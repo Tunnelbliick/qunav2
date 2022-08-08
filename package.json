@@ -1,0 +1,31 @@
+{
+  "name": "qunav2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/builders": "^1.1.0",
+    "async-batch": "^1.1.2",
+    "axios": "^0.27.2",
+    "chartjs-adapter-moment": "^1.0.0",
+    "chartjs-node-canvas": "^4.1.6",
+    "dataimageattachment": "^1.1.2",
+    "discord.js": "^13.6.0",
+    "dotenv": "^16.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongodb": "^4.8.1",
+    "mongoose": "^6.5.1",
+    "osu-api-extended": "^2.5.6",
+    "prando": "^6.0.1",
+    "redis-server": "^1.2.2",
+    "skia-canvas": "^0.9.30",
+    "tinygradient": "^1.1.5",
+    "ts-retry-promise": "^0.7.0",
+    "wokcommands": "^1.5.3"
+  }
+}
