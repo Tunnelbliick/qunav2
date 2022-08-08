@@ -20,7 +20,7 @@ As Quna is still literally a work in progress, this list should be updated somew
     You know what, just find out for yourself.
 
 ## 🈳 Availability
-Available for everyone
+Available for everyone  
 https://discord.com/api/oauth2/authorize?client_id=957969843343200276&permissions=2147863616&scope=applications.commands%20bot
 
 ## ‼️ [Bug Reports](https://github.com/Tunnelbliick/qunav2/issues)
