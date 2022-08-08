@@ -2,7 +2,7 @@
 Yet another multipurpose (but mainly focused on osu!) Discord bot recode version 2.
 
 ## ℹ️ Information
-Quna runs on Discord.js v13 and is built on Typescript. She's owned, developed and maintained by [Tunnelblick#0001](https://discord.com/users/203932549746130944) and [Arumi#5555](https://discord.com/users/181380205670170624), and lives in Café Arumina. 
+Quna runs on Discord.js v13 and is built on Typescript. She's owned, developed and maintained by [Tunnelblick#0001](https://discord.com/users/203932549746130944) and [Arumi#5555](https://discord.com/users/181380205670170624).
 
 ## 💠 Features
 As Quna is still literally a work in progress, this list should be updated somewhat regularly.
