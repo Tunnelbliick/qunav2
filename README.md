@@ -23,4 +23,4 @@ As Quna is still literally a work in progress, this list should be updated somew
 Currently, Quna only exists in Café Arumina, a private server owned by Arumi. No, you can't invite her to other servers, and no, Arumi is not inviting anyone that stumbles upon this repo to Café Arumina. She'll be public sometime soon though, so don't you worry!
 
 ## ‼️ [Bug Reports](https://github.com/AppelsPen/Quna/issues)
-Yes, Quna is filled with bugs. If you're a member of Café Arumina and have arrived here, open a new issue [over here](https://github.com/AppelsPen/Quna/issues), or just click that big ass blue bug report. Drop a screenshot of what seems wrong and title it appropriately, and (hopefully) someone will get to it!
+Yes, Quna is filled with bugs. If you're a member of Café Arumina and have arrived here, open a new issue [over here](https://github.com/Tunnelbliick/qunav2/issues), or just click that big ass blue bug report. Drop a screenshot of what seems wrong and title it appropriately, and (hopefully) someone will get to it!
