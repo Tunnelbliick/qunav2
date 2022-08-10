@@ -1,15 +1,15 @@
-import { stillProcessing } from "../../../../embeds/osu/card/error";
+import { Message } from "discord.js";
+import { stillProcessing } from "../../../../embeds/osu/skill/error";
+import { generateSkillsEmbed } from "../../../../embeds/osu/skill/skill";
 import { checkIfUserExists, checkIfUserIsLInked } from "../../../../embeds/utility/nouserfound";
 import User from "../../../../models/User";
 import { buildUsernameOfArgs } from "../../../../utility/buildusernames";
 import { encrypt } from "../../../../utility/encrypt";
-import { generateCard } from "../../../card/card";
 import { getTopForUser } from "../../../osu/top";
 import { getUser, getUserByUsername } from "../../../osu/user";
-import { getTotalSkills } from "../../../skills/skills";
-const DataImageAttachment = require("dataimageattachment");
+import { getAllSkills } from "../../../skills/skills";
 
-export async function card(message: any, args: any) {
+export async function skill(message: any, args: any) {
 
     let userid = null;
     let username = null;
@@ -48,14 +48,13 @@ export async function card(message: any, args: any) {
 
     let top_100 = await getTopForUser(osu_user.id);
 
-    let skills: any = await getTotalSkills(top_100);
+    let skills: any = await getAllSkills(top_100);
 
     if(skills === undefined) {
         stillProcessing(message);
         return;
     }
 
-    let card = await generateCard(osu_user, skills);
+    generateSkillsEmbed(skills, osu_user, message);
 
-    await message.reply({ files: [new DataImageAttachment(card, `${osu_user.username}_card.png`)] });
 }
