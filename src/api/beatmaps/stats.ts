@@ -13,6 +13,20 @@ export interface BeatmapStats {
     color?: any,
 }
 
+export function calcualteStatsFromBeatmapforMods(beatmap: any, mods: Array<string>) {
+
+    let stats: BeatmapStats = {
+        cs: beatmap.cs,
+        hp: beatmap.hp,
+        bpm: beatmap.beatmapset.bpm,
+        mapLength: beatmap.total_length,
+        mapDrain: beatmap.hit_length
+    }
+
+    return calcualteStatsforMods(stats, mods);
+
+}
+
 export function calcualteStatsforMods(stats: BeatmapStats, mods: Array<string>) {
 
     if (mods.includes("EZ")) {
@@ -35,11 +49,11 @@ export function calcualteStatsforMods(stats: BeatmapStats, mods: Array<string>) 
         stats.mapDrain = stats.mapDrain / 0.75
     }
 
-    if(stats.cs > 10) {
+    if (stats.cs > 10) {
         stats.cs = 10;
-    } 
+    }
 
-    if(stats.hp > 10) {
+    if (stats.hp > 10) {
         stats.hp = 10;
     }
 

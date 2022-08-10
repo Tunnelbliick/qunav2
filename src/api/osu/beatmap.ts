@@ -23,10 +23,10 @@ export async function getBeatmap(mapid: any) {
     });
 }
 
-export async function getBeatmapSet(setid: any) {
+export async function getBeatmapSet(setid: number) {
     await login();
     return new Promise((resolve, reject) => {
-        const result = v2.beatmap.lookup.set(setid);
+        const result = v2.beatmap.set(setid);
 
         result.then((data: any) => {
             return resolve(data);

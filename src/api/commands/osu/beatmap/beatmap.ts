@@ -45,7 +45,6 @@ export async function beatmap(message: any, args: any) {
 
     let id = args[0];
     let setid = "";
-
     let isSet = false;
 
     if (url.includes("//osu.ppy.sh/beatmapsets/")) {
@@ -71,8 +70,7 @@ export async function beatmap(message: any, args: any) {
     }
 
     if (isSet == true)
-
-        await getBeatmapSet(setid).then((data: any) => {
+        await getBeatmapSet(+setid).then((data: any) => {
             id = data.beatmaps[data.beatmaps.length - 1].id;
         });
 
