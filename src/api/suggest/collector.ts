@@ -74,6 +74,10 @@ export async function launchSuggestionCollector(params: suggestion_collector_par
                     .setTitle(`${beatmap.beatmapset.artist} - ${beatmap.beatmapset.title} [${beatmap.version}]`)
                     .setURL(`${beatmap.url}`)
                     .setDescription("The suggestion was discarded.");
+
+                accept.setDisabled(true);
+                discard.setDisabled(true);
+
                 await message.edit({ embeds: [embed], components: [row] });
                 await i.deferUpdate();
                 break;

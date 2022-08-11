@@ -11,6 +11,22 @@ export interface BeatmapStats {
     dmin?: any,
     strDsec?: any,
     color?: any,
+    total_objects?: any
+}
+
+export function calcualteStatsFromSuggestion(suggestion: any) {
+
+    let stats: BeatmapStats = {
+        cs: suggestion.cs,
+        hp: suggestion.hp,
+        bpm: suggestion.bpm,
+        mapLength: suggestion.length,
+        mapDrain: suggestion.drain,
+        total_objects: parseInt(suggestion.circles) + parseInt(suggestion.sliders) + parseInt(suggestion.spinners)
+    }
+
+    return calcualteStatsforMods(stats, suggestion.mods);
+
 }
 
 export function calcualteStatsFromBeatmapforMods(beatmap: any, mods: Array<string>) {
@@ -20,7 +36,8 @@ export function calcualteStatsFromBeatmapforMods(beatmap: any, mods: Array<strin
         hp: beatmap.hp,
         bpm: beatmap.beatmapset.bpm,
         mapLength: beatmap.total_length,
-        mapDrain: beatmap.hit_length
+        mapDrain: beatmap.hit_length,
+        total_objects: parseInt(beatmap.circles) + parseInt(beatmap.sliders) + parseInt(beatmap.spinners)
     }
 
     return calcualteStatsforMods(stats, mods);
