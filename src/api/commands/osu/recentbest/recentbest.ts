@@ -170,7 +170,6 @@ export async function recentbest(message: any, args: any, mode: any) {
                 if (retry_count == max_retry) {
                     return;
                 }
-                console.log(err);
 
                 let embed: any = new MessageEmbed()
                     .setTitle("Error loading Page")
@@ -187,7 +186,6 @@ export async function recentbest(message: any, args: any, mode: any) {
 
                 }, 5000);
 
-                console.log(retry_count);
                 retry_count++;
 
             })

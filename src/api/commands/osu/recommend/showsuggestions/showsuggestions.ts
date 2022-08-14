@@ -8,13 +8,13 @@ import { buildUsernameOfArgs } from "../../../../../utility/buildusernames";
 import { encrypt } from "../../../../../utility/encrypt";
 import { calcualteStatsFromBeatmapforMods } from "../../../../beatmaps/stats";
 import { getUser, getUserByUsername } from "../../../../osu/user";
-import { launchShowSuggestionCollector, show_suggestion_collector_params } from "../../../../showsuggestions/collector";
-import { filterRecommends, suggestion_filter } from "../../../../showsuggestions/filter";
+import { launchShowSuggestionCollector, show_suggestion_collector_params } from "../../../../recommend/showsuggestions/collector";
+import { filterRecommends, suggestion_filter } from "../../../../recommend/showsuggestions/filter";
 import { buildSearch } from "../../../../utility/buildsearch";
 
 export async function showsuggestions(message: any, args: any, prefix: any) {
 
-    let userid = null;
+    let userid = message.author.id
     let username = null;
     let userObject = null;
     let osu_user: any = null;
@@ -23,15 +23,11 @@ export async function showsuggestions(message: any, args: any, prefix: any) {
 
     let option_filter: suggestion_filter = filterRecommends(args);
 
-    if (!args[0]) {
-        userid = message.author.id
-    }
-
     if (args[0] && args[0].startsWith("<@")) {
         userid = args[0].replace("<@", "").replace(">", "");
     }
 
-    if (userid === null) {
+    if (option_filter.username !== "") {
         username = option_filter.username;
         osu_user = await getUserByUsername(username, "osu");
     } else {

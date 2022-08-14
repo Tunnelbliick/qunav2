@@ -6,6 +6,7 @@ export interface suggestion_filter {
     bpm: any,
     star: any,
     searchString: string,
+    category?: string
     username?: any
     userid?: any,
 }
@@ -19,7 +20,8 @@ export function filterRecommends(args: any) {
     let hp: any = [];
     let bpm: any = [];
     let star: any = [];
-    let usernameargs: any;
+    let category: any = [];
+    let usernameargs: any = "";
 
     for (let arg of args) {
 
@@ -58,11 +60,19 @@ export function filterRecommends(args: any) {
             continue;
         }
 
+        if(arg == "-c") {
+            mode = "CATEGORY";
+            continue;
+        }
+
         if (mode == "")
-            usernameargs.push(arg);
+            usernameargs += arg;
 
         if (mode == "SEARCHSTRING")
             searchString += arg;
+
+        if (mode == "CATEGORY")
+            category.push(arg);
 
         if (mode == "AR")
             ar.push(arg);

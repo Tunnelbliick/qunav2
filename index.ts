@@ -19,19 +19,20 @@ client.on('ready', async () => {
         })
         console.log("Connected to MongoDB!")
 
-         const server = new RedisServer({
+        const server = new RedisServer({
             port: 6379,
-             bin: 'C:/Program Files/Redis/redis-server.exe'
-          });
+            bin: 'C:/Program Files/Redis/redis-server.exe'
+        });
 
-           server.open((err: any) => {
-              if (err === null) {
-                 console.log("You may now connect a client to the Redis")
-             }
-         });
+        server.open((err: any) => {
+            if (err === null) {
+                console.log("You may now connect a client to the Redis")
+            }
+        });
 
         new WOKCommands(client, {
             commandsDir: path.join(__dirname, '/src/commands'),
+            featuresDir: path.join(__dirname, '/src/handlers'),
             mongoUri: process.env.mongodb,
             typeScript: true,
             showWarns: false,

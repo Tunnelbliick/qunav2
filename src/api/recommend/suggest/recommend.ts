@@ -1,9 +1,9 @@
 import { Message } from "discord.js";
-import { alreadyUpvoted } from "../../embeds/osu/recommend/suggest/error";
-import { CategoryVote } from "../../models/CategoryVote";
-import Recommendation from "../../models/Recommendation";
-import User from "../../models/User";
-import { encrypt } from "../../utility/encrypt";
+import { alreadyUpvoted } from "../../../embeds/osu/recommend/suggest/error";
+import { CategoryVote } from "../../../models/CategoryVote";
+import Recommendation from "../../../models/Recommendation";
+import User from "../../../models/User";
+import { encrypt } from "../../../utility/encrypt";
 import { suggestion_collector_params } from "./collector";
 
 const Procyon = require('procyon')
@@ -52,7 +52,7 @@ export async function recommend(suggestion: suggestion_collector_params, interac
         recomendation.version = beatmap.version;
         recomendation.creator = beatmap.beatmapset.creator;
         recomendation.cover = beatmap.beatmapset.covers.cover;
-        recomendation.upvote = [interaction.user.id];
+        recomendation.upvote = [user.userid];
         recomendation.downvote = [];
         recomendation.mods = mods;
         recomendation.type = categoryVoteArray;

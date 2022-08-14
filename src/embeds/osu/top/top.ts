@@ -53,8 +53,6 @@ export async function topEmbed(data: any, user: any, index: number, max: number)
         plays.push(score);
     })
 
-    console.log(plays.length)
-
     if (plays.length != 1) {
         plays.forEach((play: any) => {
             let field = genereateField(play);

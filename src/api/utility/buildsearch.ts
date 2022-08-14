@@ -1,4 +1,4 @@
-import { suggestion_filter } from "../showsuggestions/filter";
+import { suggestion_filter } from "../recommend/showsuggestions/filter";
 
 export function buildSearch(filter: suggestion_filter): any {
 
@@ -10,6 +10,7 @@ export function buildSearch(filter: suggestion_filter): any {
     const od = filter.od;
     const star = filter.star;
     const bpm = filter.bpm;
+    const category = filter.category;
 
     let error = "";
 
@@ -17,10 +18,14 @@ export function buildSearch(filter: suggestion_filter): any {
 
     if (upvote != undefined) {
         query["upvote"] = parseInt(upvote);
-    } 
+    }
 
     if (searchString != "") {
         query["$or"] = [{ title: { $regex: searchString } }, { artist: { $regex: searchString } }, { version: { $regex: searchString } }, { creator: { $regex: searchString } }, { type: { $regex: searchString } }];
+    }
+
+    if (category != undefined) {
+        query["type.category"] = { "$in": category }
     }
 
     if (ar.length != 0) {

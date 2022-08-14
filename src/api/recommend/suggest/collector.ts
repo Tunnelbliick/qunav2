@@ -1,5 +1,5 @@
 import { Message, MessageEmbed } from "discord.js";
-import { BeatmapStats } from "../beatmaps/stats";
+import { BeatmapStats } from "../../beatmaps/stats";
 import { recommend } from "./recommend";
 
 export interface suggestion_collector_params {
@@ -34,8 +34,6 @@ export async function launchSuggestionCollector(params: suggestion_collector_par
     const collector = message.channel.createMessageComponentCollector({ filter, time: 60000 })
 
     collector.on("collect", async (i: any) => {
-
-        console.log(i.customId);
 
         let para = i.customId.split("_")
         let authorid = para[2]
@@ -86,7 +84,6 @@ export async function launchSuggestionCollector(params: suggestion_collector_par
     });
 
     collector.on("end", async () => {
-
 
         accept.setDisabled(true);
         discard.setDisabled(true);

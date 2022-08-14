@@ -1,6 +1,6 @@
 import { invalidMapUrl, missingParameters } from "../../../../../embeds/osu/recommend/suggest/error";
 import { getBeatmap, getBeatmapSet } from "../../../../osu/beatmap";
-import { suggest, suggestion } from "../../../../suggest/suggest";
+import { suggest, suggestion } from "../../../../recommend/suggest/suggest";
 
 export async function suggestion(message: any, args: any, prefix: any) {
 
@@ -17,7 +17,6 @@ export async function suggestion(message: any, args: any, prefix: any) {
     message.channel.sendTyping();
 
     if (message.reference !== null) {
-        console.log(`message ref: ${message.reference}`);
         let reference_id: any = message.reference?.messageId;
         let reference_message = await message.channel.messages.fetch(reference_id);
         let embed = reference_message.embeds[0];
@@ -72,7 +71,6 @@ export async function suggestion(message: any, args: any, prefix: any) {
         });
     }
 
-    console.log(id);
 
     if (id === undefined) {
         error = "invalid_url";
@@ -82,7 +80,6 @@ export async function suggestion(message: any, args: any, prefix: any) {
         error = "no_categorie";
     }
 
-    console.log(id);
 
     switch(error){
         case "invalid_url":

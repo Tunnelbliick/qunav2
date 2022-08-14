@@ -1,10 +1,10 @@
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
-import { invalidcategorie } from "../../embeds/osu/recommend/suggest/error";
-import Category from "../../models/Category";
-import { getDifficultyColor } from "../../utility/gradiant";
-import { calcualteStatsFromBeatmapforMods } from "../beatmaps/stats";
-import { parseModString } from "../osu/utility/parsemods";
-import { loaddifficulty } from "../pp/db/loaddifficutly";
+import { invalidcategorie } from "../../../embeds/osu/recommend/suggest/error";
+import Category from "../../../models/Category";
+import { getDifficultyColor } from "../../../utility/gradiant";
+import { calcualteStatsFromBeatmapforMods } from "../../beatmaps/stats";
+import { parseModString } from "../../osu/utility/parsemods";
+import { loaddifficulty } from "../../pp/db/loaddifficutly";
 import { launchSuggestionCollector, suggestion_collector_params } from "./collector";
 
 export interface suggestion {

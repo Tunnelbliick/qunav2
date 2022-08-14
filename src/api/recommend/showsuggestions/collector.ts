@@ -1,4 +1,4 @@
-import { buildshowSuggestions, show_suggestion_embed } from "../../embeds/osu/recommend/showsuggestion/showsuggestion";
+import { buildshowSuggestions, show_suggestion_embed } from "../../../embeds/osu/recommend/showsuggestion/showsuggestion";
 
 export interface show_suggestion_collector_params {
     message: any,
