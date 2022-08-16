@@ -159,7 +159,13 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         .setEmoji("955319940435574794")
         .setStyle("DANGER");
 
-    row.setComponents([prior, upvote, downvote, next]);
+    let vote = new MessageButton().
+    setCustomId(`recommendation_vote_${userid}_${index}_${recList.id}_${recommendation.id}`)
+    .setLabel("Vote")
+    .setStyle("PRIMARY");
+
+
+    row.setComponents([prior, upvote, downvote, next, vote]);
 
     let recommendationembed = new MessageEmbed()
         .setAuthor({ name: `Personal beatmap recommendation (${index + 1}/${max_index})` })
