@@ -22,6 +22,7 @@ Quna is still waiting to receive some extra features, but this is what she has r
 
 ## 🈳 Availability
 v1 Quna used to be in a single private server, but v2 is now invitable by everyone [here!](https://discord.com/api/oauth2/authorize?client_id=957969843343200276&permissions=2147863616&scope=applications.commands%20bot)
+
 As for those who want to join Quna's home server, click [this button](https://discord.gg/azPWUfSMm3) instead.
 
 ## 💕 Credits
