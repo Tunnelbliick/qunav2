@@ -1,17 +1,19 @@
 import { id } from "osu-api-extended/dist/utility/mods";
 import { buildUpvote } from "../../../embeds/osu/recommend/category/category";
 import { alraedyUpvoted } from "../../../embeds/osu/recommend/category/error";
+import { buildCategoryVoteEmbed } from "../../../embeds/osu/recommend/categoryvote/categoryvote";
 import Recommendation from "../../../models/Recommendation";
 import User from "../../../models/User";
 import { encrypt } from "../../../utility/encrypt";
+const DataImageAttachment = require("dataimageattachment");
 
-export async function launcCollector(ids: Array<any>, interaction: any, components: any) {
+export async function launcCollector(ids: Array<any>, interaction: any, components: any, row: any) {
 
     const filter = (i: any) => {
         return ids.includes(i.customId);
     }
 
-    const collector = interaction.channel.createMessageComponentCollector({ filter, time: 10000 })
+    const collector = interaction.channel.createMessageComponentCollector({ filter, time: 30000 })
 
     collector.on("collect", async (i: any) => {
 
@@ -60,7 +62,11 @@ export async function launcCollector(ids: Array<any>, interaction: any, componen
 
     collector.on("end", async () => {
 
-        components.foreach((button: any) => button.setDisabled(true));
+        console.log(components);
+
+        components.forEach((button: any) => button.setDisabled(true));
+
+        await interaction.editReply({ components: [row]});
 
     })
 }

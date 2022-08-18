@@ -349,9 +349,6 @@ export default (client: Client) => {
 
                         let message = await categoryvote(currentid, userid, interaction)
 
-                        await interaction.deferReply({ ephemeral: true });
-                        await interaction.editReply(message);
-
 
                     }
                 }

@@ -1,4 +1,5 @@
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { buildCategoryVoteEmbed } from "../../../embeds/osu/recommend/categoryvote/categoryvote";
 import Recommendation from "../../../models/Recommendation";
 import { categorieLabeledchart } from "../../chart.js/recommend/categories";
 import { launcCollector } from "./collector";
@@ -18,12 +19,7 @@ export async function categoryvote(currentid: any, userid: any, interaction: any
 
     let ids: any = [];
 
-    let recommendationembed = new MessageEmbed()
-        .setAuthor({ name: `Upvote Categories for this Suggestion` })
-        .setColor(0x737df9)
-        .setTitle(`${recommendation.artist} - ${recommendation.title} [${recommendation.version}]`)
-        .setImage("attachment://categories.png")
-        .setURL(`https://osu.ppy.sh/beatmaps/${recommendation.mapid}`)
+    let recommendationembed = buildCategoryVoteEmbed(recommendation, null);
 
     categories.forEach((category: any) => {
 
@@ -31,7 +27,7 @@ export async function categoryvote(currentid: any, userid: any, interaction: any
 
         let vote = new MessageButton()
             .setCustomId(id)
-            .setLabel(`${category.category} + 1`)
+            .setLabel(`⬆️ ${category.category}`)
             .setStyle("PRIMARY");
 
         ids.push(id);
@@ -41,8 +37,9 @@ export async function categoryvote(currentid: any, userid: any, interaction: any
 
     row.setComponents(components);
 
-    launcCollector(ids, interaction, components);
+    await interaction.deferReply({ ephemeral: true });
+    await interaction.editReply({ embeds: [recommendationembed], components: [row], files: [new DataImageAttachment(chart, "categories.png")] });
 
-    return { embeds: [recommendationembed], components: [row], files: [new DataImageAttachment(chart, "categories.png")] };
+    launcCollector(ids, interaction, components, row);
 
 }
