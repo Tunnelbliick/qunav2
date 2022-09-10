@@ -22,10 +22,11 @@ export default {
 
     category: "osu!",
     aliases: ["help", "h"],
-    description: "Help for osu commands also can be ",
+    description: "Help for quna",
 
     callback: async ({ message, args, prefix }) => {
 
+        console.log("test");
 
         // THIS is just a quick and dirty way of doing this shit
         if (args[0] == null) {
@@ -68,7 +69,7 @@ export default {
             let embed = helpmap(prefix);
             message.reply({ embeds: [embed] });
             return;
-        } else if (["profile", "o", "osu", "p", "isu","pmania", "profilemania", "maniaprofile","catch", "pcatch", "profilecatch", "catchprofile","ptaiko", "profiletaiko", "taikoprofile"].includes(args[0])) {
+        } else if (["profile", "o", "osu", "p", "isu", "pmania", "profilemania", "maniaprofile", "catch", "pcatch", "profilecatch", "catchprofile", "ptaiko", "profiletaiko", "taikoprofile"].includes(args[0])) {
             let embed = helpprofile(prefix);
             message.reply({ embeds: [embed] });
             return;
@@ -129,11 +130,10 @@ export default {
 
 } as ICommand
 
-
 function buildGlobalHelp(prefix: string) {
     let embed = new MessageEmbed()
         .setTitle("Quna commands")
-        .setDescription(`Server prefix: \`${prefix}\`\n\`${prefix}info\`: for more info on Quna`)
+        .setDescription(`Server prefix: \`${prefix}\`\n\`${prefix}info\`: For more info on Quna\nFor more help join our [Discord](https://discord.gg/azPWUfSMm3)`)
         .setFields([{
             name: `**__Utility commands__**`,
             value: "`prefix`: To change the prefix for Quna\n" +
@@ -182,7 +182,7 @@ function buildGlobalHelp(prefix: string) {
     return embed;
 }
 
-export function helpnotsupported(prefix: string) {
+function helpnotsupported(prefix: string) {
 
     let embed = new MessageEmbed()
         .setTitle("Help not found")

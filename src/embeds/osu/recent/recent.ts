@@ -129,7 +129,7 @@ export function generateRecentEmbed(result: any, message: Message) {
         .setImage(`${map.beatmapset.covers.cover}`) // the @2x version does not work sadge
         .setFooter({ text: `Mapset by ${map.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
-    let description: any = undefined;
+    let description: string = "";
 
     if (leaderboard !== undefined) {
         description += `**Global Top #${leaderboard + 1}** `;
@@ -139,7 +139,7 @@ export function generateRecentEmbed(result: any, message: Message) {
         description += `**Personal Best #${leaderboard + 1}**`;
     }
 
-    if(description !== undefined) {
+    if (description !== undefined) {
         fullsize.setDescription(description);
     }
 
@@ -167,7 +167,10 @@ export function generateRecentEmbed(result: any, message: Message) {
             .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
             .setURL(`${map.url}`)
             .setFooter({ text: `Mapset by ${map.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
-            .setDescription(description)
+
+        if (description !== undefined) {
+            compact.setDescription(description);
+        }
 
         switch (play.mode) {
             case "osu":

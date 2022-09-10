@@ -21,7 +21,7 @@ client.on('ready', async () => {
 
         const server = new RedisServer({
             port: 6379,
-            bin: 'redis-server'    
+            bin: 'C:/Program Files/Redis/redis-server.exe'
         });
 
         server.open((err: any) => {

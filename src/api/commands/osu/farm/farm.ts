@@ -128,8 +128,6 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
             hours[n] = hours[n] + 1
     }
 
-    console.log(hours);
-
     let chart = null;
     switch (mode) {
         case "hour":
