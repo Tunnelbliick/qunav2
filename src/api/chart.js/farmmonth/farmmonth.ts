@@ -18,7 +18,7 @@ export async function generateFarmmonthChart(hours: any) {
                 'Feb',
                 'Mar',
                 'Apr',
-                'Mai',
+                'May',
                 'Jun',
                 'Jul',
                 'Aug',
