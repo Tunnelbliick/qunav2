@@ -1,5 +1,6 @@
 
 import { ICommand } from "wokcommands";
+import { helpunlink } from "../../../embeds/osu/unlink/help";
 import { successfullUnlink } from "../../../embeds/osu/unlink/unlink";
 import User from "../../../models/User";
 import { encrypt } from "../../../utility/encrypt";
@@ -13,12 +14,12 @@ export default {
 
 
     callback: async ({ message, args, interaction, prefix }) => {
-
-        // if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-        //      let embed = helplink(prefix);
-        //      message.reply({ embeds: [embed] });
-        //      return;
-        //   }
+        
+        if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
+            let embed = helpunlink(prefix);
+            message.reply({ embeds: [embed] });
+            return;
+        }
 
         let isSlash = true;
 

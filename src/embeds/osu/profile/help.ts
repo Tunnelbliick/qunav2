@@ -1,30 +1,30 @@
 import { MessageEmbed } from "discord.js";
 
-export function helposu(prefix: string) {
+export function helpprofile(prefix: string) {
 
     let embed = new MessageEmbed()
-        .setTitle("Help osu profile")
+        .setTitle("Help profile")
         .setDescription("Shows the user profile.")
         .setColor(0x737df9)
         .setFields(
             {
                 name: "Usage",
-                value: `\`${prefix}osu [username]\``
+                value: `\`${prefix}p [username]\` or gamemode name`
             },
             {
                 name: "username",
-                value: `Gets teh profile for a specific user. Can be the exact username or a mention e.g \`${prefix}osu Tunnelblick\` or \`${prefix}osu @Tunnelblick\``
+                value: `Gets the profile for a specific user. Can be the exact username or a mention e.g \`${prefix}p Tunnelblick\` or \`${prefix}p @Tunnelblick\``
             },
             {
                 name: "examples",
                 value:
-                    `\`${prefix}osu Tunnelblick\`\n` +
-                    `\`${prefix}osu @Tunnelblick\``,
+                    `\`${prefix}p Tunnelblick\`\n` +
+                    `\`${prefix}p @Tunnelblick\``,
                 inline: true
             },
             {
                 name: "aliases",
-                value: `\`${prefix}o\` \`${prefix}osu\``,
+                value: `\`${prefix}p\` \`${prefix}profile\``,
                 inline: true
             });
 

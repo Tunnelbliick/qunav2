@@ -4,6 +4,7 @@ import User from "../../../models/User";
 import { encrypt } from "../../../utility/encrypt";
 import { retry } from "ts-retry-promise";
 import { checkforLinkSucess, generateAuthEmbed, successfullAuthEmbed, timeoutAuthEmbed } from "../../../embeds/osu/link/link";
+import { helplink } from "../../../embeds/osu/link/help";
 
 const timeout = new Set()
 
@@ -16,11 +17,11 @@ export default {
 
     callback: async ({ message, args, interaction, prefix }) => {
 
-        // if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-        //let embed = helplink(prefix);
-        //message.reply({ embeds: [embed] });
-        //     return;
-        //  }
+        if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
+            let embed = helplink(prefix);
+            message.reply({ embeds: [embed] });
+            return;
+        }
 
         const url = `https://osu.ppy.sh/oauth/authorize?client_id=12872&response_type=code&scope=identify&redirect_uri=https://tnnlb.dev/quna/login`
 

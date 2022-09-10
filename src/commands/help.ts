@@ -7,14 +7,14 @@ import { helpcard } from "../embeds/osu/card/help";
 import { helpcompare } from "../embeds/osu/compare/help";
 import { helpFarmdays, helpFarmhours, helpFarmMonth, helpFramWeeks } from "../embeds/osu/farm/help";
 import { helplink } from "../embeds/osu/link/help";
-import { helposu } from "../embeds/osu/profile/help";
-import { recentHelp } from "../embeds/osu/recent/help";
+import { helpprofile } from "../embeds/osu/profile/help";
+import { helpRecent } from "../embeds/osu/recent/help";
 import { helprecentBest } from "../embeds/osu/recentbest/help";
 import { helprecommend } from "../embeds/osu/recommend/recommend/help";
 import { helpshowsuggestions } from "../embeds/osu/recommend/showsuggestion/help";
 import { helpsuggest } from "../embeds/osu/recommend/suggest/help";
 import { helpskills } from "../embeds/osu/skill/help";
-import { topHelp } from "../embeds/osu/top/help";
+import { helpTop } from "../embeds/osu/top/help";
 import { helpunlink } from "../embeds/osu/unlink/help";
 import { helpTimezone } from "../embeds/timezone/help";
 
@@ -69,11 +69,11 @@ export default {
             message.reply({ embeds: [embed] });
             return;
         } else if (["profile", "o", "osu", "p", "isu","pmania", "profilemania", "maniaprofile","catch", "pcatch", "profilecatch", "catchprofile","ptaiko", "profiletaiko", "taikoprofile"].includes(args[0])) {
-            let embed = helposu(prefix);
+            let embed = helpprofile(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["r", "rs", "recent", "maniar", "maniars", "maniarecent", "catchr", "catchrs", "catchrecent", "taikor", "taikors", "taikorecent"].includes(args[0])) {
-            let embed = recentHelp(prefix);
+            let embed = helpRecent(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["rb", "maniarb", "catchrb", "taikorb"].includes(args[0])) {
@@ -81,7 +81,7 @@ export default {
             message.reply({ embeds: [embed] });
             return;
         } else if (["top", "maniatop", "catchtop", "taikotop"].includes(args[0])) {
-            let embed = topHelp(prefix);
+            let embed = helpTop(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["ss", "showsugs", "shows", "showsug", "suggestions", "showsuggestions"].includes(args[0])) {
@@ -133,7 +133,7 @@ export default {
 function buildGlobalHelp(prefix: string) {
     let embed = new MessageEmbed()
         .setTitle("Quna commands")
-        .setDescription(`Server prefix: \`${prefix}\`\n`)
+        .setDescription(`Server prefix: \`${prefix}\`\n` + `\${prefix}info\`: for more info on Quna`)
         .setFields([{
             name: `**__Utility commands__**`,
             value: "`prefix`: To change the prefix for Quna\n" +

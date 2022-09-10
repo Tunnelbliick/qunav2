@@ -1,6 +1,6 @@
 import { MessageEmbed } from "discord.js";
 
-export function recentHelp(prefix: string) {
+export function helpRecent(prefix: string) {
 
     let embed = new MessageEmbed()
         .setTitle("Help recent")

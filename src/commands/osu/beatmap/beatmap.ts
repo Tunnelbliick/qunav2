@@ -1,5 +1,6 @@
 import { ICommand } from "wokcommands";
 import { beatmap } from "../../../api/commands/osu/beatmap/beatmap";
+import { helpmap } from "../../../embeds/osu/beatmap/help";
 
 export default {
 
@@ -10,11 +11,11 @@ export default {
     callback: async ({ message, args, prefix }) => {
 
 
-       /* if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
+       if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
             let embed = helpmap(prefix);
             message.reply({ embeds: [embed] });
             return;
-        }*/
+        }
 
         await beatmap(message, args);
 

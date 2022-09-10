@@ -1,5 +1,6 @@
 import { ICommand } from "wokcommands";
 import { skill } from "../../../api/commands/osu/skill/skill";
+import { helpskills } from "../../../embeds/osu/skill/help";
 
 
 export default {
@@ -13,11 +14,11 @@ export default {
 
         message.channel.sendTyping();
 
-       /* if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
+        if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
             let embed = helpskills(prefix);
             message.reply({ embeds: [embed] });
             return;
-        }*/
+        }
 
         skill(message, args);
 

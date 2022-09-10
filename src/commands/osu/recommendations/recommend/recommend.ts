@@ -1,5 +1,6 @@
 import { ICommand } from "wokcommands";
 import { bulldrecommends } from "../../../../api/commands/osu/recommend/recommend/recommend";
+import { helprecommend } from "../../../../embeds/osu/recommend/recommend/help";
 
 export default {
 
@@ -16,11 +17,11 @@ export default {
     callback: async ({ message, args, prefix }) => {
 
 
-        /* if (args[0] == "-h" || args[0] == "-help" || args[0] == "h" || args[0] == "help") {
+        if (args[0] == "-h" || args[0] == "-help" || args[0] == "h" || args[0] == "help") {
              let embed = helprecommend(prefix);
              message.reply({ embeds: [embed] });
              return;
-         }*/
+         }
 
          bulldrecommends(message, args, prefix);
 
