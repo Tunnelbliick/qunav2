@@ -19,12 +19,6 @@ export async function compare(message: any, args: any) {
     let first = true;
     let tag;
 
-    /* if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-        let embed = helpcompare(prefix);
-        message.reply({ embeds: [embed] });
-        return;
-    } */
-
     if (message.reference != null) {
         let reference_id: any = message.reference?.messageId;
         let reference_message = await message.channel.messages.fetch(reference_id);
