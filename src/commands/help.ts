@@ -133,7 +133,7 @@ export default {
 function buildGlobalHelp(prefix: string) {
     let embed = new MessageEmbed()
         .setTitle("Quna commands")
-        .setDescription(`Server prefix: \`${prefix}\`\n` + `\${prefix}info\`: for more info on Quna`)
+        .setDescription(`Server prefix: \`${prefix}\`\n\`${prefix}info\`: for more info on Quna`)
         .setFields([{
             name: `**__Utility commands__**`,
             value: "`prefix`: To change the prefix for Quna\n" +
