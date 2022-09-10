@@ -113,20 +113,23 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
                 n = moment(top.value.created_at).tz(timezone).format("d");
                 break;
             case "week":
-                n = moment(top.value.created_at).tz(timezone).format("W");
+                n = moment(top.value.created_at).tz(timezone).format("W") - 1;
                 break;
             case "month":
-                n = moment(top.value.created_at).tz(timezone).format("M");
+                n = moment(top.value.created_at).tz(timezone).format("M") - 1;
                 break;
             default:
                 n = moment(top.value.created_at).tz(timezone).format("H");
                 break;
         }
+        console.log(n);
         if (hours[n] == null)
             hours[n] = 1
         else
             hours[n] = hours[n] + 1
     }
+
+    console.log(hours);
 
     let chart = null;
     switch (mode) {
