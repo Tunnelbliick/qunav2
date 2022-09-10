@@ -26,8 +26,6 @@ export default {
 
     callback: async ({ message, args, prefix }) => {
 
-        console.log("test");
-
         // THIS is just a quick and dirty way of doing this shit
         if (args[0] == null) {
             let embed = buildGlobalHelp(prefix);
