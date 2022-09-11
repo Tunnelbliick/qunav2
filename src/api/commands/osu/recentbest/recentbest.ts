@@ -29,17 +29,11 @@ export async function recentbest(message: any, args: any, mode: any) {
 
     message.channel.sendTyping();
 
-    /*if (args[0] == "-h" || args[0] == "-help" || args[0] == "h" || args[0] == "help") {
-        let embed = topHelp(prefix);
-        message.reply({ embeds: [embed] });
-        return;
-    }*/
-
     let filterOptions = buildFilter(message, args, mode);
 
     if (filterOptions.username !== "") {
 
-        user = await getUserByUsername(username, "osu");
+        user = await getUserByUsername(filterOptions.username, "osu");
 
         userid = user.id;
     } else {
