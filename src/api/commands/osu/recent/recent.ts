@@ -5,20 +5,20 @@ import { RecentPlayFilter } from "../../../../models/RecentPlayFilter";
 import User from "../../../../models/User";
 import { encrypt } from "../../../../utility/encrypt";
 import { getRecentPlaysForUser, getRecentPlaysForUserName } from "../../../osu/recent";
-import { builFilter } from "./filter";
+import { builFilter, optionsToFilter } from "./filter";
 
-export async function recent(message: any, args: any, mode: any) {
+export async function recent(message: any, interaction: any, args: any, mode: any) {
 
     let arg_index = 0;
     let default_mode = mode;
 
-    /* if (args[0] == "-h" || args[0] == "-help" || args[0] == "h" || args[0] == "help") {
-        let embed = recentHelp(prefix);
-        message.reply({ embeds: [embed] });
-        return;
-    }*/
+    let filter: RecentPlayFilter;
 
-    let filter: RecentPlayFilter = builFilter(message, args, default_mode)
+    if (interaction) {
+        filter = optionsToFilter(interaction, default_mode);
+    } else {
+        filter = builFilter(message, args, default_mode)
+    }
 
     let result: any;
 
@@ -34,7 +34,7 @@ export async function recent(message: any, args: any, mode: any) {
     }
 
     try {
-        generateRecentEmbed(result, message);
+        generateRecentEmbed(result, interaction, message);
     } catch (err) {
         buildErrEmbed(err, message);
         return;

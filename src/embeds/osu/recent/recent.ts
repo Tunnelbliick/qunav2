@@ -24,15 +24,21 @@ export interface RecentEmbedParameters {
     max_combo: any,
 }
 
-export function generateRecentEmbed(result: any, message: Message) {
+export function generateRecentEmbed(result: any, interaction: any, message: Message) {
 
     if (result == null) {
-        message.channel.send("No recent play found");
+        if (interaction) {
+            interaction.reply("No recent play found");
+        } else {
+            message.reply("No recent play found");
+        }
         return;
     } else if (result == "osuapierr") {
         buildAPIErrEmbed(message);
         return;
     }
+
+    let receipient = interaction;
 
     const retries = result.retries;
     const user = result.user;
@@ -158,59 +164,118 @@ export function generateRecentEmbed(result: any, message: Message) {
             break;
     }
 
-    message.channel.send({ content: `Try #${retries}`, embeds: [fullsize] }).then((msg) => setTimeout(function () {
-        var currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
-        let compact = new MessageEmbed()
-            .setThumbnail(`${map.beatmapset.covers.list}`)
-            .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
-            .setColor(color)
-            .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
-            .setURL(`${map.url}`)
-            .setFooter({ text: `Mapset by ${map.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
-        if (description !== undefined) {
-            compact.setDescription(description);
-        }
+    if (interaction) {
+        interaction.editReply({ content: `Try #${retries}`, embeds: [fullsize] }).then(() => setTimeout(function () {
+            var currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+            let compact = new MessageEmbed()
+                .setThumbnail(`${map.beatmapset.covers.list}`)
+                .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
+                .setColor(color)
+                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
+                .setURL(`${map.url}`)
+                .setFooter({ text: `Mapset by ${map.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
-        switch (play.mode) {
-            case "osu":
-                compact.addFields([
-                    {
-                        name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                        value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
-                        inline: true
-                    },
-                ])
-                break;
-            case "mania":
-                compact.addFields([
-                    {
-                        name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                        value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${play.statistics.count_300}/${play.statistics.count_katu}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
-                        inline: true
-                    },
-                ])
-                break;
-            case "taiko":
-                compact.addFields([
-                    {
-                        name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                        value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_miss}}`,
-                        inline: true
-                    },
-                ])
-                break;
-            case "fruits":
-                compact.addFields([
-                    {
-                        name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                        value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
-                        inline: true
-                    },
-                ])
-                break;
-        }
+            if (description !== undefined) {
+                compact.setDescription(description);
+            }
 
-        msg.edit({ embeds: [compact] });
-    }, 60000));
+            switch (play.mode) {
+                case "osu":
+                    compact.addFields([
+                        {
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            inline: true
+                        },
+                    ])
+                    break;
+                case "mania":
+                    compact.addFields([
+                        {
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${play.statistics.count_300}/${play.statistics.count_katu}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            inline: true
+                        },
+                    ])
+                    break;
+                case "taiko":
+                    compact.addFields([
+                        {
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_miss}}`,
+                            inline: true
+                        },
+                    ])
+                    break;
+                case "fruits":
+                    compact.addFields([
+                        {
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            inline: true
+                        },
+                    ])
+                    break;
+            }
+
+            interaction.editReply({ embeds: [compact] });
+        }, 60000));
+    } else {
+        message.reply({ content: `Try #${retries}`, embeds: [fullsize] }).then((msg) => setTimeout(function () {
+            var currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+            let compact = new MessageEmbed()
+                .setThumbnail(`${map.beatmapset.covers.list}`)
+                .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
+                .setColor(color)
+                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
+                .setURL(`${map.url}`)
+                .setFooter({ text: `Mapset by ${map.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+    
+            if (description !== undefined) {
+                compact.setDescription(description);
+            }
+    
+            switch (play.mode) {
+                case "osu":
+                    compact.addFields([
+                        {
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            inline: true
+                        },
+                    ])
+                    break;
+                case "mania":
+                    compact.addFields([
+                        {
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${play.statistics.count_300}/${play.statistics.count_katu}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            inline: true
+                        },
+                    ])
+                    break;
+                case "taiko":
+                    compact.addFields([
+                        {
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_miss}}`,
+                            inline: true
+                        },
+                    ])
+                    break;
+                case "fruits":
+                    compact.addFields([
+                        {
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            inline: true
+                        },
+                    ])
+                    break;
+            }
+    
+            msg.edit({ embeds: [compact] });
+        }, 60000));
+    }
 }

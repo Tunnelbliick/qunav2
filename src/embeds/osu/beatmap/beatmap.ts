@@ -1,5 +1,5 @@
 
-import { Message, MessageEmbed } from "discord.js";
+import { Interaction, Message, MessageEmbed } from "discord.js";
 import { BeatmapStats, calcualteStatsforMods } from "../../../api/beatmaps/stats";
 import { generateBeatmapChart } from "../../../api/chart.js/beatmap/beatmap";
 import { parseModString } from "../../../api/osu/utility/parsemods";
@@ -9,10 +9,14 @@ import { gamemode_icons } from "../../../utility/icons";
 const { Canvas, loadImage } = require('skia-canvas');
 const DataImageAttachment = require("dataimageattachment");
 
-export async function buildMapEmbed(data: any, message: Message, mods: string) {
+export async function buildMapEmbed(data: any, message: Message, interaction: any, mods: string) {
 
     if (data.hasOwnProperty("error")) {
-        message.channel.send("I could not find a beatmap");
+        if (interaction) {
+            interaction.reply("I could not find a beatmap");
+        } else {
+            message.reply("I could not find a beatmap");
+        }
         return;
     }
 
@@ -127,7 +131,12 @@ export async function buildMapEmbed(data: any, message: Message, mods: string) {
             }
         ])
     }
-    message.channel.send({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
+
+    if (interaction) {
+        interaction.editReply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
+    } else {
+        message.reply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
+    }
 }
 
 function center(text: string, length: number): string {

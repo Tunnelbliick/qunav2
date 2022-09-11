@@ -3,14 +3,12 @@ import { buildMapEmbed } from "../../../../embeds/osu/beatmap/beatmap";
 import { buildErrEmbed } from "../../../../embeds/osu/beatmap/error";
 import { getBeatmap, getBeatmapSet } from "../../../osu/beatmap";
 
-export async function beatmap(message: any, args: any) {
+export async function beatmap(message: any, interaction: any, args: any) {
 
     let url = "";
     let mods = "";
 
-    message.channel.sendTyping();
-
-    if (message.reference != null) {
+    if (message && message.reference != null) {
         let reference_id: any = message.reference?.messageId;
         let reference_message = await message.channel.messages.fetch(reference_id);
         let embed = reference_message.embeds[0];
@@ -18,7 +16,15 @@ export async function beatmap(message: any, args: any) {
     }
 
     if (!args[0] || !args[0].startsWith("https")) {
-        await message.channel.messages.fetch({ limit: 50 }).then((messages: any) => {
+        let channel = undefined;
+
+        if (interaction) {
+            channel = interaction.channel;
+        } else {
+            channel = message.channel;
+        }
+
+        await channel.messages.fetch({ limit: 50 }).then((messages: any) => {
             messages.forEach((mes: any) => {
 
                 if (url != "") {
@@ -77,7 +83,7 @@ export async function beatmap(message: any, args: any) {
     await getBeatmap(id).then((data: any) => {
 
         try {
-            buildMapEmbed(data, message, mods);
+            buildMapEmbed(data, message, interaction, mods);
         } catch (err) {
             buildErrEmbed(err, message);
             return;

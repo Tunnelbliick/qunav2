@@ -1,5 +1,7 @@
+import { CommandInteractionOptionResolver } from "discord.js";
 import { RecentPlayFilter } from "../../../../models/RecentPlayFilter";
 import { buildUsernameOfArgs } from "../../../../utility/buildusernames";
+import { parseModString } from "../../../osu/utility/parsemods";
 
 export function builFilter(message: any, args: any, default_mode: any) {
 
@@ -92,6 +94,28 @@ export function builFilter(message: any, args: any, default_mode: any) {
     filter.include_fails = include_fails;
     filter.discordid = discordid;
     filter.username = username;
+
+    return filter;
+}
+
+export function optionsToFilter(interaction: any, default_mode: any) {
+    let filter: RecentPlayFilter = new RecentPlayFilter;
+
+    let options = interaction.options;
+
+
+    filter.mode = options.getString("mode") === null ? default_mode : options.getString("mode")!;
+    filter.mods = options.getString("mods") === null ? [] : parseModString(options.getString("mods"));
+    filter.search = options.getString("query") === null ? "" : options.getString("query")?.toLowerCase()!;
+    filter.offset = options.getNumber("index") === null ? 0 : options.getNumber("index")! - 1;
+    filter.rank = options.getString("rank") === null ? "" : options.getString("rank")?.toLowerCase()!;
+    filter.include_fails = options.getNumber("fails") === null ? 1 : options.getNumber("fails")!;
+    filter.discordid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")?.toString()!;
+    filter.username = options.getString("username") === null ? "" : options.getString("username")!;
+
+    if (filter.discordid) {
+        filter.discordid = filter.discordid.replace("<@", "").replace(">", "");
+    }
 
     return filter;
 }

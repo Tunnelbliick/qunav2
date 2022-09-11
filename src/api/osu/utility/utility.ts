@@ -15,13 +15,13 @@ export function filterRecent(recentplays: any, filter: any) {
 
         let filterresults = [];
 
-        if (filter.search != "") {
+        if (filter.search != null && filter.search != "") {
             filterresults.push(r.beatmapset.artist.toLowerCase().includes(filter.search) || r.beatmapset.title.toLowerCase().includes(filter.search) || r.beatmap.version.toLowerCase().includes(filter.search) || r.beatmapset.creator.toLowerCase().includes(filter.search))
         }
-        if (filter.mods.length != 0) {
+        if (filter.mods != null && filter.mods.length != 0) {
             filterresults.push(arrayEquals(r.mods, filter.mods))
         }
-        if (filter.rank != "") {
+        if (filter.rank != null && filter.rank != "") {
             filterresults.push(r.rank.toLowerCase() == filter.rank)
         }
 

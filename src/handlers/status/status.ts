@@ -3,7 +3,7 @@ import { Client } from "discord.js";
 export default (client: Client) => {
 
     const statusOptions = [
-        `v2 live | !help`,
+        `slash only 1st oct! | !help`,
     ]
 
     let i = 0

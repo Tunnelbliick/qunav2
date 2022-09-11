@@ -1,14 +1,14 @@
 import { ICommand } from "wokcommands";
-import { buildErrEmbed } from "../../../embeds/osu/recent/error";
 import { recent } from "../../../api/commands/osu/recent/recent";
 import { helpRecent } from "../../../embeds/osu/recent/help";
 import DiscordJS from 'discord.js'
 import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
 
+
 export default {
 
     category: "osu!",
-    aliases: ["taikor", "taikors"],
+    aliases: ["r", "recent"],
     slash: "both",
     options: [
         {
@@ -77,7 +77,7 @@ export default {
             return;
         }
 
-        await recent(message, args, interaction, "taiko");
+        await recent(message, interaction, args, "osu");
 
     }
 

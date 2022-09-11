@@ -1,5 +1,7 @@
+import { StringExpression } from "mongoose";
+
 export class RecentPlayFilter {
-    search: string = "";
+    search: StringExpression = "";
     offset: number = 0;
     mods: Array<string> = [];
     rank: string = "";

@@ -51,7 +51,7 @@ export default (client: Client) => {
 
             await getBeatmap(id).then((data: any) => {
 
-                buildMapEmbed(data, message, "");
+                buildMapEmbed(data, message, null, "");
 
             })
 

@@ -69,7 +69,7 @@ const mods = [
 ]
 
 
-export function parseModString(input: string) {
+export function parseModString(input: string | null) {
 
     let modString = "";
     if (input != null)
