@@ -3,7 +3,7 @@ import { replaceDots, replaceFirstDots } from "../../../utility/comma";
 import { getDifficultyColor } from "../../../utility/gradiant";
 import { rank_icons } from "../../../utility/icons";
 
-export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>, message: Message) {
+export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>, message: Message, interaction: any) {
 
     let fields: any[] = [];
 
@@ -23,28 +23,33 @@ export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>,
     })
 
     let global_rank = user.statistics.global_rank;
-    if(global_rank == null) 
-    global_rank = 0;
+    if (global_rank == null)
+        global_rank = 0;
 
     let country_rank = user.statistics.rank.country;
-    if(country_rank == null)
-    country_rank = 0;
+    if (country_rank == null)
+        country_rank = 0;
 
     let color = getDifficultyColor(map.difficulty_rating);
 
     const compact = new MessageEmbed()
         .setThumbnail(`${map.beatmapset.covers.list}`)
-        .setAuthor({name:`${user.username}: ${user.statistics.pp.toFixed(2)}pp #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}`})
+        .setAuthor({ name: `${user.username}: ${user.statistics.pp.toFixed(2)}pp #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
         .setColor(color)
         .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}]`)
         .setURL(`${map.url}`)
-        .setFooter({ text: `Mapset by ${map.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}`})
+        .setFooter({ text: `Mapset by ${map.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
         .addFields(fields)
 
-    if(fields.length == 0) {
+    if (fields.length == 0) {
         compact.setDescription("No scores found")
     }
-    message.reply({ embeds: [compact] });
+
+    if (interaction) {
+        interaction.editReply({ embeds: [compact] });
+    } else {
+        message.reply({ embeds: [compact] });
+    }
 }
 
 function genereateField(counter: any, play: any, acc100: any, difficulty: any, max_combo: any, ppOfPlay?: any) {

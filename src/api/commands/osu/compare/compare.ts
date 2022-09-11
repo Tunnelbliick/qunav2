@@ -7,9 +7,7 @@ import User from "../../../../models/User";
 import { encrypt } from "../../../../utility/encrypt";
 import { getScoresForBeatMap, getScoresForUsernameForBeatMap } from "../../../osu/score";
 
-export async function compare(message: any, args: any) {
-
-    message.channel.sendTyping();
+export async function compare(message: any, interaction: any, args: any) {
 
     let url = "";
     let id = "";
@@ -19,42 +17,65 @@ export async function compare(message: any, args: any) {
     let first = true;
     let tag;
 
-    if (message.reference != null) {
+    if (message && message.reference != null) {
         let reference_id: any = message.reference?.messageId;
         let reference_message = await message.channel.messages.fetch(reference_id);
         let embed = reference_message.embeds[0];
         url = embed.url;
     }
 
-    if (!args[0]) {
-        userid = message.author.id
-    }
-
-    for (let arg of args) {
-
-        // If Argument is tag
-        if (arg.startsWith("<@")) {
-            tag = arg;
-            userid = arg.replace("<@", "").replace(">", "");
-
-            // If Argument is map link
-        } else if (arg.startsWith("http")) {
-
-            url = arg;
-
-            // else its the username
-        } else {
-            if (first) {
-                username += arg;
-                first = false
-            } else
-                username += ` ${arg}`
+    if (message) {
+        if (!args[0]) {
+            userid = message.author.id
         }
+
+        for (let arg of args) {
+
+            // If Argument is tag
+            if (arg.startsWith("<@")) {
+                tag = arg;
+                userid = arg.replace("<@", "").replace(">", "");
+
+                // If Argument is map link
+            } else if (arg.startsWith("http")) {
+
+                url = arg;
+
+                // else its the username
+            } else {
+                if (first) {
+                    username += arg;
+                    first = false
+                } else
+                    username += ` ${arg}`
+            }
+        }
+    } else {
+
+        let options = interaction.options;
+
+        url = options.getString("map") === null ? "" : options.getString("map")!;
+        userid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")?.toString()!;
+        username = options.getString("username") === null ? "" : options.getString("username")!;
+    
+        if (userid) {
+            userid = userid.replace("<@", "").replace(">", "");
+        }
+
     }
 
     // If no beatmap is in String
     if (url == "") {
-        await message.channel.messages.fetch({ limit: 50 }).then((messages: any) => {
+
+        let channel = undefined;
+
+        if (interaction) {
+            channel = interaction.channel;
+        } else {
+            channel = message.channel;
+        }
+
+        await channel.messages.fetch({ limit: 50 }).then((messages: any) => {
             messages.forEach((mes: any) => {
                 if (url != "") {
                     return;
@@ -127,7 +148,7 @@ export async function compare(message: any, args: any) {
         scoreList.push(score.value);
     })
     try {
-        generateCompareEmbed(map, user, scoreList, message);
+        generateCompareEmbed(map, user, scoreList, message, interaction);
     } catch (err) {
         buildErrEmbed(err, message);
         return;

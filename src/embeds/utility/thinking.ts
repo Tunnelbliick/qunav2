@@ -5,5 +5,5 @@ export function interaction_thinking(interaction: any) {
 
 export function message_thinking(message: any) {
     if(message)
-    message.channel.startTyping();
+    message.channel.sendTyping();
 }
