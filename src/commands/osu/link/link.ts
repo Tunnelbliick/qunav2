@@ -48,7 +48,11 @@ export default {
             userObject = new User();
 
             userObject.status = hexGen;
-            userObject.discordid = await encrypt(message.author.id);
+            if (isSlash) {
+                userObject.discordid = await encrypt(interaction.user.id);
+            } else {
+                userObject.discordid = await encrypt(message.author.id);
+            }
             userObject.requesttime = date;
             userObject.linksucess = false;
             userObject.validStatus = true;
