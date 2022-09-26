@@ -213,7 +213,6 @@ export async function getAllSkills(top_100: any) {
         aim_avg += aim[i].value * weight;
         acc_avg += acc[i].value * weight;
         speed_avg += speed[i].value * weight;
-        console.log(speed[i].value * weight);
         weight_sum += weight;
     }
 
