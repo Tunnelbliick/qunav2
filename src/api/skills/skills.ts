@@ -21,10 +21,10 @@ export interface all_skills {
     star_avg: number;
 }
 
-// Currently stolen from Bath i should figgure these out myself but bath ones look fine for rn
-const ACC_NERF: number = 1.3;
-const AIM_NERF: number = 2.6;
-const SPEED_NERF: number = 2.4;
+// based on bath values just slightly tweaked.
+const ACC_NERF: number = 1.4;
+const AIM_NERF: number = 2.5;
+const SPEED_NERF: number = 2.3;
 
 export async function getTotalSkills(top_100: any) {
 
@@ -239,6 +239,8 @@ export async function getAllSkills(top_100: any) {
 
 }
 
+
+// sorry bath i stole this. working on slightly altering this
 function normalise(value: number) {
     let factor = (8.0 / (value / 72.0 + 8.0))
 
