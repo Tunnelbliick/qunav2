@@ -100,6 +100,10 @@ export async function getTotalSkills(top_100: any) {
 
     let weight_sum = 0;
 
+    aim = aim.sort((a: any, b: any) => { return b - a; })
+    acc = acc.sort((a: any, b: any) => { return b - a; })
+    speed = speed.sort((a: any, b: any) => { return b - a; })
+
     for (let i = 0; i < 100; i++) {
         let weight = Math.pow(0.95, i);
         aimpp += aim[i] * weight;
@@ -175,10 +179,10 @@ export async function getAllSkills(top_100: any) {
 
                     simulateFull(sim).then((value: any) => {
 
-                        aim.push({value: normalise(value.pp_aim / AIM_NERF), score: task.value});
-                        acc.push({value: normalise(value.pp_acc / ACC_NERF), score: task.value});
-                        speed.push({value: normalise(value.pp_speed / SPEED_NERF), score: task.value});
-                        star.push({value: value.star, score: task.value});
+                        aim.push({ value: normalise(value.pp_aim / AIM_NERF), score: task.value });
+                        acc.push({ value: normalise(value.pp_acc / ACC_NERF), score: task.value });
+                        speed.push({ value: normalise(value.pp_speed / SPEED_NERF), score: task.value });
+                        star.push({ value: value.star, score: task.value });
 
                         return resolve(value);
 
@@ -209,6 +213,7 @@ export async function getAllSkills(top_100: any) {
         aim_avg += aim[i].value * weight;
         acc_avg += acc[i].value * weight;
         speed_avg += speed[i].value * weight;
+        console.log(speed[i].value * weight);
         weight_sum += weight;
     }
 
