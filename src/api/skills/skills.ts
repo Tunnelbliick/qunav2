@@ -21,9 +21,10 @@ export interface all_skills {
     star_avg: number;
 }
 
-const ACC_NERF: number = 1.4;
-const AIM_NERF: number = 2.5;
-const SPEED_NERF: number = 2.3;
+// Currently stolen from Bath i should figgure these out myself but bath ones look fine for rn
+const ACC_NERF: number = 1.3;
+const AIM_NERF: number = 2.6;
+const SPEED_NERF: number = 2.4;
 
 export async function getTotalSkills(top_100: any) {
 
