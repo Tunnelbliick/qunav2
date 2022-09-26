@@ -82,9 +82,9 @@ export async function getTotalSkills(top_100: any) {
 
                     simulateFull(sim).then((value: any) => {
 
-                        aim.push(value.pp_aim / AIM_NERF);
-                        acc.push(value.pp_acc / ACC_NERF);
-                        speed.push(value.pp_speed / SPEED_NERF);
+                        aim.push(normalise(value.pp_aim / AIM_NERF));
+                        acc.push(normalise(value.pp_acc / ACC_NERF));
+                        speed.push(normalise(value.pp_speed / SPEED_NERF));
 
                         return resolve(value);
 
