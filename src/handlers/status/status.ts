@@ -3,7 +3,7 @@ import { Client } from "discord.js";
 export default (client: Client) => {
 
     const statusOptions = [
-        `slash only 1st oct! | !help`,
+        `helping ${client.guilds.cache.size} servers | !help`,
     ]
 
     let i = 0

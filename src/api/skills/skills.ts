@@ -1,6 +1,8 @@
 import asyncBatch from "async-batch";
 import { downloadAndOverrideBeatmap } from "../beatmaps/downloadbeatmap";
 import { loaddifficulty } from "../pp/db/loaddifficutly";
+import { simulate, simulateArgs } from "../pp/simulate";
+import { simulateFull } from "../pp/simulatefull";
 
 export interface skills {
     aim: number;
@@ -18,6 +20,10 @@ export interface all_skills {
     speed_avg: number;
     star_avg: number;
 }
+
+const ACC_NERF: number = 1.4;
+const AIM_NERF: number = 2.5;
+const SPEED_NERF: number = 2.3;
 
 export async function getTotalSkills(top_100: any) {
 
@@ -43,40 +49,47 @@ export async function getTotalSkills(top_100: any) {
 
     let check_which_won = await Promise.race([skip, dopwnload_beatmaps]);
 
-    if(check_which_won === "skip") {
+    if (check_which_won === "skip") {
         return undefined;
     }
 
-    let aim: any = [];
-    let acc: any = [];
-    let speed: any = [];
+    let aim: Array<number> = [];
+    let acc: Array<number> = [];
+    let speed: Array<number> = [];
 
-    let aimpp = 0;
-    let accpp = 0;
-    let speedpp = 0;
-
+    let aimpp: number = 0;
+    let accpp: number = 0;
+    let speedpp: number = 0;
 
     const generateSkills = await asyncBatch(top_100,
         (task: any, taskIndex: number, workerIndex: number) => new Promise(
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
-                    loaddifficulty(task.value.beatmap.id, task.value.beatmap.checksum, task.value.mods, task.value.mode).then((value: any) => {
 
-                        let stats = value;
+                    let sim: simulateArgs = {
+                        mode: task.value.mode,
+                        checksum: task.value.beatmap.checksum,
+                        mapid: task.value.beatmap.id,
+                        mods: task.value.mods,
+                        combo: task.value.max_combo,
+                        great: task.value.statistics.count_300,
+                        goods: task.value.statistics.count_100,
+                        mehs: task.value.statistics.count_50,
+                        misses: task.value.statistics.count_miss,
+                        score: task.value.score
 
-                        let totalHits = task.value.beatmap.count_circles + task.value.beatmap.count_sliders + task.value.beatmap.count_spinners;
+                    };
 
-                        // It is possible to reach a negative accuracy with this formula. Cap it at zero - zero points.
+                    simulateFull(sim).then((value: any) => {
 
-                        let accuracyValue = Math.pow(task.value.accuracy, stats.star / 10 * stats.od) * stats.star / 2 * 1.11
+                        aim.push(value.pp_aim / AIM_NERF);
+                        acc.push(value.pp_acc / ACC_NERF);
+                        speed.push(value.pp_speed / SPEED_NERF);
 
-                        accuracyValue *= Math.min(1.13, Math.pow(totalHits / 1000.0, 0.23));
+                        return resolve(value);
 
-                        aim.push(stats.aim * 10);
-                        acc.push(accuracyValue * 10);
-                        speed.push(stats.speed * 10);
-                        return resolve(stats)
-                    });
+                    })
+
                 } else {
                     return resolve(null);
                 }
@@ -85,17 +98,19 @@ export async function getTotalSkills(top_100: any) {
         10,
     );
 
-    aim.sort((a: any, b: any) => { return b - a; }).forEach((a: any, n: number) => {
-        aimpp += a * Math.pow(0.95, n);
-    })
+    let weight_sum = 0;
 
-    acc.sort((a: any, b: any) => { return b - a; }).forEach((a: any, n: number) => {
-        accpp += a * Math.pow(0.95, n);;
-    })
+    for (let i = 0; i < 100; i++) {
+        let weight = Math.pow(0.95, i);
+        aimpp += aim[i] * weight;
+        accpp += acc[i] * weight;
+        speedpp += speed[i] * weight;
+        weight_sum += weight;
+    }
 
-    speed.sort((a: any, b: any) => { return b - a; }).forEach((a: any, n: number) => {
-        speedpp += a * Math.pow(0.95, n);
-    })
+    aimpp = normalise(aimpp / weight_sum);
+    accpp = normalise(accpp / weight_sum);
+    speedpp = normalise(speedpp / weight_sum);
 
     let skills: skills = {
         aim: aimpp,
@@ -131,7 +146,7 @@ export async function getAllSkills(top_100: any) {
 
     let check_which_won = await Promise.race([skip, dopwnload_beatmaps]);
 
-    if(check_which_won === "skip") {
+    if (check_which_won === "skip") {
         return undefined;
     }
 
@@ -144,24 +159,31 @@ export async function getAllSkills(top_100: any) {
         (task: any, taskIndex: number, workerIndex: number) => new Promise(
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
-                    loaddifficulty(task.value.beatmap.id, task.value.beatmap.checksum, task.value.mods, task.value.mode).then((value: any) => {
 
-                        let stats = value;
+                    let sim: simulateArgs = {
+                        mode: task.value.mode,
+                        checksum: task.value.beatmap.checksum,
+                        mapid: task.value.beatmap.id,
+                        mods: task.value.mods,
+                        combo: task.value.max_combo,
+                        great: task.value.statistics.count_300,
+                        goods: task.value.statistics.count_100,
+                        mehs: task.value.statistics.count_50,
+                        misses: task.value.statistics.count_miss,
+                        score: task.value.score
+                    };
 
-                        let totalHits = task.value.beatmap.count_circles + task.value.beatmap.count_sliders + task.value.beatmap.count_spinners;
+                    simulateFull(sim).then((value: any) => {
 
-                        // It is possible to reach a negative accuracy with this formula. Cap it at zero - zero points.
+                        aim.push({value: normalise(value.pp_aim / AIM_NERF), score: task.value});
+                        acc.push({value: normalise(value.pp_acc / ACC_NERF), score: task.value});
+                        speed.push({value: normalise(value.pp_speed / SPEED_NERF), score: task.value});
+                        star.push({value: value.star, score: task.value});
 
-                        let accuracyValue = Math.pow(task.value.accuracy, stats.star / 10 * stats.od) * stats.star / 2 * 1.11
+                        return resolve(value);
 
-                        accuracyValue *= Math.min(1.13, Math.pow(totalHits / 1000.0, 0.23));
+                    })
 
-                        aim.push({ value: stats.aim * 10, score: task.value });
-                        acc.push({ value: accuracyValue * 10, score: task.value });
-                        speed.push({ value: stats.speed * 10, score: task.value });
-                        star.push({ value: stats.star, score: task.value })
-                        return resolve(stats)
-                    });
                 } else {
                     return resolve(null);
                 }
@@ -180,16 +202,22 @@ export async function getAllSkills(top_100: any) {
     speed = speed.sort((a: any, b: any) => { return b.value - a.value; })
     star = star.sort((a: any, b: any) => { return b.value - a.value; })
 
-    aim.forEach((a: any, n: number) => {
-        aim_avg += a.value * Math.pow(0.95, n);
-    })
-    acc.forEach((a: any, n: number) => {
-        acc_avg += a.value * Math.pow(0.95, n);
-    })
-    speed.forEach((a: any, n: number) => {
-        speed_avg += a.value * Math.pow(0.95, n);
-    })
+    let weight_sum = 0;
+
+    for (let i = 0; i < 100; i++) {
+        let weight = Math.pow(0.95, i);
+        aim_avg += aim[i].value * weight;
+        acc_avg += acc[i].value * weight;
+        speed_avg += speed[i].value * weight;
+        weight_sum += weight;
+    }
+
+    aim_avg = normalise(aim_avg / weight_sum);
+    acc_avg = normalise(acc_avg / weight_sum);
+    speed_avg = normalise(speed_avg / weight_sum);
+
     star.forEach((a: any) => star_avg += a.value);
+    star_avg = star_avg / star.length;
 
     let skills: all_skills = {
         aim: aim,
@@ -205,3 +233,13 @@ export async function getAllSkills(top_100: any) {
     return skills;
 
 }
+
+function normalise(value: number) {
+    let factor = (8.0 / (value / 72.0 + 8.0))
+
+    factor = Math.pow(factor, 10)
+
+    let res = -101.0 * factor + 101.0;
+
+    return res;
+};

@@ -7,16 +7,16 @@ const { createCanvas, loadImage, registerFont } = require('canvas')
 
 const tiers = [
     { id: 0, value: 0, name: "Beginner", background: "t1bg.png", colors: ["#ffffff", "#ffffff"] },
-    { id: 1, value: 300, name: "Beginner", background: "t2bg.png", colors: ["#d09292", "#c82270"] },
-    { id: 2, value: 600, name: "Casual", background: "t3bg.png", colors: ["#facc22", "#ff544f"] },
-    { id: 3, value: 900, name: "Casual", background: "t4bg.png", colors: ["#55cc7c", "#f5f97f"] },
-    { id: 4, value: 1200, name: "Expert", background: "t5bg.png", colors: ["#cd408f", "#094fc3"] },
-    { id: 5, value: 1500, name: "Expert", background: "t6bg.png", colors: ["#e1afcc", "#7530e3"] },
-    { id: 6, value: 1800, name: "Expert+", background: "t7bg.png", colors: ["#cd408f", "#094fc3"] },
-    { id: 7, value: 2100, name: "Pro", background: "pattern.jpg", colors: ["#b3b6eb", "#e98a98"] },
-    { id: 8, value: 2400, name: "Godlike", background: "pattern.jpg", colors: ["#6d7ff1", "#d66ef8"] },
-    { id: 9, value: 2700, name: "God", background: "pattern.jpg", colors: ["#ea6262", "#f1ad54", "#a8ee6f", "#6df1e9", "#6d7ff1", "#d66ef8"] },
-    { id: 10, value: 3000, name: "Master", background: "pattern.jpg", colors: ["#FFFFFF", "#000000"] },
+    { id: 1, value: 30, name: "Beginner", background: "t2bg.png", colors: ["#d09292", "#c82270"] },
+    { id: 2, value: 60, name: "Casual", background: "t3bg.png", colors: ["#facc22", "#ff544f"] },
+    { id: 3, value: 90, name: "Casual", background: "t4bg.png", colors: ["#55cc7c", "#f5f97f"] },
+    { id: 4, value: 120, name: "Expert", background: "t5bg.png", colors: ["#cd408f", "#094fc3"] },
+    { id: 5, value: 150, name: "Expert", background: "t6bg.png", colors: ["#e1afcc", "#7530e3"] },
+    { id: 6, value: 180, name: "Expert+", background: "t7bg.png", colors: ["#cd408f", "#094fc3"] },
+    { id: 7, value: 210, name: "Pro", background: "pattern.jpg", colors: ["#b3b6eb", "#e98a98"] },
+    { id: 8, value: 240, name: "Godlike", background: "pattern.jpg", colors: ["#6d7ff1", "#d66ef8"] },
+    { id: 9, value: 270, name: "God", background: "pattern.jpg", colors: ["#ea6262", "#f1ad54", "#a8ee6f", "#6df1e9", "#6d7ff1", "#d66ef8"] },
+    { id: 10, value: 300, name: "Master", background: "pattern.jpg", colors: ["#FFFFFF", "#000000"] },
     { id: 11, value: Infinity, name: "Inhuman", background: "pattern.jpg", colors: ["#00000"] }];
 
 export async function generateCard(user: any, skills: skills) {
@@ -42,7 +42,7 @@ export async function generateCard(user: any, skills: skills) {
         }
     });
 
-    let missing = Math.round(total - currentTier.value);
+    let missing = Math.round(total - currentTier.value) * 10;
 
     let blocks = [];
 
@@ -199,7 +199,7 @@ export async function generateCard(user: any, skills: skills) {
     //ctx.strokeStyle = "green";
     //ctx.rect(90, 625, 120, -180); // DEBUG
     //ctx.stroke();
-    ctx.fillText(`${aim_perc.toFixed(0)}% - ${aim.toFixed(0)}`, 150, 645, 120);
+    ctx.fillText(`${aim_perc.toFixed(0)}% - ${aim.toFixed(1)}`, 150, 645, 120);
 
     ctx.drawImage(speedchart, 265.5, 457.5, 120, 120);
     ctx.fillStyle = 'white';
@@ -208,7 +208,7 @@ export async function generateCard(user: any, skills: skills) {
     // ctx.strokeStyle = "green";
     // ctx.rect(265, 547, 75, 20); // DEBUG
     // ctx.stroke();
-    ctx.fillText(`${speed_perc.toFixed(0)}% - ${speed.toFixed(0)}`, 323, 645, 120);
+    ctx.fillText(`${speed_perc.toFixed(0)}% - ${speed.toFixed(1)}`, 323, 645, 120);
 
     ctx.drawImage(accchart, 440.5, 457.5, 120, 120);
     ctx.fillStyle = 'white';
@@ -217,7 +217,7 @@ export async function generateCard(user: any, skills: skills) {
     // ctx.strokeStyle = "green";
     // ctx.rect(435, 547, 75, 20); // DEBUG
     // ctx.stroke();
-    ctx.fillText(`${acc_perc.toFixed(0)}% - ${acc.toFixed(0)}`, 498, 645, 120);
+    ctx.fillText(`${acc_perc.toFixed()}% - ${acc.toFixed(1)}`, 498, 645, 120);
 
     ctx.drawImage(progresschart, 171, 701, 308, 42);
 
