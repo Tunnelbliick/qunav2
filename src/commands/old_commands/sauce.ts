@@ -1,7 +1,7 @@
 import { ICommand } from "wokcommands";
 import sagiri from "sagiri";
 import { MessageEmbed } from "discord.js";
-import { buildErrEmbed } from "../../functions/util/errorEmbed";
+import { buildErrEmbed } from "./embeds/errorEmbed";
 const sauce = sagiri(`${process.env.saucenao}`, { results: 1 });
 
 export default {
@@ -12,7 +12,7 @@ export default {
     callback: ({ message }) => {
 
         message.attachments.forEach(attachment => {
-            sauce(attachment.proxyURL).then(response => {
+            sauce(attachment.proxyURL).then((response:any) => {
                 let data = response[0]
 
                 const embed = new MessageEmbed()

@@ -27,6 +27,7 @@
     "prando": "^6.0.1",
     "procyon": "^0.0.4",
     "redis-server": "^1.2.2",
+    "sagiri": "^3.2.4",
     "skia-canvas": "^0.9.30",
     "tinygradient": "^1.1.5",
     "ts-retry-promise": "^0.7.0",
