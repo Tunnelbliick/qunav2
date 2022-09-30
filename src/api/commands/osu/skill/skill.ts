@@ -30,7 +30,7 @@ export async function skill(message: any, args: any) {
 
     if (userid === null) {
         username = buildUsernameOfArgs(args);
-        osu_user = getUserByUsername(username, undefined);
+        osu_user = await getUserByUsername(username, undefined);
     } else {
         userObject = await User.findOne({ discordid: await encrypt(userid) });
 

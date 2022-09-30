@@ -6,7 +6,7 @@ import { helpskills } from "../../../embeds/osu/skill/help";
 export default {
 
     category: "osu!",
-    aliases: ["topskills"],
+    aliases: ["topskills", "skills"],
     description: "Quna loads your topplay",
 
 

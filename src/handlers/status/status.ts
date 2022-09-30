@@ -3,7 +3,9 @@ import { Client } from "discord.js";
 export default (client: Client) => {
 
     const statusOptions = [
+
         `${client.guilds.cache.size} servers | !help`,
+
     ]
     const updateStatus = () => {
         client.user?.setActivity(statusOptions[0], {type: 2})
