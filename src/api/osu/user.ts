@@ -2,7 +2,7 @@ import { login } from "./login";
 
 import { v2 } from "osu-api-extended";
 
-export async function getUser(userid: any, mode: any) {
+export async function getUser(userid: any, mode?: any) {
     await login();
 
     if (mode == undefined) {

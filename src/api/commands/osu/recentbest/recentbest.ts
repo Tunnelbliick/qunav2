@@ -33,7 +33,7 @@ export async function recentbest(message: any, args: any, mode: any) {
 
     if (filterOptions.username !== "") {
 
-        user = await getUserByUsername(filterOptions.username, "osu");
+        user = await getUserByUsername(filterOptions.username, mode);
 
         userid = user.id;
     } else {
@@ -46,7 +46,7 @@ export async function recentbest(message: any, args: any, mode: any) {
 
         userid = userObject.userid;
 
-        user = await getUser(userid, "osu");
+        user = await getUser(userid, mode);
 
     }
 

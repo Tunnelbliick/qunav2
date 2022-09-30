@@ -47,7 +47,7 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
 
             userid = userObject.userid;
 
-            user = await getUser(userid, "osu");
+            user = await getUser(userid, mode);
 
         } else if (!isNaN(+arg) && (+arg <= 12 && +arg >= -12)) {
 
@@ -76,12 +76,12 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
 
         userid = userObject.userid;
 
-        user = await getUser(userid, "osu");
+        user = await getUser(userid, mode);
 
     } else if (user == null && usernameargs.length != 0) {
         username = buildUsernameOfArgs(usernameargs);
 
-        user = await getUserByUsername(username, "osu");
+        user = await getUserByUsername(username, mode);
 
         userid = user.id;
 
@@ -129,25 +129,31 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
     }
 
     let chart = null;
+
+    let fields = "Number of top 100 scores set at specific hour";
+
     switch (mode) {
         case "hour":
             chart = await generateFarmhoursChart(hours);
+            fields = "Number of top 100 scores set at specific hour";
             break;
         case "day":
             chart = await generateFarmdaysChart(hours);
+            fields = "Number of top 100 scores set at specific day";
             break;
         case "week":
             chart = await generateFarmweekChart(hours);
+            fields = "Number of top 100 scores set at specific week";
             break;
         case "month":
             chart = await generateFarmmonthChart(hours);
+            fields = "Number of top 100 scores set at specific month";
             break;
         default:
             chart = await generateFarmhoursChart(hours);
+            fields = "Number of top 100 scores set at specific hour";
             break;
     }
-
-    let fields = "Number of top 100 scores set at specific hour";
 
     let global_rank = user.statistics.global_rank;
     if (global_rank == null)
