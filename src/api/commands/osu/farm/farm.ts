@@ -147,7 +147,7 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
             break;
     }
 
-    let fields = "Number of top 100 scores for this specific case:";
+    let fields = "Number of top 100 scores set at specific hour";
 
     let global_rank = user.statistics.global_rank;
     if (global_rank == null)
