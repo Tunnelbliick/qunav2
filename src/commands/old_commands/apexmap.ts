@@ -1,8 +1,7 @@
 import { ICommand } from "wokcommands";
 import { MessageEmbed } from "discord.js";
 import axios from 'axios';
-import { buildErrEmbed } from "../../functions/util/errorEmbed";
-import { helpapex } from "../utility/help/helpapis";
+import { buildErrEmbed } from "./embeds/errorEmbed";
 
 export default {
 
@@ -11,12 +10,6 @@ export default {
     description: "Quna's Map Rotation showcase!",
 
     callback: ({ message, args, prefix }) => {
-
-        if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helpapex(prefix);
-            message.reply({ embeds: [embed] });
-            return;
-        }
 
         // place api in dotenv
         axios.get(`https://api.mozambiquehe.re/maprotation?version=2&auth=${process.env.apexapi}`)
