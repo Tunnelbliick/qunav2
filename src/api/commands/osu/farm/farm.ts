@@ -34,45 +34,53 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
 
     let default_mode = "osu";
 
-    let gamemode = ["osu","mania","taiko","catch","ctb","fruits"]
+    let gamemode = ["osu", "mania", "taiko", "catch", "ctb", "fruits"]
+
+    let select_mode = "";
 
     message.channel.sendTyping();
 
     for (let arg of args) {
 
-        if (arg.startsWith("<@")) {
-            discordid = args[0].replace("<@", "").replace(">", "");
-
-            userObject = await User.findOne({ discordid: await encrypt(discordid) });
-
-            if (checkIfUserIsLInked(userObject, args[0], message)) {
-                return;
+        if (select_mode = "gamemode") {
+            if (gamemode.includes(arg)) {
+                default_mode = arg;
             }
-
-            userid = userObject.userid;
-
-            user = await getUser(userid, default_mode);
-
-        } else if (!isNaN(+arg) && (+arg <= 12 && +arg >= -12)) {
-
-            let time = moment();
-
-            let input: any = arg;
-
-            if (+input) {
-                input = parseInt(input);
-            }
-
-            timezone = getZoneFromOffset(time.utcOffset(input).format("Z"))[0]
-
         } else {
-            usernameargs.push(arg);
-        }
+            if (arg === "-m" || arg === "m") {
+                select_mode = "gamemode";
+            } else {
 
-        if(gamemode.includes(arg)) {
-            default_mode = arg;
-        }
+                if (arg.startsWith("<@")) {
+                    discordid = args[0].replace("<@", "").replace(">", "");
 
+                    userObject = await User.findOne({ discordid: await encrypt(discordid) });
+
+                    if (checkIfUserIsLInked(userObject, args[0], message)) {
+                        return;
+                    }
+
+                    userid = userObject.userid;
+
+                    user = await getUser(userid, default_mode);
+
+                } else if (!isNaN(+arg) && (+arg <= 12 && +arg >= -12)) {
+
+                    let time = moment();
+
+                    let input: any = arg;
+
+                    if (+input) {
+                        input = parseInt(input);
+                    }
+
+                    timezone = getZoneFromOffset(time.utcOffset(input).format("Z"))[0]
+
+                } else {
+                    usernameargs.push(arg);
+                }
+            }
+        }
     }
 
     if (user == null && usernameargs.length == 0) {

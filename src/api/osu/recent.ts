@@ -96,7 +96,9 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
 
             Promise.allSettled([user, beatmap, acc100, ppIffc, raiting, top100, leaderboard]).then((result: any) => {
 
-                let top100 = result[5].value.find((t: any) => t.value.best_id === recentplay.id);
+                console.log(recentplay);
+
+                let top100 = result[5].value.find((t: any) => t.value.id === recentplay.id);
                 let top_100_position = undefined;
 
                 let leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.id);
