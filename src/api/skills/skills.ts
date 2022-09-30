@@ -1,7 +1,6 @@
 import asyncBatch from "async-batch";
 import { downloadAndOverrideBeatmap } from "../beatmaps/downloadbeatmap";
-import { loaddifficulty } from "../pp/db/loaddifficutly";
-import { simulate, simulateArgs } from "../pp/simulate";
+import { simulateArgs } from "../pp/simulate";
 import { simulateFull } from "../pp/simulatefull";
 
 export interface skills {
@@ -23,8 +22,8 @@ export interface all_skills {
 
 // based on bath values just slightly tweaked.
 const ACC_NERF: number = 1.4;
-const AIM_NERF: number = 2.5;
-const SPEED_NERF: number = 2.3;
+const AIM_NERF: number = 2.6;
+const SPEED_NERF: number = 2.4;
 
 export async function getTotalSkills(top_100: any) {
 
@@ -83,9 +82,9 @@ export async function getTotalSkills(top_100: any) {
 
                     simulateFull(sim).then((value: any) => {
 
-                        aim.push(normalise(value.pp_aim / AIM_NERF));
-                        acc.push(normalise(value.pp_acc / ACC_NERF));
-                        speed.push(normalise(value.pp_speed / SPEED_NERF));
+                        aim.push(value.pp_aim / AIM_NERF);
+                        acc.push(value.pp_acc / ACC_NERF);
+                        speed.push(value.pp_speed / SPEED_NERF);
 
                         return resolve(value);
 
@@ -180,9 +179,9 @@ export async function getAllSkills(top_100: any) {
 
                     simulateFull(sim).then((value: any) => {
 
-                        aim.push({ value: normalise(value.pp_aim / AIM_NERF), score: task.value });
-                        acc.push({ value: normalise(value.pp_acc / ACC_NERF), score: task.value });
-                        speed.push({ value: normalise(value.pp_speed / SPEED_NERF), score: task.value });
+                        aim.push({ value: value.pp_aim / AIM_NERF, score: task.value });
+                        acc.push({ value: value.pp_acc / ACC_NERF, score: task.value });
+                        speed.push({ value: value.pp_speed / SPEED_NERF, score: task.value });
                         star.push({ value: value.star, score: task.value });
 
                         return resolve(value);
@@ -241,7 +240,7 @@ export async function getAllSkills(top_100: any) {
 
 
 // sorry bath i stole this. working on slightly altering this
-function normalise(value: number) {
+export function normalise(value: number): number {
     let factor = (8.0 / (value / 72.0 + 8.0))
 
     factor = Math.pow(factor, 10)

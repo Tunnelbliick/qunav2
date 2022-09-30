@@ -1,5 +1,5 @@
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
-import { all_skills } from "../../../api/skills/skills";
+import { all_skills, normalise } from "../../../api/skills/skills";
 import { replaceFirstDots } from "../../../utility/comma";
 import { rank_icons } from "../../../utility/icons";
 
@@ -34,7 +34,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
         let mods: Array<String> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
-        let map = `\`${a.value.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+        let map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
         aimString += map;
     }
 
@@ -44,7 +44,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
         let mods: Array<String> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
-        let map = `\`${a.value.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+        let map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
         speedString += map;
     }
 
@@ -54,7 +54,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
         let mods: Array<String> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
-        let map = `\`${a.value.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+        let map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
         accString += map;
     }
 
@@ -133,8 +133,9 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                     let mods: Array<String> = a.score.mods;
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
-                    let map = `\`${a.value.toFixed(2)}★\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
-                    accumelated += a.value;
+                    let value = a.value;
+                    let map = `\`${value.toFixed(2)}★\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+                    accumelated += value;
                     valuestring += map;
                 }
 
@@ -150,9 +151,10 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
                     let weight = Math.pow(0.95, index);
-                    let valued = a.value * weight;
-                    let map = `\`${a.value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
-                    accumelated += a.value;
+                    let value = normalise(a.value);
+                    let valued = value * weight;
+                    let map = `\`${value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+                    accumelated += value;
                     valuestring += map;
                     index++;
                 }
@@ -168,9 +170,10 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
                     let weight = Math.pow(0.95, index);
-                    let valued = a.value * weight;
-                    let map = `\`${a.value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
-                    accumelated += a.value;
+                    let value = normalise(a.value);
+                    let valued = value * weight;
+                    let map = `\`${value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+                    accumelated += value;
                     valuestring += map;
                     index++;
                 }
@@ -186,9 +189,10 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
                     let weight = Math.pow(0.95, index);
-                    let valued = a.value * weight;
-                    let map = `\`${a.value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
-                    accumelated += a.value;
+                    let value = normalise(a.value);
+                    let valued = value * weight;
+                    let map = `\`${value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+                    accumelated += value;
                     valuestring += map;
                     index++;
                 }
