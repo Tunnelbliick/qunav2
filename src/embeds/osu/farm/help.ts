@@ -53,6 +53,10 @@ export function helpFarmdays(prefix: string) {
                 value: `Get farmdays for a specific user. Can be the exact username or a mention e.g \`${prefix}fd Tunnelblick\` or \`${prefix}fd @Tunnelblick\``
             },
             {
+                name: "mode",
+                value: `Changes the gamemode to display the graph for e.g \`${prefix}fd -m osu\` or \`${prefix}fd -m mania\``
+            },
+            {
                 name: "offset",
                 value: `Offset to use for the graph e.g \`${prefix}fd +6\` \`${prefix}fd -2\``,
             },

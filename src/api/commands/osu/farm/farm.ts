@@ -32,6 +32,10 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
     let timezone;
     let usernameargs = [];
 
+    let default_mode = "osu";
+
+    let gamemode = ["osu","mania","taiko","catch","ctb","fruits"]
+
     message.channel.sendTyping();
 
     for (let arg of args) {
@@ -47,7 +51,7 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
 
             userid = userObject.userid;
 
-            user = await getUser(userid, mode);
+            user = await getUser(userid, default_mode);
 
         } else if (!isNaN(+arg) && (+arg <= 12 && +arg >= -12)) {
 
@@ -65,6 +69,10 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
             usernameargs.push(arg);
         }
 
+        if(gamemode.includes(arg)) {
+            default_mode = arg;
+        }
+
     }
 
     if (user == null && usernameargs.length == 0) {
@@ -76,18 +84,18 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
 
         userid = userObject.userid;
 
-        user = await getUser(userid, mode);
+        user = await getUser(userid, default_mode);
 
     } else if (user == null && usernameargs.length != 0) {
         username = buildUsernameOfArgs(usernameargs);
 
-        user = await getUserByUsername(username, mode);
+        user = await getUserByUsername(username, default_mode);
 
         userid = user.id;
 
     }
 
-    top100 = await getRecentBestForUser(userid, index);
+    top100 = await getRecentBestForUser(userid, index, default_mode);
 
     if (top100 == null || top100 == "osuapierr") {
         buildAPIErrEmbed(message);
