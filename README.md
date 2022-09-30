@@ -34,4 +34,4 @@ As for those who want to join Quna's home server, click [this button](https://di
 ## ⚠️ Cloning
 There is currently no documentation (nor will there ever be) on how to set up your own instance of Quna. 
 
-Feel free to discover how to do so though! Yours truely, ∞∞(σ∀σ*)∞∞ 
+Feel free to discover how to do so though! Yours truly, ∞∞(σ∀σ*)∞∞ 
