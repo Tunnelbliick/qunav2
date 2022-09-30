@@ -142,7 +142,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     }
 
     if (top100 !== undefined) {
-        description += `**Personal Best #${leaderboard + 1}**`;
+        description += `**Personal Best #${top100 + 1}**`;
     }
 
     if (description !== undefined) {
