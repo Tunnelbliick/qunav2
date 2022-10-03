@@ -8,9 +8,10 @@ import { getTopForUser } from "../../../osu/top";
 import { getUser, getUserByUsername } from "../../../osu/user";
 import { getAllSkills, getTotalSkills } from "../../../skills/skills";
 import { getTitle } from "../../../osu/utility/title";
-const DataImageAttachment = require("dataimageattachment");
+import { MessageEmbed } from "discord.js";
+import { replaceFirstDots } from "../../../../utility/comma";
 
-export async function card(message: any, args: any) {
+export async function title(message: any, args: any) {
 
     let userid = null;
     let username = null;
@@ -51,14 +52,28 @@ export async function card(message: any, args: any) {
 
     let skills: any = await getAllSkills(top_100);
 
-    if(skills === undefined) {
+    if (skills === undefined) {
         stillProcessing(message);
         return;
     }
 
     let title = "";
 
-    let card = await generateCard(osu_user, skills, title);
+    title = getTitle(skills);
 
-    await message.reply({ files: [new DataImageAttachment(card, `${osu_user.username}_card.png`)] });
+    let global_rank = osu_user.statistics.global_rank;
+    if (global_rank == null)
+        global_rank = 0;
+
+    let country_rank = osu_user.statistics.rank.country;
+    if (country_rank == null)
+        country_rank = 0;
+
+    const embed = new MessageEmbed()
+    .setColor(0x737df9)
+    .setAuthor({ name: `${osu_user.username} - ${osu_user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${osu_user.country_code}${country_rank})`, iconURL: `${osu_user.avatar_url}`, url: `https://osu.ppy.sh/users/${osu_user.id}` })
+    .setDescription(`Title: **${title}**`)
+    .setFooter({text:"Beta command! Only supports std atm."})
+
+    await message.reply({ embeds: [embed] });
 }
