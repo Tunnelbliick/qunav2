@@ -109,6 +109,11 @@ export function arraytoBinary(mods?: Array<any>) {
     for (let mod of mods) {
         for (const [key, values] of Object.entries(binaries))
             for (let arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
+
+                if(mod.trim().toLowerCase() == "td") {
+                    continue;
+                }
+
                 if(mod.trim().toLowerCase() == "nc") {
                     val += 64;
                 } else if(mod.trim().toLowerCase() == "pf") {

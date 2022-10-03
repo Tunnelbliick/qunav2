@@ -92,16 +92,16 @@ export function getTitle(skills: all_skills) {
 
     switch (type) {
         case Type.Aim:
-            title = `Aim - ${aim_title[most_used_mod_int].title}`;
+            title = `Aim - ${aim_title[most_used_mod_int].mod} - ${aim_title[most_used_mod_int].title}`;
             break;
         case Type.Speed:
-            title = `Speed - ${speed_title[most_used_mod_int].title}`;
+            title = `Speed - ${aim_title[most_used_mod_int].mod} - ${speed_title[most_used_mod_int].title}`;
             break;
         case Type.Acc:
-            title = `Acc - ${acc_title[most_used_mod_int].title}`;
+            title = `Acc - ${aim_title[most_used_mod_int].mod} - ${acc_title[most_used_mod_int].title}`;
             break;
         default:
-            title = `Aim - ${aim_title[most_used_mod_int].title}`;
+            title = `Aim - ${aim_title[most_used_mod_int].mod}- ${aim_title[most_used_mod_int].title}`;
             break;
     }
 
