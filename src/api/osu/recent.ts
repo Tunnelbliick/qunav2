@@ -99,7 +99,7 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
                 let top100 = result[5].value.find((t: any) => t.value.id === recentplay.best_id);
                 let top_100_position = undefined;
 
-                let leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.id);
+                let leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.best_id);
                 let leaderboard_position = undefined;
 
                 if (top100 !== undefined)
@@ -186,7 +186,7 @@ export async function getRecentPlaysForUserName(username: string, filter: Recent
                 let top100 = result[5].value.find((t: any) => t.value.id === recentplay.best_id);
                 let top_100_position = undefined;
 
-                let leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.id);
+                let leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.best_id);
                 let leaderboard_position = undefined;
 
                 if (top100 !== undefined)
