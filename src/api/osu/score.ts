@@ -6,6 +6,8 @@ import { getBeatmap } from "./beatmap";
 import { login } from "./login";
 import { getUser, getUserByUsername } from "./user";
 import { v2 } from "osu-api-extended"
+import { getTopForUser } from "./top";
+import { getLeaderBoard } from "./leaderboard";
 
 
 export async function getScore(mode: any, scoreid: any) {
@@ -34,9 +36,25 @@ export async function getBeatmapScore(beatmap: any, userid: any, mode?: any) {
 
 export async function getScoresForUsernameForBeatMap(mapid: string, username: any) {
 
+
     let beatmap: any = await getBeatmap(mapid);
     let user: any = await getUserByUsername(username, beatmap.mode);
-    let scores: any = await getBeatmapScore(mapid, user.id, beatmap.mode);
+    let scoresPromise: any = getBeatmapScore(mapid, user.id, beatmap.mode);
+    let top100Promise: any = getTopForUser(user.id, undefined, undefined, undefined);
+    let leaderboardPromise: any = getLeaderBoard(mapid, undefined);
+    let top: any;
+    let lb: any;
+    let scores: any;
+    let top_100_position: any = undefined;
+    let leaderboard_position: any = undefined;
+
+
+    await Promise.allSettled([scoresPromise, top100Promise, leaderboardPromise]).then(async (result: any) => {
+
+        scores = result[0].value;
+        top = result[1].value;
+        lb = result[2].value;
+    })
 
     if (user.hasOwnProperty("error")) {
         return { scores: scores.scores, user: undefined, beatmap: beatmap };
@@ -53,6 +71,16 @@ export async function getScoresForUsernameForBeatMap(mapid: string, username: an
         let promises: Array<Promise<any>> = []
 
         scores.scores.forEach(async (score: any) => {
+
+            let top100 = top.find((t: any) => t.value.id === score.best_id);
+
+            let leaderboard = lb.find((t: any) => t.value.id === score.best_id);
+
+            if (top100 !== undefined)
+                top_100_position = top100.position;
+
+            if (leaderboard !== undefined)
+                leaderboard_position = leaderboard.position;
 
             let promise: Promise<any> = new Promise((resolve, reject) => {
 
@@ -107,7 +135,9 @@ export async function getScoresForUsernameForBeatMap(mapid: string, username: an
             return resolve({
                 scores: result,
                 user: user,
-                beatmap: beatmap
+                beatmap: beatmap,
+                top: top_100_position,
+                leaderboard: leaderboard_position,
             })
         });
     })
@@ -117,15 +147,23 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
 
     let scoresPromise: any = getBeatmapScore(mapid, userid)
     let beatmapPromise: any = getBeatmap(mapid);
+    let top100: any = getTopForUser(userid, undefined, undefined, undefined);
+    let leaderboard: any = getLeaderBoard(mapid, undefined);
 
     let scores: any;
     let beatmap: any;
+    let top: any;
+    let lb: any;
     let user: any;
+    let top_100_position: any = undefined;
+    let leaderboard_position: any = undefined;
 
-    await Promise.allSettled([scoresPromise, beatmapPromise]).then(async (result: any) => {
+    await Promise.allSettled([scoresPromise, beatmapPromise, top100, leaderboard]).then(async (result: any) => {
 
         scores = result[0].value;
         beatmap = result[1].value;
+        top = result[2].value;
+        lb = result[3].value;
 
         user = await getUser(userid, beatmap.mode);
     })
@@ -143,6 +181,16 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
         let promises: Array<Promise<any>> = []
 
         scores.scores.forEach(async (score: any) => {
+            
+            let top100 = top.find((t: any) => t.value.id === score.best_id);
+
+            let leaderboard = lb.find((t: any) => t.value.id === score.best_id);
+
+            if (top100 !== undefined)
+                top_100_position = top100.position;
+
+            if (leaderboard !== undefined)
+                leaderboard_position = leaderboard.position;
 
             let promise: Promise<any> = new Promise(async (resolve, reject) => {
 
@@ -198,7 +246,9 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
             return resolve({
                 scores: result,
                 user: user,
-                beatmap: beatmap
+                beatmap: beatmap,
+                top: top_100_position,
+                leaderboard: leaderboard_position,
             })
         });
     })

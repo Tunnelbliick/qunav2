@@ -57,7 +57,7 @@ export async function compare(message: any, interaction: any, args: any) {
         url = options.getString("map") === null ? "" : options.getString("map")!;
         userid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")?.toString()!;
         username = options.getString("username") === null ? "" : options.getString("username")!;
-    
+
         if (userid) {
             userid = userid.replace("<@", "").replace(">", "");
         }
@@ -144,11 +144,14 @@ export async function compare(message: any, interaction: any, args: any) {
 
     let scoreList: Array<any> = [];
 
+    const top = response.top;
+    const leaderboard = response.leaderboard;
+
     response.scores.forEach((score: any) => {
         scoreList.push(score.value);
     })
     try {
-        generateCompareEmbed(map, user, scoreList, message, interaction);
+        generateCompareEmbed(map, user, scoreList, top, leaderboard, message, interaction);
     } catch (err) {
         buildErrEmbed(err, message);
         return;

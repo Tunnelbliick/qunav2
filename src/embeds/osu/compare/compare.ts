@@ -3,7 +3,7 @@ import { replaceDots, replaceFirstDots } from "../../../utility/comma";
 import { getDifficultyColor } from "../../../utility/gradiant";
 import { rank_icons } from "../../../utility/icons";
 
-export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>, message: Message, interaction: any) {
+export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>, top100: any, leaderboard: any, message: Message, interaction: any) {
 
     let fields: any[] = [];
 
@@ -30,6 +30,16 @@ export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>,
     if (country_rank == null)
         country_rank = 0;
 
+    let description: string = "";
+
+    if (leaderboard !== undefined) {
+        description += `**Global Top #${leaderboard + 1}** `;
+    }
+
+    if (top100 !== undefined) {
+        description += `**Personal Best #${top100 + 1}**`;
+    }
+
     let color = getDifficultyColor(map.difficulty_rating);
 
     const compact = new MessageEmbed()
@@ -40,6 +50,7 @@ export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>,
         .setURL(`${map.url}`)
         .setFooter({ text: `Mapset by ${map.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
         .addFields(fields)
+        .setDescription(description);
 
     if (fields.length == 0) {
         compact.setDescription("No scores found")
