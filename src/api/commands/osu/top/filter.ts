@@ -25,8 +25,7 @@ export function buildFilter(message: any, args: any, default_mode: any) {
         if (arg.startsWith("<@")) {
             discordid = arg.replace('<@', '').replace('>', '');
             continue;
-        }
-        else if (arg == "-g" || arg == "-gamemode" || arg == "g" || arg == "gamemode") {
+        } else if (arg == "-g" || arg == "-gamemode" || arg == "g" || arg == "gamemode") {
             mode == "gamemode";
             continue;
         }
@@ -68,41 +67,43 @@ export function buildFilter(message: any, args: any, default_mode: any) {
             }
         }
 
-        if (mode == "") {
-            usernameargs.push(arg);
-        }
-        else if (mode == "gamemode") {
-            gamemode = arg;
-        }
-        else if (mode == "search") {
-            search += arg;
-        }
-        else if (mode == "mods") {
-            mods += arg;
-        }
-        else if (mode == "combo") {
-            combo.push(arg);
-        }
-        else if (mode == "acc") {
-            acc.push(arg);
-        }
-        else if (mode == "rank") {
-            if (arg.toLowerCase() == "ss") {
-                rank.push("x");
-                rank.push("xh")
-            } else
-                rank.push(arg);
-        }
-        else if (mode == "sort") {
-            sort = arg;
-        }
-        else if (mode == "reverse") {
-            if (arg == "true") {
-                reverse = true;
-            }
-            else if (arg == "false") {
-                reverse = false;
-            }
+        switch (mode) {
+            default:
+                usernameargs.push(arg);
+                break;
+            case "gamemode":
+                gamemode = arg;
+                break;
+            case "search":
+                search += arg;
+                break;
+            case "mods":
+                mods += arg;
+                break;
+            case "combo":
+                combo.push(arg);
+                break;
+            case "acc":
+                acc.push(arg);
+                break;
+            case "rank":
+                if (arg.toLowerCase() == "ss") {
+                    rank.push("x");
+                    rank.push("xh")
+                } else
+                    rank.push(arg);
+                break;
+            case "sort":
+                sort = arg;
+                break;
+            case "reverse":
+                if (arg == "true") {
+                    reverse = true;
+                }
+                else if (arg == "false") {
+                    reverse = false;
+                }
+                break;
         }
 
         arg_index++;

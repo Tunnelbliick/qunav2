@@ -10,11 +10,13 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/builders": "^1.1.0",
+    "@formatjs/intl": "^2.4.2",
     "async-batch": "^1.1.2",
     "axios": "^0.27.2",
     "chartjs-adapter-moment": "^1.0.0",
     "chartjs-node-canvas": "^4.1.6",
     "countries-and-timezones": "^3.3.0",
+    "country-list": "^2.2.0",
     "dataimageattachment": "^1.1.2",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.1",

@@ -3,6 +3,7 @@ import WOKCommands from 'wokcommands'
 import path from 'path'
 import dotenv from "dotenv"
 import mongoose from 'mongoose'
+import { getTournament } from './src/api/owc/owc'
 dotenv.config()
 const RedisServer = require('redis-server');
 
@@ -53,4 +54,9 @@ process.on('unhandledRejection', err => {
 client.on("warn", (e) => console.warn(e));
 
 client.login(process.env.token);
+
+getTournament("OWC_2019");
+getTournament("OWC_2020");
+getTournament("OWC_2021");
+getTournament("wh664k0v");
 
