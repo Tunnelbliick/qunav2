@@ -9,6 +9,16 @@ const { overwrite, getCode } = require('country-list');
 country_overwrite();
 
 export async function launchCollector(message: any, interaction: any, reply: any, customid: any, owc: owc_year) {
+
+    let channel;
+
+    if(interaction) {
+        channel = interaction.channel;
+    } else {
+        channel = message.channel;
+    }
+
+
     const filter = (i: any) => {
         return i.customId === customid
     }
@@ -28,7 +38,9 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
     })
 
-    const collector = message.channel.createMessageComponentCollector({ filter, time: 60000 });
+    console.log(interaction);
+
+    const collector = channel.createMessageComponentCollector({ filter, time: 60000 });
 
     collector.on("collect", async (i: any) => {
 
