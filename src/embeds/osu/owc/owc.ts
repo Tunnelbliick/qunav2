@@ -28,7 +28,7 @@ export const bo32 = {
     4: { name: "Semifinals", value: 4 },
     5: { name: "Finals", value: 5 },
     6: { name: "Grand Finals", value: 6 },
-    "-1": { name: "Losers Bracket (Ro16)", value: 2 },
+    "-1": { name: "Losers Bracket (RO16)", value: 2 },
     "-2": { name: "Losers Bracket (QF1)", value: 3 },
     "-3": { name: "Losers Bracket (QF2)", value: 3 },
     "-4": { name: "Losers Bracket (SF1)", value: 4 },
