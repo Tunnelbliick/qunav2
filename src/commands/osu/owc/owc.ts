@@ -7,7 +7,7 @@ export default {
 
     category: "osu!",
     slash: "both",
-    description: "Get Owc results for a sepcific year",
+    description: "Get Owc results for a specific year",
     options: [
         {
             name: 'year',
@@ -19,13 +19,13 @@ export default {
                 { name: "2020", value: "2020", },
                 { name: "2021", value: "2021", },]
         },
-        {
+        /*{
             name: 'Country',
             description: 'Country to take a closer look at',
             required: false,
             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
             autocomplete: true,
-        },
+        },*/
     ],
 
     callback: async ({ message, interaction, args, prefix,  }) => {
