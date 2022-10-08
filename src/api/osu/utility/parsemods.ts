@@ -125,3 +125,45 @@ export function arraytoBinary(mods?: Array<any>) {
     return val;
 }
 
+export function arraytoBinaryFix(mods?: Array<any>) {
+    let val = 0;
+
+    if (mods != undefined)
+    for (let mod of mods) {
+        for (const [key, values] of Object.entries(binaries))
+            for (let arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
+
+                switch(mod.trim().toLowerCase()) {
+                    case "nm":
+                        val += 0;
+                        break;
+                    case "ez":
+                        val += 2;
+                        break;
+                    case "hd":
+                        val += 8;
+                        break;
+                    case "hr":
+                        val += 16;
+                        break;
+                    case "dt":
+                        val += 64;
+                        break;
+                    case "nc":
+                        val += 64;
+                        break;
+                    case "ht":
+                        val += 256;
+                }
+
+                if(mod.trim().toLowerCase() == "nc") {
+                    val += 64;
+                } else if(mod.trim().toLowerCase() == "pf") {
+                    val += 16384;
+                }
+                val += parseInt(key);
+            }
+    }
+    return val;
+}
+
