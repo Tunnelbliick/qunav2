@@ -58,5 +58,4 @@ client.login(process.env.token);
 getTournament("OWC_2019");
 getTournament("OWC_2020");
 getTournament("OWC_2021");
-getTournament("wh664k0v");
 
