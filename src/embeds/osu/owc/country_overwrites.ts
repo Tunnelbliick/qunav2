@@ -7,6 +7,8 @@ export function country_overwrite() {
     { code: 'GB', name: "United Kingdom" },
     { code: "UY", name: "Uruguay" },
     { code: "TW", name: "Taiwan" },
-    { code: "CZ", name: "Czech Republic" }
+    { code: "CZ", name: "Czech Republic" },
+    { code: "VN", name: "Vietnam"},
+    { code: "VE", name: "Venezuela"}
     ])
 }

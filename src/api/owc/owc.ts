@@ -1,4 +1,5 @@
 import moment from "moment";
+import { buildOwcNotPortedError } from "../../embeds/osu/owc/error";
 import { buildOwcEmbed } from "../../embeds/osu/owc/owc";
 import owc from "../../models/owc";
 import owcgame from "../../models/owcgame"
@@ -22,15 +23,25 @@ export interface owc_year {
     country?: country,
 }
 
-export async function getInfo(message: any, interaction: any, args: any) {
+export async function getInfo(message: any, interaction: any, args: any, default_mode: any) {
 
-    let filter: owc_filter = buildfilter(interaction, args)!;
+    let filter: owc_filter = buildfilter(interaction, args, default_mode)!;
     let country: any = undefined;
 
-    let year = await getYear(filter.year);
+    let year;
 
-    if(filter.country != null)
-    country = getCountry(year.owc.id, filter.country);
+    if (filter.mode === "mania") {
+        year = await getYear(filter.year, filter.mode, filter.keys);
+    }
+    year = await getYear(filter.year, filter.mode, undefined);
+
+    if (year === null) {
+        buildOwcNotPortedError(message, interaction, filter);
+        return;
+    }
+
+    if (filter.country != null)
+        country = getCountry(year.owc.id, filter.country);
 
     let resp: owc_year = {
         year: year,
@@ -41,13 +52,24 @@ export async function getInfo(message: any, interaction: any, args: any) {
 
 }
 
-async function getYear(year: string) {
+async function getYear(year: string, mode: string, keys: any) {
 
-    let owc_year: any = await owc.findOne({year: year});
-    let teams: any = await owcteam.find({owc: owc_year.id});
-    let matches: any = await owcgame.find({owc: owc_year.id});
+    let owc_year: any;
 
-    let sorted_teams = teams.sort((a: any, b: any) => { return a.place - b.place }).slice(0,5);
+    if (keys !== undefined) {
+        owc_year = await owc.findOne({ year: year, mode: mode, keys: keys });
+    } else {
+        owc_year = await owc.findOne({ year: year, mode: mode });
+    }
+
+    if (owc_year === null) {
+        return null;
+    }
+
+    let teams: any = await owcteam.find({ owc: owc_year.id });
+    let matches: any = await owcgame.find({ owc: owc_year.id });
+
+    let sorted_teams = teams.sort((a: any, b: any) => { return a.place - b.place }).slice(0, 5);
 
     let resp: year = {
         owc: owc_year,
@@ -61,7 +83,7 @@ async function getYear(year: string) {
 
 async function getCountry(owc_year: any, country: string) {
 
-    let team = await owcteam.findOne({owc:owc_year,name:country});
+    let team = await owcteam.findOne({ owc: owc_year, name: country });
     let matches = await getCountryMatches(owc_year, country);
 
     let resp: country = {
@@ -70,7 +92,7 @@ async function getCountry(owc_year: any, country: string) {
     }
 
     return resp;
-    
+
 }
 
 export async function getCountryMatches(owc_year: any, team: any) {
@@ -94,7 +116,7 @@ export async function getCountryMatches(owc_year: any, team: any) {
 }
 
 export async function getTournament(tournamentid: string) {
-   await createOrUpdateTournaments(tournamentid);
+    await createOrUpdateTournaments(tournamentid);
 }
 
 async function createOrUpdateMatches(owcid: any, matches: any) {
@@ -144,23 +166,23 @@ async function createOrUpdateMatches(owcid: any, matches: any) {
         owc_game.round = match.round;
         owc_game.isLooser = islooser;
         owc_game.isWinner = iswinner;
-        if(team1 != null) {
-        owc_game.team1 = team1.id;
-        owc_game.team1_score = team1_score;
-        owc_game.team1_name = team1.name;
+        if (team1 != null) {
+            owc_game.team1 = team1.id;
+            owc_game.team1_score = team1_score;
+            owc_game.team1_name = team1.name;
         }
-        if(team2 != null) {
-        owc_game.team2 = team2.id;
-        owc_game.team2_name = team2.name;
-        owc_game.team2_score = team2_score;
+        if (team2 != null) {
+            owc_game.team2 = team2.id;
+            owc_game.team2_name = team2.name;
+            owc_game.team2_score = team2_score;
         }
-        if(winner != null) {
-        owc_game.winner = winner.id;
-        owc_game.winner_name = winner.name;
+        if (winner != null) {
+            owc_game.winner = winner.id;
+            owc_game.winner_name = winner.name;
         }
-        if(looser != null) {
-        owc_game.looser = looser.id;
-        owc_game.looser_name = looser.name;
+        if (looser != null) {
+            owc_game.looser = looser.id;
+            owc_game.looser_name = looser.name;
         }
         owc_game.winner_index = winner_index;
         owc_game.data = match;
@@ -196,18 +218,43 @@ async function createOrUpdateTournaments(tournament_string: any) {
     let res: any = await viewTournament(tournament_string, "json");
 
     let tournament = res.tournament;
+    let mode = "osu";
 
     let gen_owc: any = await owc.findOne({ tournamentid: tournament.id });
 
     if (gen_owc === null) {
         gen_owc = new owc();
     }
+
+    let keys;
+
+    if (tournament.name.includes("osu! ")) {
+        mode = "osu";
+    } else if (tournament.name.includes("osu!mania")) {
+        mode = "mania";
+    } else if (tournament.name.includes("osu!taiko")) {
+        mode = "taiko";
+    } else if (tournament.name.includes("osu!catch")) {
+        mode = "catch";
+    }
+
+    if (tournament.name.includes("4K")) {
+        keys = "4K";
+    } else if (tournament.name.includes("7K")) {
+        keys = "7K";
+    }
+
     let year = moment(tournament.started_at).format("YYYY")
     gen_owc.year = year;
+    gen_owc.name = tournament.name;
+    gen_owc.size = tournament.participants_count;
+    gen_owc.mode = mode;
+    gen_owc.keys = keys;
     gen_owc.tournamentid = tournament.id;
     gen_owc.url = tournament.url;
     gen_owc.live_image_url = tournament.live_image_url;
     gen_owc.full_challonge_url = tournament.full_challonge_url;
+
 
     gen_owc = await gen_owc.save();
 

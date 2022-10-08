@@ -70,13 +70,9 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
     let options: any[] = [];
     let tournament_type: Object = bo32;
 
-    // TODO: Move this to tournament initilization!
-    /*
-    if (Math.max(...Array.from(rounds.keys())) == 6) {
-        tournament_type = bo32;
-    } else {
+    if(year.owc.size === 16) {
         tournament_type = bo16;
-    }*/
+    }
 
     for (const [key, value] of Object.entries(tournament_type)) {
 
@@ -99,11 +95,12 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
     const row = new MessageActionRow().addComponents(select);
 
-    let file = await imageToBase64(`assets/owc/${year.owc.year}.jpg`);
+    let file = await imageToBase64(`assets/owc/${year.owc.mode}${year.owc.keys === undefined ? "" : year.owc.keys}_${year.owc.year}.jpg`);
     let uri = "data:image/jpeg;base64," + file
 
     let embed = new MessageEmbed().
-        setTitle(`Tournament: OWC ${year.owc.year}`)
+        setTitle(`${year.owc.name}`)
+        .setColor("#4b67ba")
         .setDescription(description)
         .setImage("attachment://owc.jpg")
 

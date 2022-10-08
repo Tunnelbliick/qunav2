@@ -1,7 +1,11 @@
 import mongoose from "mongoose";
 
 const OwcSchema = new mongoose.Schema({
+    name: String,
+    mode: String,
+    keys: String,
     year: String,
+    size: Number,
     tournamentid: String,
     url: String,
     live_image_url: String,

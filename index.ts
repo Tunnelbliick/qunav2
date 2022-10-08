@@ -3,7 +3,7 @@ import WOKCommands from 'wokcommands'
 import path from 'path'
 import dotenv from "dotenv"
 import mongoose from 'mongoose'
-import { getTournament } from './src/api/owc/owc'
+import { loadTournaments } from './loadtournaments'
 dotenv.config()
 const RedisServer = require('redis-server');
 
@@ -55,7 +55,4 @@ client.on("warn", (e) => console.warn(e));
 
 client.login(process.env.token);
 
-getTournament("OWC_2019");
-getTournament("OWC_2020");
-getTournament("OWC_2021");
-
+loadTournaments();

@@ -3,7 +3,7 @@ import { desc } from "osu-api-extended/dist/utility/mods";
 import { owc_year } from "../../../api/owc/owc";
 import { owc_rank_icons } from "../../../utility/icons";
 import { country_overwrite } from "./country_overwrites";
-import { bo32 } from "./owc";
+import { bo16, bo32 } from "./owc";
 const { overwrite, getCode } = require('country-list');
 
 country_overwrite();
@@ -12,7 +12,7 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
     let channel;
 
-    if(interaction) {
+    if (interaction) {
         channel = interaction.channel;
     } else {
         channel = message.channel;
@@ -42,8 +42,13 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
     collector.on("collect", async (i: any) => {
 
-        let bo_32: any = bo32;
-        let round_name = bo_32[+i.values[0]].name;
+        let tournament_type: any = bo32;
+
+        if (year.owc.size === 16) {
+            tournament_type = bo16;
+        }
+
+        let round_name = tournament_type[+i.values[0]].name;
 
         await i.deferUpdate({ content: `${round_name}` });
 
@@ -51,35 +56,61 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
         let info: row
 
-        switch (+i.values[0]) {
-            case 1:
-                info = { bo: bo32, winner: 1 };
-                description += buildRow(rounds, info);
-                break;
-            case 2:
-                info = { bo: bo32, winner: 2, loser: "-1" };
-                description += buildRow(rounds, info);
-                break;
-            case 3:
-                info = { bo: bo32, winner: 3, loser: "-2", loser2: "-3" };
-                description += buildRow(rounds, info);
-                break;
-            case 4:
-                info = { bo: bo32, winner: 4, loser: "-4", loser2: "-5" };
-                description += buildRow(rounds, info);
-                break;
-            case 5:
-                info = { bo: bo32, winner: 5, loser: "-6", loser2: "-7" };
-                description += buildRow(rounds, info, 5);
-                break;
-            case 6:
-                info = { bo: bo32, winner: 6, loser: "-8" };
-                description += buildRow(rounds, info, 1);
-                break;
+        if (year.owc.size === 32) {
+            switch (+i.values[0]) {
+                case 1:
+                    info = { bo: bo32, winner: 1 };
+                    description += buildRow(rounds, info);
+                    break;
+                case 2:
+                    info = { bo: bo32, winner: 2, loser: "-1" };
+                    description += buildRow(rounds, info);
+                    break;
+                case 3:
+                    info = { bo: bo32, winner: 3, loser: "-2", loser2: "-3" };
+                    description += buildRow(rounds, info);
+                    break;
+                case 4:
+                    info = { bo: bo32, winner: 4, loser: "-4", loser2: "-5" };
+                    description += buildRow(rounds, info);
+                    break;
+                case 5:
+                    info = { bo: bo32, winner: 5, loser: "-6", loser2: "-7" };
+                    description += buildRow(rounds, info, 5);
+                    break;
+                case 6:
+                    info = { bo: bo32, winner: 6, loser: "-8" };
+                    description += buildRow(rounds, info, 1);
+                    break;
+            }
+        } else {
+            switch (+i.values[0]) {
+                case 1:
+                    info = { bo: bo16, winner: 1 };
+                    description += buildRow(rounds, info);
+                    break;
+                case 2:
+                    info = { bo: bo16, winner: 2, loser: "-1" };
+                    description += buildRow(rounds, info);
+                    break;
+                case 3:
+                    info = { bo: bo16, winner: 3, loser: "-2", loser2: "-3" };
+                    description += buildRow(rounds, info);
+                    break;
+                case 4:
+                    info = { bo: bo16, winner: 4, loser: "-4", loser2: "-5" };
+                    description += buildRow(rounds, info, 5);
+                    break;
+                case 5:
+                    info = { bo: bo16, winner: 5, loser: "-6"};
+                    description += buildRow(rounds, info, 1);
+                    break;
+            }
         }
 
         let embed = new MessageEmbed().
-            setTitle(`Tournament: OWC ${year.owc.year}`)
+            setTitle(`${year.owc.name}`)
+            .setColor("#4b67ba")
             .setDescription(description)
             .setImage("attachment://owc.jpg")
             .setFooter({ text: `${round_name}` })
@@ -105,7 +136,8 @@ export async function launchCollector(message: any, interaction: any, reply: any
         }
 
         let embed = new MessageEmbed().
-            setTitle(`Tournament: OWC ${year.owc.year}`)
+            setTitle(`${year.owc.name}`)
+            .setColor("#4b67ba")
             .setDescription(description)
             .setImage("attachment://owc.jpg")
 
