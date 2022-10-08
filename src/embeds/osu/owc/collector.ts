@@ -38,8 +38,6 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
     })
 
-    console.log(interaction);
-
     const collector = channel.createMessageComponentCollector({ filter, time: 60000 });
 
     collector.on("collect", async (i: any) => {
