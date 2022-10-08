@@ -64,7 +64,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
         let emote: any = owc_rank_icons[team.place];
 
-        description += `${emote}᲼:flag_${code.toLocaleLowerCase()}: **${team.name}** (#${team.seed}) \n`
+        description += `${emote} :flag_${code.toLocaleLowerCase()}: **${team.name}** (#${team.seed}) \n`
     }
 
     let options: any[] = [];

@@ -101,7 +101,7 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
             let emote: any = owc_rank_icons[team.place];
 
-            description += `${emote}᲼:flag_${code.toLocaleLowerCase()}: **${team.name}** (#${team.seed}) \n`
+            description += `${emote} :flag_${code.toLocaleLowerCase()}: **${team.name}** (#${team.seed}) \n`
         }
 
         let embed = new MessageEmbed().
@@ -211,39 +211,39 @@ export function buildmatch(match: any, podium?: 1 | 3 | 5) {
     if (match.winner_name === match.team1_name) {
         switch (podium) {
             default:
-                team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name}᲼${match.team1_score}** - `;
-                team2 = `${match.team2_score}᲼${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
+                team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
                 break;
             case 1:
-                team1 = `${owc_rank_icons[1]}᲼:flag_${code1.toLocaleLowerCase()}: **${match.team1_name}᲼${match.team1_score}** - `;
-                team2 = `${match.team2_score}᲼${match.team2_name} :flag_${code2.toLocaleLowerCase()}:᲼${owc_rank_icons[2]}\n`;
+                team1 = `${owc_rank_icons[1]} :flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[2]}\n`;
                 break;
             case 3:
-                team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name}᲼${match.team1_score}** - `;
-                team2 = `${match.team2_score}᲼${match.team2_name} :flag_${code2.toLocaleLowerCase()}:᲼${owc_rank_icons[3]}\n`;
+                team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[3]}\n`;
                 break;
             case 5:
-                team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name}᲼${match.team1_score}** - `;
-                team2 = `${match.team2_score}᲼${match.team2_name} :flag_${code2.toLocaleLowerCase()}:᲼${owc_rank_icons[4]}\n`;
+                team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[4]}\n`;
                 break;
         }
     } else {
         switch (podium) {
             default:
-                team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name}᲼${match.team1_score} - `;
-                team2 = `**${match.team2_score}᲼${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
+                team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
                 break;
             case 1:
-                team1 = `${owc_rank_icons[2]}᲼:flag_${code1.toLocaleLowerCase()}: ${match.team1_name}᲼${match.team1_score} - `;
-                team2 = `**${match.team2_score}᲼${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:᲼${owc_rank_icons[1]}\n`;
+                team1 = `${owc_rank_icons[2]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[1]}\n`;
                 break;
             case 3:
-                team1 = `${owc_rank_icons[3]}᲼:flag_${code1.toLocaleLowerCase()}: ${match.team1_name}᲼${match.team1_score} - `;
-                team2 = `**${match.team2_score}᲼${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:\n`;
+                team1 = `${owc_rank_icons[3]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:\n`;
                 break;
             case 5:
-                team1 = `${owc_rank_icons[4]}᲼:flag_${code1.toLocaleLowerCase()}: ${match.team1_name}᲼${match.team1_score} - `;
-                team2 = `**${match.team2_score}᲼${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:\n`;
+                team1 = `${owc_rank_icons[4]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:\n`;
                 break;
         }
     }
