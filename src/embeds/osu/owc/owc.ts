@@ -45,7 +45,6 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
     let id;
 
     if (interaction != null) {
-        await interaction.deferReply({});
         id = interaction.id;
     } else {
         id = message.id;

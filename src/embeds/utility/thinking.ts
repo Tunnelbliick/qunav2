@@ -1,6 +1,6 @@
-export function interaction_thinking(interaction: any) {
+export async function interaction_thinking(interaction: any) {
     if(interaction)
-    interaction.deferReply();
+    await interaction.deferReply();
 }
 
 export function message_thinking(message: any) {

@@ -30,7 +30,7 @@ export default {
 
     callback: async ({ message, interaction, args, prefix,  }) => {
 
-        interaction_thinking(interaction);
+        await interaction_thinking(interaction);
         message_thinking(message);
 
         await getInfo(message, interaction, args);

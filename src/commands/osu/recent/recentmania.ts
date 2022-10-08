@@ -67,7 +67,7 @@ export default {
 
     callback: async ({ message, args, prefix, interaction }) => {
 
-        interaction_thinking(interaction);
+        await interaction_thinking(interaction);
         message_thinking(message);
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
