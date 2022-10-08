@@ -1,5 +1,5 @@
 import { all_skills } from "../../skills/skills";
-import { arraytoBinary } from "./parsemods";
+import { arraytoBinary, arraytoBinaryFix } from "./parsemods";
 
 
 const aim_title: any = {
@@ -111,7 +111,7 @@ export function getTitle(skills: all_skills) {
 
 function getMostFrequent(arr: Array<any>) {
     const hashmap = arr.reduce((acc: any, val: any) => {
-        let string_val = arraytoBinary(val.score.mods);
+        let string_val = arraytoBinaryFix(val.score.mods);
         acc[string_val] = (acc[string_val] || 0) + 1
         return acc
     }, {})

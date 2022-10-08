@@ -1,7 +1,7 @@
 import { ICommand } from "wokcommands";
-import { profile } from "../../../api/commands/osu/profile/profile";
 import DiscordJS from 'discord.js';
 import { getInfo } from "../../../api/owc/owc";
+import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
 
 export default {
 
@@ -24,10 +24,14 @@ export default {
             description: 'Country to take a closer look at',
             required: false,
             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            autocomplete: true,
         },
     ],
 
-    callback: async ({ message, interaction, args, prefix }) => {
+    callback: async ({ message, interaction, args, prefix,  }) => {
+
+        interaction_thinking(interaction);
+        message_thinking(message);
 
         await getInfo(message, interaction, args);
 

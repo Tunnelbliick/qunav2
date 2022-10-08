@@ -1,50 +1,43 @@
 import moment from "moment";
+import { buildOwcEmbed } from "../../embeds/osu/owc/owc";
 import owc from "../../models/owc";
 import owcgame from "../../models/owcgame"
 import owcteam from "../../models/owcteam";
 import { viewTournament } from "../challonge/tournament";
 import { buildfilter, owc_filter } from "./filter";
 
-let seeding: any = {
-    1: { country: "US", name: "United States" },
-    2: { country: "CA", name: "Canada" },
-    3: { country: "GER", name: "Germany" },
-    4: { country: "CHL", name: "Chile" },
-    5: { country: "IND", name: "Indonesia" },
-    6: { country: "PL", name: "Poland" },
-    7: { country: "JP", name: "Japan" },
-    8: { country: "UK", name: "United Kingdom" },
-    9: { country: "SK", name: "South Korea" },
-    10: { country: "FR", name: "France" },
-    11: { country: "SWE", name: "Sweden" },
-    12: { country: "HK", name: "Hong Kong" },
-    13: { country: "RU", name: "Russia" },
-    14: { country: "AU", name: "Australia" },
-    15: { country: "ROU", name: "Romania" },
-    16: { country: "BR", name: "Brazil" },
-    17: { country: "PH", name: "Philippines" },
-    18: { country: "TAI", name: "Taiwan" },
-    19: { country: "NOR", name: "Norway" },
-    20: { country: "CH", name: "China" },
-    21: { country: "TRK", name: "Turkey" },
-    22: { country: "NL", name: "Netherlands" },
-    23: { country: "FIN", name: "Finnland" },
-    24: { country: "URK", name: "Ukraine" },
-    25: { country: "SIN", name: "Singapore" },
-    26: { country: "MAL", name: "Malaysia" },
-    27: { country: "CZ", name: "Czech Republic" },
-    28: { country: "MX", name: "Mexico" },
-    29: { country: "ARG", name: "Argentina" },
-    30: { country: "OER", name: "Austria" },
-    31: { country: "SPA", name: "Spain" },
-    32: { counntry: "URU", name: "Uruguay" }
+export interface country {
+    team: any,
+    matches: any,
+}
+
+export interface year {
+    owc: any,
+    team: any,
+    matches: any,
+}
+
+export interface owc_year {
+    year: year,
+    country?: country,
 }
 
 export async function getInfo(message: any, interaction: any, args: any) {
 
     let filter: owc_filter = buildfilter(interaction, args)!;
+    let country: any = undefined;
 
-    let year = getYear(filter.year);
+    let year = await getYear(filter.year);
+
+    if(filter.country != null)
+    country = getCountry(year.owc.id, filter.country);
+
+    let resp: owc_year = {
+        year: year,
+        country: country,
+    }
+
+    buildOwcEmbed(message, interaction, resp);
 
 }
 
@@ -56,19 +49,34 @@ async function getYear(year: string) {
 
     let sorted_teams = teams.sort((a: any, b: any) => { return a.place - b.place }).slice(0,5);
 
-    sorted_teams.forEach((team: any) => {
-        console.log(`${team.place}. ${team.name} Seed: ${team.seed}`);
-    })
+    let resp: year = {
+        owc: owc_year,
+        team: sorted_teams,
+        matches: matches,
+    }
+
+    return resp;
 
 }
 
 async function getCountry(owc_year: any, country: string) {
+
+    let team = await owcteam.findOne({owc:owc_year,name:country});
+    let matches = await getCountryMatches(owc_year, country);
+
+    let resp: country = {
+        team: team,
+        matches: matches
+    }
+
+    return resp;
     
 }
 
-export async function getTeamMatches(team: any) {
+export async function getCountryMatches(owc_year: any, team: any) {
 
     let matches: any = await owcgame.find({
+        owc: owc_year,
         $or: [
             {
                 team1_name: team
@@ -78,8 +86,6 @@ export async function getTeamMatches(team: any) {
             }
         ]
     })
-
-    console.log(matches);
 
     matches.forEach((match: any) => {
         console.log(`${match.team1_name} ${match.score} ${match.team2_name}`);

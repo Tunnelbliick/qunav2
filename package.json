@@ -2,7 +2,7 @@
   "name": "qunav2",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,7 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/builders": "^1.1.0",
-    "@formatjs/intl": "^2.4.2",
     "async-batch": "^1.1.2",
     "axios": "^0.27.2",
     "chartjs-adapter-moment": "^1.0.0",
@@ -20,6 +19,7 @@
     "dataimageattachment": "^1.1.2",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.1",
+    "image-to-base64": "^2.2.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37",
