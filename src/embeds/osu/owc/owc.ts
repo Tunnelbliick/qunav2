@@ -67,9 +67,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
         tournament_type = bo16;
     }
 
-    console.log(team_country);
-
-    if (team_country !== undefined) {
+    if (team_country !== undefined && team_country !== null) {
 
         let code: string = getCode(team_country.name);
 
