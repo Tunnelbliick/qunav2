@@ -58,23 +58,48 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
         if (year.owc.tournament_type === "single elimination") {
 
-            switch (+i.values[0]) {
-                case 1:
-                    info = { bo: bo16, winner: 1 };
-                    description += buildRow(rounds, info);
-                    break;
-                case 2:
-                    info = { bo: bo16, winner: 2 };
-                    description += buildRow(rounds, info);
-                    break;
-                case 3:
-                    info = { bo: bo16, winner: 3 };
-                    description += buildRow(rounds, info);
-                    break;
-                case 4:
-                    info = { bo: bo16, winner: 4, };
-                    description += buildRow(rounds, info, 1);
-                    break;
+            if (year.owc.size === 32) {
+                switch (+i.values[0]) {
+                    case 1:
+                        info = { bo: bo32, winner: 1};
+                        description += buildRow(rounds, info);
+                        break;
+                    case 2:
+                        info = { bo: bo32, winner: 2};
+                        description += buildRow(rounds, info);
+                        break;
+                    case 3:
+                        info = { bo: bo32, winner: 3};
+                        description += buildRow(rounds, info);
+                        break;
+                    case 4:
+                        info = { bo: bo32, winner: 4};
+                        description += buildRow(rounds, info);
+                        break;
+                    case 5:
+                        info = { bo: bo32, winner: 5};
+                        description += buildRow(rounds, info, 1);
+                        break;
+                }
+            } else {
+                switch (+i.values[0]) {
+                    case 1:
+                        info = { bo: bo16, winner: 1 };
+                        description += buildRow(rounds, info);
+                        break;
+                    case 2:
+                        info = { bo: bo16, winner: 2 };
+                        description += buildRow(rounds, info);
+                        break;
+                    case 3:
+                        info = { bo: bo16, winner: 3 };
+                        description += buildRow(rounds, info);
+                        break;
+                    case 4:
+                        info = { bo: bo16, winner: 4, };
+                        description += buildRow(rounds, info, 1);
+                        break;
+                }
             }
 
         } else {
@@ -256,12 +281,12 @@ export function buildmatch(match: any, podium?: 1 | 3 | 5) {
     let code1: string = getCode(match.team1_name);
     let code2: string = getCode(match.team2_name);
 
-    if(match.team1_name.includes("#")) {
+    if (match.team1_name.includes("#")) {
         match.team1_name = "No Enemy";
         code1 = "aq";
     }
 
-    if(match.team2_name.includes("#")) {
+    if (match.team2_name.includes("#")) {
         match.team2_name = "No Enemy";
         code2 = "aq";
     }
