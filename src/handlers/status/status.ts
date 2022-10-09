@@ -9,7 +9,8 @@ export default (client: Client) => {
 
     ]
     const updateStatus = () => {
-        client.user?.setActivity(statusOptions[0], {type: 2})
+        Math
+        client.user?.setActivity(statusOptions[getRandomInt(statusOptions.length)], {type: 2})
         setTimeout(updateStatus, 1000 * 60 * 10)
     }
     updateStatus()
@@ -19,3 +20,8 @@ export const config = {
     dbName: 'STATUS_CHANGER',
     displayName: 'Status Changer'
 }
+
+function getRandomInt(max: any) {
+    return Math.floor(Math.random() * max);
+  }
+  
