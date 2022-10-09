@@ -56,7 +56,7 @@ async function getYear(year: string, mode: string, keys: any) {
 
     let owc_year: any;
 
-    if (keys !== undefined) {
+    if (keys !== null && keys !== undefined ) {
         owc_year = await owc.findOne({ year: year, mode: mode, keys: keys });
     } else {
         owc_year = await owc.findOne({ year: year, mode: mode });
