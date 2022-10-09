@@ -10,30 +10,29 @@ export default {
     description: "Get Owc results for a specific year",
     options: [
         {
+            name: 'keys',
+            description: 'Keys to look at',
+            required: false,
+            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            choices: [
+                { name: "4k", value: "4K"},
+                { name: "7k", value: "7K"}
+            ]
+        },
+        {
             name: 'year',
             description: 'Year to look at',
             required: false,
             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
-            choices: [
-                { name: "2019", value: "2019", },
-                { name: "2020", value: "2020", },
-                { name: "2021", value: "2021", },
-                { name: "2022", value: "2022", },]
+            autocomplete: true,
         },
         {
-            name: 'mode',
-            description: 'Gamemode to lookup',
-            required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
-            choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "ctb", value: "ctb", }, { name: "mania", value: "mania" }]
-        },
-        /*{
             name: 'Country',
             description: 'Country to take a closer look at',
             required: false,
             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
             autocomplete: true,
-        },*/
+        },
     ],
 
     callback: async ({ message, interaction, args, prefix,  }) => {

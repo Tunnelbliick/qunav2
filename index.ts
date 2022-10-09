@@ -40,7 +40,7 @@ client.on('ready', async () => {
             disabledDefaultCommands: [
                 "help"
             ],
-            testServers: ['725613335940300871']
+            testServers: ['940446029436821514']
         });
     } catch (err) {
         console.log(err);

@@ -16,6 +16,7 @@ export function loadTournaments() {
         "TWC_2021",
         "TWC_2022",
 
+        "MWC4K_2022",
         "MWC4K_2021",
         "MWC4K2020",
         "MWC4K2019",

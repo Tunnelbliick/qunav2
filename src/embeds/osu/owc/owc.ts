@@ -56,7 +56,52 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
     let team_country = country?.team;
     let team_matches = country?.matches;
 
+    let file = await imageToBase64(`assets/owc/${year.owc.mode}${year.owc.keys === undefined ? "" : year.owc.keys}_${year.owc.year}.jpg`);
+    let uri = "data:image/jpeg;base64," + file
+
     let description = `[**Challonge**](${year.owc.full_challonge_url})\n[**Bracket**](${year.owc.full_challonge_url}/module)\n\n`;
+
+    let tournament_type: Object = bo32;
+
+    if (year.owc.size === 16) {
+        tournament_type = bo16;
+    }
+
+    console.log(team_country);
+
+    if (team_country !== undefined) {
+
+        let code: string = getCode(team_country.name);
+
+        description += `Team :flag_${code.toLocaleLowerCase()}: **${team_country.name}**\nPlace: **#${team_country.place}**\nSeed: **#${team_country.seed}**\n\n**__Matches__**\n`
+
+        let index = 0;
+
+        team_matches.forEach((match: any) => {
+            index++;
+            if (index === team_matches.length) {
+                description += buildmatch(match, team_country.place);
+            } else {
+                description += buildmatch(match);
+            }
+        })
+
+
+        let embed = new MessageEmbed().
+            setTitle(`Team ${team_country.name} ${year.owc.name}`)
+            .setColor("#4b67ba")
+            .setDescription(description)
+            .setImage("attachment://owc.jpg")
+
+        let reply;
+
+        if (interaction != null) {
+            reply = await interaction.editReply({ embeds: [embed], files: [new DataImageAttachment(uri, "owc.jpg")] });
+        } else {
+            reply = await message.reply({ embeds: [embed], files: [new DataImageAttachment(uri, "owc.jpg")] })
+        }
+        return;
+    }
 
     for (let team of year.team) {
 
@@ -68,11 +113,6 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
     }
 
     let options: any[] = [];
-    let tournament_type: Object = bo32;
-
-    if(year.owc.size === 16) {
-        tournament_type = bo16;
-    }
 
     for (const [key, value] of Object.entries(tournament_type)) {
 
@@ -95,9 +135,6 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
     const row = new MessageActionRow().addComponents(select);
 
-    let file = await imageToBase64(`assets/owc/${year.owc.mode}${year.owc.keys === undefined ? "" : year.owc.keys}_${year.owc.year}.jpg`);
-    let uri = "data:image/jpeg;base64," + file
-
     let embed = new MessageEmbed().
         setTitle(`${year.owc.name}`)
         .setColor("#4b67ba")
@@ -107,11 +144,40 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
     let reply;
 
     if (interaction != null) {
-        reply = await interaction.editReply({embeds: [embed], components: [row], files: [new DataImageAttachment(uri, "owc.jpg")]});
+        reply = await interaction.editReply({ embeds: [embed], components: [row], files: [new DataImageAttachment(uri, "owc.jpg")] });
     } else {
-        reply = await message.reply({embeds: [embed], components: [row], files: [new DataImageAttachment(uri, "owc.jpg")]})
+        reply = await message.reply({ embeds: [embed], components: [row], files: [new DataImageAttachment(uri, "owc.jpg")] })
     }
 
     launchCollector(message, interaction, reply, select.customId, owc);
 
+}
+
+function buildmatch(match: any, place?: any) {
+
+    let code1: string = getCode(match.team1_name);
+    let code2: string = getCode(match.team2_name);
+
+    if (code2 === undefined) {
+        console.log(match.team2_name);
+    }
+
+    if (code1 === undefined) {
+        console.log(match.team1_name);
+    }
+
+
+    let team1 = "";
+    let team2 = "";
+
+    if (match.winner_name === match.team1_name) {
+        team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+        team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
+    } else {
+
+        team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+        team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
+    }
+
+    return `${team1}${team2}`;
 }

@@ -7,6 +7,7 @@ const owcteamSchema = new mongoose.Schema({
     seed: Number,
     data: Object,
     place: Number,
+    mode: String
 });
 
 export default mongoose.model("owcteam", owcteamSchema);

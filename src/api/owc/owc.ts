@@ -41,7 +41,7 @@ export async function getInfo(message: any, interaction: any, args: any, default
     }
 
     if (filter.country != null)
-        country = getCountry(year.owc.id, filter.country);
+        country = await getCountry(year.owc.id, filter.country);
 
     let resp: owc_year = {
         year: year,
@@ -109,10 +109,7 @@ export async function getCountryMatches(owc_year: any, team: any) {
         ]
     })
 
-    matches.forEach((match: any) => {
-        console.log(`${match.team1_name} ${match.score} ${match.team2_name}`);
-    })
-
+    return matches;
 }
 
 export async function getTournament(tournamentid: string) {
@@ -192,7 +189,7 @@ async function createOrUpdateMatches(owcid: any, matches: any) {
 
 }
 
-async function createOrUpdateParticipants(owcid: any, participants: any) {
+async function createOrUpdateParticipants(owcid: any, participants: any, mode: any) {
 
     for (let team of participants) {
         team = team.participant;
@@ -208,6 +205,7 @@ async function createOrUpdateParticipants(owcid: any, participants: any) {
         owc_team.seed = team.seed;
         owc_team.data = team;
         owc_team.place = team.final_rank;
+        owc_team.mode = mode;
 
         await owc_team.save();
     }
@@ -258,7 +256,7 @@ async function createOrUpdateTournaments(tournament_string: any) {
 
     gen_owc = await gen_owc.save();
 
-    await createOrUpdateParticipants(gen_owc.id, tournament.participants);
+    await createOrUpdateParticipants(gen_owc.id, tournament.participants, mode);
     await createOrUpdateMatches(gen_owc.id, tournament.matches);
 
 }
