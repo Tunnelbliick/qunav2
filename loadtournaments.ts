@@ -5,6 +5,9 @@ export function loadTournaments() {
     // PLACE Challonge URL HERE
 
     let tournaments = [
+        "nvzkhfet", //2010
+        "mlo93x9p", //2011
+        "fy6t2zls", //2012
         "rpdt2g31", //2013
         "cugtkq2t", //2014
         "8sadv07p", //2015

@@ -256,6 +256,16 @@ export function buildmatch(match: any, podium?: 1 | 3 | 5) {
     let code1: string = getCode(match.team1_name);
     let code2: string = getCode(match.team2_name);
 
+    if(match.team1_name.includes("#")) {
+        match.team1_name = "No Enemy";
+        code1 = "aq";
+    }
+
+    if(match.team2_name.includes("#")) {
+        match.team2_name = "No Enemy";
+        code2 = "aq";
+    }
+
     if (code2 === undefined) {
         console.log(match.team2_name);
     }
