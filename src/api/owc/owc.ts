@@ -32,8 +32,9 @@ export async function getInfo(message: any, interaction: any, args: any, default
 
     if (filter.mode === "mania") {
         year = await getYear(filter.year, filter.mode, filter.keys);
+    } else {
+        year = await getYear(filter.year, filter.mode, undefined);
     }
-    year = await getYear(filter.year, filter.mode, undefined);
 
     if (year === null) {
         buildOwcNotPortedError(message, interaction, filter);
@@ -56,7 +57,7 @@ async function getYear(year: string, mode: string, keys: any) {
 
     let owc_year: any;
 
-    if (keys !== null && keys !== undefined ) {
+    if (keys !== null && keys !== undefined) {
         owc_year = await owc.findOne({ year: year, mode: mode, keys: keys });
     } else {
         owc_year = await owc.findOne({ year: year, mode: mode });
