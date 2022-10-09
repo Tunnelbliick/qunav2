@@ -3,7 +3,7 @@ import { desc } from "osu-api-extended/dist/utility/mods";
 import { owc_year } from "../../../api/owc/owc";
 import { owc_rank_icons } from "../../../utility/icons";
 import { country_overwrite } from "./country_overwrites";
-import { bo16, bo32 } from "./owc";
+import { bo16, bo32, bo8 } from "./owc";
 const { overwrite, getCode } = require('country-list');
 
 country_overwrite();
@@ -58,48 +58,67 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
         if (year.owc.tournament_type === "single elimination") {
 
-            if (year.owc.size === 32) {
-                switch (+i.values[0]) {
-                    case 1:
-                        info = { bo: bo32, winner: 1};
-                        description += buildRow(rounds, info);
-                        break;
-                    case 2:
-                        info = { bo: bo32, winner: 2};
-                        description += buildRow(rounds, info);
-                        break;
-                    case 3:
-                        info = { bo: bo32, winner: 3};
-                        description += buildRow(rounds, info);
-                        break;
-                    case 4:
-                        info = { bo: bo32, winner: 4};
-                        description += buildRow(rounds, info);
-                        break;
-                    case 5:
-                        info = { bo: bo32, winner: 5};
-                        description += buildRow(rounds, info, 1);
-                        break;
-                }
-            } else {
-                switch (+i.values[0]) {
-                    case 1:
-                        info = { bo: bo16, winner: 1 };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 2:
-                        info = { bo: bo16, winner: 2 };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 3:
-                        info = { bo: bo16, winner: 3 };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 4:
-                        info = { bo: bo16, winner: 4, };
-                        description += buildRow(rounds, info, 1);
-                        break;
-                }
+            switch (year.owc.size) {
+                case 32:
+                    switch (+i.values[0]) {
+                        case 1:
+                            info = { bo: bo32, winner: 1 };
+                            description += buildRow(rounds, info);
+                            break;
+                        case 2:
+                            info = { bo: bo32, winner: 2 };
+                            description += buildRow(rounds, info);
+                            break;
+                        case 3:
+                            info = { bo: bo32, winner: 3 };
+                            description += buildRow(rounds, info);
+                            break;
+                        case 4:
+                            info = { bo: bo32, winner: 4 };
+                            description += buildRow(rounds, info);
+                            break;
+                        case 5:
+                            info = { bo: bo32, winner: 5, loser: "0" };
+                            description += buildRow(rounds, info, 1, true);
+                            break;
+                    }
+                    break;
+                case 16:
+                    switch (+i.values[0]) {
+                        case 1:
+                            info = { bo: bo16, winner: 1 };
+                            description += buildRow(rounds, info);
+                            break;
+                        case 2:
+                            info = { bo: bo16, winner: 2 };
+                            description += buildRow(rounds, info);
+                            break;
+                        case 3:
+                            info = { bo: bo16, winner: 3 };
+                            description += buildRow(rounds, info);
+                            break;
+                        case 4:
+                            info = { bo: bo16, winner: 4, loser: "0" };
+                            description += buildRow(rounds, info, 1, true);
+                            break;
+                    }
+                    break;
+                case 8:
+                    switch (+i.values[0]) {
+                        case 1:
+                            info = { bo: bo8, winner: 1 };
+                            description += buildRow(rounds, info);
+                            break;
+                        case 2:
+                            info = { bo: bo8, winner: 2 };
+                            description += buildRow(rounds, info);
+                            break;
+                        case 3:
+                            info = { bo: bo8, winner: 3, loser: "0" };
+                            description += buildRow(rounds, info, 1, true);
+                            break;
+                    }
+                    break;
             }
 
         } else {
@@ -207,7 +226,7 @@ interface row {
     loser2?: string;
 }
 
-export function buildRow(rounds: any, info: row, podium?: 1 | 5) {
+export function buildRow(rounds: any, info: row, podium?: 1 | 5, single?: boolean) {
 
     let losers = [];
     let losers2 = [];
@@ -236,7 +255,7 @@ export function buildRow(rounds: any, info: row, podium?: 1 | 5) {
         }
 
         description += `__**${info.bo[info.loser].name}**__\n`;
-        description += buildround(losers, local_podium);
+        description += buildround(losers, local_podium, single);
     }
 
     if (info.loser2 != null) {
@@ -253,7 +272,7 @@ export function buildRow(rounds: any, info: row, podium?: 1 | 5) {
 
 }
 
-export function buildround(matches: any, podium?: 1 | 3 | 5) {
+export function buildround(matches: any, podium?: 1 | 3 | 5, single?: boolean) {
 
     let description = "";
 
@@ -268,7 +287,7 @@ export function buildround(matches: any, podium?: 1 | 3 | 5) {
         if (podium === 5 && matches.length !== index + 1) {
             podium = undefined;
         }
-        description += buildmatch(match, podium);
+        description += buildmatch(match, podium, single);
         if (matches.length === 1 || index % 2) { description += "\n"; }
         index++;
     });
@@ -276,7 +295,7 @@ export function buildround(matches: any, podium?: 1 | 3 | 5) {
     return description
 }
 
-export function buildmatch(match: any, podium?: 1 | 3 | 5) {
+export function buildmatch(match: any, podium?: 1 | 3 | 5, single?: boolean) {
 
     let code1: string = getCode(match.team1_name);
     let code2: string = getCode(match.team2_name);
@@ -304,42 +323,86 @@ export function buildmatch(match: any, podium?: 1 | 3 | 5) {
     let team2 = "";
 
     if (match.winner_name === match.team1_name) {
-        switch (podium) {
-            default:
-                team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
-                team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
-                break;
-            case 1:
-                team1 = `${owc_rank_icons[1]} :flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
-                team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[2]}\n`;
-                break;
-            case 3:
-                team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
-                team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[3]}\n`;
-                break;
-            case 5:
-                team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
-                team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[4]}\n`;
-                break;
+
+        if (single) {
+            switch (podium) {
+                default:
+                    team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                    team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
+                    break;
+                case 1:
+                    team1 = `${owc_rank_icons[1]} :flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                    team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[2]}\n`;
+                    break;
+                case 3:
+                    team1 = `${owc_rank_icons[3]} :flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                    team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}:\n`;
+                    break;
+            }
+        } else {
+            switch (podium) {
+                default:
+                    team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                    team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
+                    break;
+                case 1:
+                    team1 = `${owc_rank_icons[1]} :flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                    team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[2]}\n`;
+                    break;
+                case 3:
+                    team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                    team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[3]}\n`;
+                    break;
+                case 5:
+                    team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${match.team1_score}** - `;
+                    team2 = `${match.team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[4]}\n`;
+                    break;
+            }
         }
     } else {
-        switch (podium) {
-            default:
-                team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
-                team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
-                break;
-            case 1:
-                team1 = `${owc_rank_icons[2]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
-                team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[1]}\n`;
-                break;
-            case 3:
-                team1 = `${owc_rank_icons[3]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
-                team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:\n`;
-                break;
-            case 5:
-                team1 = `${owc_rank_icons[4]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
-                team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:\n`;
-                break;
+
+        if (single) {
+
+            switch (podium) {
+                default:
+                    team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                    team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
+                    break;
+                case 1:
+                    team1 = `${owc_rank_icons[2]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                    team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[1]}\n`;
+                    break;
+                case 3:
+                    team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                    team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[3]}\n`;
+                    break;
+                case 5:
+                    team1 = `${owc_rank_icons[4]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                    team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:\n`;
+                    break;
+            }
+
+        } else {
+
+            switch (podium) {
+                default:
+                    team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                    team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
+                    break;
+                case 1:
+                    team1 = `${owc_rank_icons[2]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                    team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: ${owc_rank_icons[1]}\n`;
+                    break;
+                case 3:
+                    team1 = `${owc_rank_icons[3]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                    team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:\n`;
+                    break;
+                case 5:
+                    team1 = `${owc_rank_icons[4]} :flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${match.team1_score} - `;
+                    team2 = `**${match.team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:\n`;
+                    break;
+            }
+
         }
     }
 

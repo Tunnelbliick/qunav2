@@ -7,12 +7,20 @@ const { overwrite, getCode } = require('country-list');
 const DataImageAttachment = require("dataimageattachment");
 const imageToBase64 = require('image-to-base64');
 
+export const bo8 = {
+    1: { name: "Quarterfinals", value: 1 },
+    2: { name: "Semifinals", value: 2 },
+    3: { name: "Finals", value: 3 },
+    "0": { name: "3rd place match", value: 3 },
+}
+
 export const bo16 = {
     1: { name: "Round of 16", value: 1 },
     2: { name: "Quarterfinals", value: 2 },
     3: { name: "Semifinals", value: 3 },
     4: { name: "Finals", value: 4 },
     5: { name: "Grand Finals", value: 5 },
+    "0": { name: "3rd place match", value: 4 },
     "-1": { name: "Losers Bracket (QF)", value: 2 },
     "-2": { name: "Losers Bracket (SF1)", value: 3 },
     "-3": { name: "Losers Bracket (SF2)", value: 3 },
@@ -28,6 +36,7 @@ export const bo32 = {
     4: { name: "Semifinals", value: 4 },
     5: { name: "Finals", value: 5 },
     6: { name: "Grand Finals", value: 6 },
+    "0": { name: "3rd place match", value: 5 },
     "-1": { name: "Losers Bracket (RO16)", value: 2 },
     "-2": { name: "Losers Bracket (QF1)", value: 3 },
     "-3": { name: "Losers Bracket (QF2)", value: 3 },
@@ -65,6 +74,10 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
     if (year.owc.size === 16) {
         tournament_type = bo16;
+    }
+
+    if (year.owc.size === 8) {
+        tournament_type = bo8;
     }
 
     if (team_country !== undefined && team_country !== null) {
@@ -114,7 +127,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
     for (const [key, value] of Object.entries(tournament_type)) {
 
-        if (+key < 0) {
+        if (+key < 1) {
             continue;
         }
 
