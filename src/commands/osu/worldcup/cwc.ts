@@ -12,7 +12,7 @@ export default {
         {
             name: 'year',
             description: 'Year to look at',
-            required: false,
+            required: true,
             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
             autocomplete: true,
         },
@@ -22,6 +22,13 @@ export default {
             required: false,
             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
             autocomplete: true,
+        },
+        {
+            name: 'mode',
+            description: 'Gamemode to lookup',
+            required: false,
+            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "ctb", value: "ctb", }, { name: "mania", value: "mania" }]
         },
     ],
 

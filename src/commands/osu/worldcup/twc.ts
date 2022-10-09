@@ -23,6 +23,13 @@ export default {
             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
             autocomplete: true,
         },
+        {
+            name: 'mode',
+            description: 'Gamemode to lookup',
+            required: false,
+            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "ctb", value: "ctb", }, { name: "mania", value: "mania" }]
+        },
     ],
 
     callback: async ({ message, interaction, args, prefix,  }) => {

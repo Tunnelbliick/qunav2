@@ -1,28 +1,15 @@
 import { ICommand } from "wokcommands";
 import DiscordJS from 'discord.js';
-import { getInfo } from "../../../api/owc/owc";
 import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
+import { compareworldcups } from "../../../api/owc/compare";
 
 export default {
 
     category: "osu!",
     slash: "both",
+    aliases: ["worldcupcompare", "wccompare", "worldcupcompare", "owcc", "mwcc", "twcc", "mwcc"],
     description: "Get Owc results for a specific year",
     options: [
-        {
-            name: 'year',
-            description: 'Year to look at',
-            required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
-            autocomplete: true,
-        },
-        {
-            name: 'Country',
-            description: 'Country to take a closer look at',
-            required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
-            autocomplete: true,
-        },
         {
             name: 'mode',
             description: 'Gamemode to lookup',
@@ -30,16 +17,14 @@ export default {
             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
             choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "ctb", value: "ctb", }, { name: "mania", value: "mania" }]
         },
-
     ],
-    callback: async ({ message, interaction, args, prefix, client }) => {
 
-        let default_mode = "osu"
+    callback: async ({ message, interaction, args, prefix, }) => {
 
         await interaction_thinking(interaction);
         message_thinking(message);
 
-        await getInfo(message, interaction, args, default_mode);
+        await compareworldcups(message, interaction, args, undefined);
 
     }
 

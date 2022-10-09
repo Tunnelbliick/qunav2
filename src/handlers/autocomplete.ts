@@ -30,17 +30,18 @@ export default (client: Client) => {
 
         let tournaments: any = await owc.find({ mode: default_mode });
 
-        if(default_mode === "mania") {
+        if (default_mode === "mania") {
             let default_keys = interaction.options.getString("keys") === null ? "4K" : interaction.options.getString("keys");
             tournaments = await owc.find({ mode: default_mode, keys: default_keys });
         }
 
         let years: any = [];
-        tournaments.forEach((t:any) => {
+        tournaments.forEach((t: any) => {
             years.push(t.year);
         })
 
         years = [...new Set(years)];
+        years = years.sort((a: any, b: any) => a - b);
 
         const focusedValue = interaction.options.getFocused();
 

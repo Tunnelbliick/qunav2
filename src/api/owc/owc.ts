@@ -243,7 +243,7 @@ async function createOrUpdateTournaments(tournament_string: any) {
         keys = "7K";
     }
 
-    let year = moment(tournament.started_at).format("YYYY")
+    let year = tournament.name.match("[0-9]{4}")[0];
     gen_owc.year = year;
     gen_owc.name = tournament.name;
     gen_owc.size = tournament.participants_count;
@@ -253,6 +253,7 @@ async function createOrUpdateTournaments(tournament_string: any) {
     gen_owc.url = tournament.url;
     gen_owc.live_image_url = tournament.live_image_url;
     gen_owc.full_challonge_url = tournament.full_challonge_url;
+    gen_owc.tournament_type = tournament.tournament_type;
 
 
     gen_owc = await gen_owc.save();

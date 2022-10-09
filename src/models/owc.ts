@@ -10,6 +10,7 @@ const OwcSchema = new mongoose.Schema({
     url: String,
     live_image_url: String,
     full_challonge_url: String,
+    tournament_type: String,
 });
 
 export default mongoose.model("owc", OwcSchema);

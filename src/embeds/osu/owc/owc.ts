@@ -118,6 +118,11 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
             continue;
         }
 
+        // Fallback for single elimination tournaments prior to 2014
+        if (year.owc.tournament_type === "single elimination" && value.name === "Grand Finals" ) {
+            continue;
+        }
+
         let option = {
             label: `${value.name}`,
             value: `${value.value}`
