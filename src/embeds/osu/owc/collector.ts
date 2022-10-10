@@ -202,6 +202,10 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
             let code: string = getCode(team.name);
 
+            if(code === undefined) {
+                code = "aq"
+            }
+
             let emote: any = owc_rank_icons[team.place];
 
             description += `${emote} :flag_${code.toLocaleLowerCase()}: **${team.name}** (#${team.seed}) \n`
