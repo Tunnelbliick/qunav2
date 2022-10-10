@@ -48,6 +48,10 @@ export async function launchCollector(message: any, interaction: any, reply: any
             tournament_type = bo16;
         }
 
+        if (year.owc.size === 8) {
+            tournament_type = bo8;
+        }
+
         let round_name = tournament_type[+i.values[0]].name;
 
         await i.deferUpdate({ content: `${round_name}` });
@@ -63,19 +67,19 @@ export async function launchCollector(message: any, interaction: any, reply: any
                     switch (+i.values[0]) {
                         case 1:
                             info = { bo: bo32, winner: 1 };
-                            description += buildRow(rounds, info);
+                            description += buildRow(rounds, info, undefined, true);
                             break;
                         case 2:
                             info = { bo: bo32, winner: 2 };
-                            description += buildRow(rounds, info);
+                            description += buildRow(rounds, info, undefined, true);
                             break;
                         case 3:
                             info = { bo: bo32, winner: 3 };
-                            description += buildRow(rounds, info);
+                            description += buildRow(rounds, info, undefined, true);
                             break;
                         case 4:
                             info = { bo: bo32, winner: 4 };
-                            description += buildRow(rounds, info);
+                            description += buildRow(rounds, info, undefined, true);
                             break;
                         case 5:
                             info = { bo: bo32, winner: 5, loser: "0" };
@@ -87,15 +91,15 @@ export async function launchCollector(message: any, interaction: any, reply: any
                     switch (+i.values[0]) {
                         case 1:
                             info = { bo: bo16, winner: 1 };
-                            description += buildRow(rounds, info);
+                            description += buildRow(rounds, info, undefined, true);
                             break;
                         case 2:
                             info = { bo: bo16, winner: 2 };
-                            description += buildRow(rounds, info);
+                            description += buildRow(rounds, info, undefined, true);
                             break;
                         case 3:
                             info = { bo: bo16, winner: 3 };
-                            description += buildRow(rounds, info);
+                            description += buildRow(rounds, info, undefined, true);
                             break;
                         case 4:
                             info = { bo: bo16, winner: 4, loser: "0" };
@@ -107,11 +111,11 @@ export async function launchCollector(message: any, interaction: any, reply: any
                     switch (+i.values[0]) {
                         case 1:
                             info = { bo: bo8, winner: 1 };
-                            description += buildRow(rounds, info);
+                            description += buildRow(rounds, info, undefined, true);
                             break;
                         case 2:
                             info = { bo: bo8, winner: 2 };
-                            description += buildRow(rounds, info);
+                            description += buildRow(rounds, info, undefined, true);
                             break;
                         case 3:
                             info = { bo: bo8, winner: 3, loser: "0" };
@@ -238,7 +242,7 @@ export function buildRow(rounds: any, info: row, podium?: 1 | 5, single?: boolea
     if (info.loser2 != null)
         losers2 = rounds[info.loser2];
 
-    if (info.winner > 1) {
+    if (info.winner > 1 && single !== true) {
         description += "__**Winners Bracket**__\n";
     }
 
@@ -297,8 +301,9 @@ export function buildround(matches: any, podium?: 1 | 3 | 5, single?: boolean) {
 
 export function buildmatch(match: any, podium?: 1 | 3 | 5, single?: boolean) {
 
-    let code1: string = getCode(match.team1_name);
-    let code2: string = getCode(match.team2_name);
+
+    let code1: string = getCode(match.team1_name.replace(/\s\w$/g, ""));
+    let code2: string = getCode(match.team2_name.replace(/\s\w$/g, ""));
 
     if (match.team1_name.includes("#")) {
         match.team1_name = "No Enemy";
@@ -307,6 +312,14 @@ export function buildmatch(match: any, podium?: 1 | 3 | 5, single?: boolean) {
 
     if (match.team2_name.includes("#")) {
         match.team2_name = "No Enemy";
+        code2 = "aq";
+    }
+
+    if(code1 === undefined) {
+        code1 = "aq";
+    }
+
+    if(code2 === undefined) {
         code2 = "aq";
     }
 

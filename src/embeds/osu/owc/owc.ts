@@ -116,9 +116,13 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
     for (let team of year.team) {
 
-        let code: string = getCode(team.name);
+        let code: string = getCode(team.name.replace(/\s\w$/g, ""));
 
         let emote: any = owc_rank_icons[team.place];
+
+        if (code == undefined) {
+            code = "aq";
+        }
 
         description += `${emote} :flag_${code.toLocaleLowerCase()}: **${team.name}** (#${team.seed}) \n`
     }
@@ -132,7 +136,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
         }
 
         // Fallback for single elimination tournaments prior to 2014
-        if (year.owc.tournament_type === "single elimination" && value.name === "Grand Finals" ) {
+        if (year.owc.tournament_type === "single elimination" && value.name === "Grand Finals") {
             continue;
         }
 

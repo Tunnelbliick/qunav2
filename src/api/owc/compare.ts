@@ -30,7 +30,7 @@ export async function compareworldcups(message: any, interaction: any, args: any
 
     let teams = await owcteam.find({ owc: { $in: [...tournament_ids] }, place: { $in: [1, 2, 3] } });
 
-    let team_placements: Map<String, placement[]> = new Map<String, placement[]>();
+    let team_placements: Map<string, placement[]> = new Map<string, placement[]>();
 
     teams.forEach((t: any) => {
         let placement = { mode: t.mode, place: t.place };
@@ -49,7 +49,11 @@ export async function compareworldcups(message: any, interaction: any, args: any
 
     let description = "";
 
-    team_placements.forEach((v: any, k: any) => {
+    team_placements.forEach((v: any, k: string) => {
+
+        if(new RegExp(/\s\w$/g).test(k)) {
+            return;
+        }
 
         let code: string = getCode(k);
         let medals = v.sort((a: any, b: any) => {
