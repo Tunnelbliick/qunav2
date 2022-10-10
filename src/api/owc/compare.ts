@@ -26,7 +26,9 @@ export async function compareworldcups(message: any, interaction: any, args: any
         tournaments = await owc.find({});
     }
 
-    let tournament_ids = tournaments.map((t: any) => t.id);
+    let tournament_ids = tournaments.map((t: any) => {
+        if(t.mode !== "catch" || t.year !== "2012") return t.id
+    });
 
     let teams = await owcteam.find({ owc: { $in: [...tournament_ids] }, place: { $in: [1, 2, 3] } });
 
@@ -51,7 +53,7 @@ export async function compareworldcups(message: any, interaction: any, args: any
 
     team_placements.forEach((v: any, k: string) => {
 
-        if(new RegExp(/\s\w$/g).test(k)) {
+        if (new RegExp(/\s\w$/g).test(k)) {
             return;
         }
 

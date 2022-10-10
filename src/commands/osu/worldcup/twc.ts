@@ -28,7 +28,7 @@ export default {
             description: 'Gamemode to lookup',
             required: false,
             type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
-            choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "ctb", value: "ctb", }, { name: "mania", value: "mania" }]
+            choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "catch", value: "catch", }, { name: "mania", value: "mania" }]
         },
     ],
 
