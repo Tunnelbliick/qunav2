@@ -11,6 +11,8 @@ const OwcSchema = new mongoose.Schema({
     live_image_url: String,
     full_challonge_url: String,
     tournament_type: String,
+    state: String,
+    current_round: Number,
 });
 
 export default mongoose.model("owc", OwcSchema);

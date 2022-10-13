@@ -202,7 +202,7 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
             let code: string = getCode(team.name);
 
-            if(code === undefined) {
+            if (code === undefined) {
                 code = "aq"
             }
 
@@ -319,11 +319,11 @@ export function buildmatch(match: any, podium?: 1 | 3 | 5, single?: boolean) {
         code2 = "aq";
     }
 
-    if(code1 === undefined) {
+    if (code1 === undefined) {
         code1 = "aq";
     }
 
-    if(code2 === undefined) {
+    if (code2 === undefined) {
         code2 = "aq";
     }
 
@@ -335,9 +335,15 @@ export function buildmatch(match: any, podium?: 1 | 3 | 5, single?: boolean) {
         console.log(match.team1_name);
     }
 
-
     let team1 = "";
     let team2 = "";
+
+    if (match.state === "open") {
+        team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} **vs**`;
+        team2 = ` ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
+
+        return `${team1}${team2}`;
+    }
 
     if (match.winner_name === match.team1_name) {
 

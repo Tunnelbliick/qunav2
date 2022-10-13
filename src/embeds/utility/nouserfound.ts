@@ -1,11 +1,16 @@
 import { Message, MessageEmbed } from "discord.js";
 
-export function checkIfUserExists(userObject: any, message: Message) {
+export function checkIfUserExists(userObject: any, message: Message, interaction?: any) {
     if (userObject == null || userObject.userid == null) {
         let embed = new MessageEmbed()
             .setColor(0x737df9)
             .setDescription(`No account linked to this User.\nPlease link your account with /link`)
-        message.reply({ embeds: [embed] });
+
+        if (interaction) {
+            interaction.editReply({ embeds: [embed] });
+        } else {
+            message.reply({ embeds: [embed] });
+        }
         return true;
     } else {
         false;

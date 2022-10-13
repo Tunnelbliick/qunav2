@@ -114,7 +114,16 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
         return;
     }
 
+    let index = 0;
+
     for (let team of year.team) {
+
+        index++;
+
+        if (team.place === null) {
+            team.name = "To be determined";
+            team.place = index;
+        }
 
         let code: string = getCode(team.name.replace(/\s\w$/g, ""));
 
@@ -124,7 +133,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
             code = "aq";
         }
 
-        description += `${emote} :flag_${code.toLocaleLowerCase()}: **${team.name}** (#${team.seed}) \n`
+        description += `${emote} :flag_${code.toLocaleLowerCase()}: **${team.name}** ${team.name === "To be determined" ? "" : "(#"+team.seed+")"} \n`
     }
 
     let options: any[] = [];
@@ -133,6 +142,13 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
         if (+key < 1) {
             continue;
+        }
+
+        if(year.owc.current_round != null) {
+            console.log(+key > year.owc.current_round);
+            if(+key > year.owc.current_round) {
+                continue;
+            }
         }
 
         // Fallback for single elimination tournaments prior to 2014

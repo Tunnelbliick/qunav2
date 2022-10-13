@@ -1,4 +1,6 @@
 import { getTournament } from "./src/api/owc/owc"
+import owc from "./src/models/owc";
+import owcgame from "./src/models/owcgame";
 
 export function loadTournaments() {
 
@@ -18,6 +20,7 @@ export function loadTournaments() {
         "OWC_2019",
         "OWC_2020",
         "OWC_2021",
+        "r8ll3trn",
 
         // Catch
         "cwc_2012",
@@ -31,7 +34,7 @@ export function loadTournaments() {
         "CWC_2020",
         "CWC_2021",
         "CWC22",
-        
+
         // Taiko
         "twc_2011", //2011
         "twc_2012", //2012
@@ -58,4 +61,77 @@ export function loadTournaments() {
     tournaments.forEach((t: any) => {
         getTournament(t);
     })
+}
+
+export function ongoingWorldCup() {
+
+    let current_tournament = "r8ll3trn";
+
+    if (current_tournament !== undefined) {
+        const updatecurrent = async () => {
+            getTournament(current_tournament);
+            let current: any = await owc.findOne({ url: current_tournament });
+
+            let matches: any = await owcgame.find({ owc: current.id });
+
+            let current_round = 1;
+
+            const grouped = groupBy(matches, (match: any) => match.round);
+
+            if (checkIfRoundComplete([1], grouped)) {
+                current_round = 2;
+            } if (checkIfRoundComplete([2, -1], grouped)) {
+                current_round = 3;
+            } if (checkIfRoundComplete([3, -2, -3], grouped)) {
+                current_round = 4;
+            } if (checkIfRoundComplete([4, -4, -5], grouped)) {
+                current_round = 5;
+            } if (checkIfRoundComplete([5, -6, -7], grouped)) {
+                current_round = 6;
+            }
+
+            current.current_round = current_round;
+
+            console.log(current_round);
+
+            await current.save();
+            await setTimeout(updatecurrent, 1000 * 60);
+        }
+        updatecurrent();
+    }
+}
+
+function checkIfRoundComplete(rounds: any[], grouped: Map<any, any>) {
+
+    let iscomplete = true;
+
+    rounds.forEach((round_number: any) => {
+        let round = grouped.get(round_number);
+
+        round.forEach((match: any) => {
+
+            if (match.state != "complete") {
+                iscomplete = false;
+            }
+
+        })
+
+    });
+
+    return iscomplete;
+
+}
+
+function groupBy(list: any, keyGetter: any) {
+    const map = new Map();
+    list.forEach((item: any) => {
+        const key = keyGetter(item);
+        const collection = map.get(key);
+        if (!collection) {
+            map.set(key, [item]);
+        } else {
+            collection.push(item);
+        }
+    });
+    return map;
 }

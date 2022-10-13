@@ -3,7 +3,7 @@ import WOKCommands from 'wokcommands'
 import path from 'path'
 import dotenv from "dotenv"
 import mongoose from 'mongoose'
-import { loadTournaments } from './loadtournaments'
+import { loadTournaments, ongoingWorldCup } from './loadtournaments'
 dotenv.config()
 const RedisServer = require('redis-server');
 
@@ -56,3 +56,4 @@ client.on("warn", (e) => console.warn(e));
 client.login(process.env.token);
 
 loadTournaments();
+ongoingWorldCup();

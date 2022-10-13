@@ -254,6 +254,7 @@ async function createOrUpdateTournaments(tournament_string: any) {
     gen_owc.live_image_url = tournament.live_image_url;
     gen_owc.full_challonge_url = tournament.full_challonge_url;
     gen_owc.tournament_type = tournament.tournament_type;
+    gen_owc.state = tournament.state;
 
 
     gen_owc = await gen_owc.save();
