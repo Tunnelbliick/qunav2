@@ -1,8 +1,8 @@
 import { ICommand } from "wokcommands";
 import DiscordJS, { MessageEmbed } from 'discord.js';
-import { getInfo } from "../../../api/owc/owc";
-import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
-import Pool from "../../../models/Pool";
+import { getInfo } from "../../../../api/owc/owc";
+import { interaction_thinking, message_thinking } from "../../../../embeds/utility/thinking";
+import Pool from "../../../../models/Pool";
 
 export default {
 
@@ -54,7 +54,7 @@ export default {
         if(interaction.user.id !== "203932549746130944") {
             let embed = new MessageEmbed()
             .setTitle("Nice try!")
-            .setDescription("This command is secured for only the botowner")
+            .setDescription("This command is secured for only the bot owner")
 
             await interaction.editReply({embeds: [embed]});
         }

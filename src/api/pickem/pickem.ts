@@ -1,4 +1,4 @@
-import { MessageEmbed } from "discord.js";
+import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { checkIfUserExists } from "../../embeds/utility/nouserfound";
 import owc from "../../models/owc";
 import owcgame from "../../models/owcgame";
@@ -8,17 +8,21 @@ import { encrypt } from "../../utility/encrypt";
 const imageToBase64 = require('image-to-base64');
 const DataImageAttachment = require("dataimageattachment");
 
+export const current_tournament = "r8ll3trn";
+
 export async function pickem(message: any, interaction: any, args: any) {
 
     let default_mode = "osu"
-    let current_tournament = "r8ll3trn";
 
     let userid: any = undefined;
+    let channel: any = undefined;
 
     if (interaction) {
         userid = interaction.user.id;
+        channel = interaction.channel;
     } else {
         userid = message.author.id;
+        channel = message.channel;
     }
 
     let owc_year: any = await owc.findOne({ url: current_tournament })
@@ -29,55 +33,44 @@ export async function pickem(message: any, interaction: any, args: any) {
     let registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 
 
-    if (registration == null) {
+    let file = await imageToBase64(`assets/pickem/pickem_osu_2022.png`);
+    let uri = "data:image/jpeg;base64," + file
 
-        let file = await imageToBase64(`assets/pickem/pickem_osu_2022.png`);
-        let uri = "data:image/jpeg;base64," + file
+    let register = new MessageButton()
+        .setLabel("Register")
+        .setStyle("SUCCESS")
+        .setCustomId(`register_${userid}`)
 
-        let embed = new MessageEmbed()
-            .setTitle("Quna OWC 2022 Pick'em Challenge")
-            .setColor("#4b67ba")
-            .setDescription(
-                "Welcome to the Pick'em Challege.\n\n" +
-                "**__Rewards__**\n" +
-                "<:gold:1028355775350964328> **3 months supporter** + **custom card title**\n" +
-                "<:silver:1028355773660676146> **2 months supporter**\n" +
-                "<:bronze:1028355772079407188> **1 month supporter**\n\n" +
-                "You are currently **not registered** for the Pick'em Challenge!\n" +
-                "**Please register with the button below.**")
-            .setImage("attachment://pickem.png")
+    let predict = new MessageButton()
+        .setLabel("Predict")
+        .setStyle("PRIMARY")
+        .setCustomId(`predict_${userid}`)
 
-        if (interaction) {
-            await interaction.editReply({ embeds: [embed], files: [new DataImageAttachment(uri, "pickem.png")] });
-        } else {
-            await message.reply({ embeds: [embed], files: [new DataImageAttachment(uri, "pickem.png")] });
-        }
+    let predictions = new MessageButton()
+        .setLabel("Your Predictions")
+        .setStyle("SECONDARY")
+        .setCustomId(`predictions${userid}`)
 
-        return;
+    let row = new MessageActionRow().addComponents([register, predict, predictions]);
 
+    let embed = new MessageEmbed()
+        .setTitle("Quna OWC 2022 Pick'em Challenge")
+        .setColor("#4b67ba")
+        .setDescription(
+            "Welcome to the Pick'em Challege.\n\n" +
+            "**__Rewards__**\n" +
+            "<:gold:1028355775350964328> **3 months supporter** + **custom card title**\n" +
+            "<:silver:1028355773660676146> **2 months supporter**\n" +
+            "<:bronze:1028355772079407188> **1 month supporter**\n\n" +
+            `You are currently ${registration === null ? "**not registered**" : "**registered**"} for the Pick'em Challenge!\n` +
+            `${registration === null ? "**Please register with the button below.**" : ""}`)
+        .setImage("attachment://pickem.png");
+
+    if (interaction) {
+        await interaction.editReply({ embeds: [embed], components: [row], files: [new DataImageAttachment(uri, "pickem.png")] });
+    } else {
+        await message.reply({ embeds: [embed], components: [row], files: [new DataImageAttachment(uri, "pickem.png")] });
     }
 
-    let select: any[] = [1];
-
-    switch (owc_year.current_round) {
-        case 1:
-            select = [1];
-            break;
-        case 2:
-            select = [2, "-1"];
-            break;
-        case 3:
-            select = [3, "-2", "-3"];
-            break;
-        case 4:
-            select = [4, "-4", "-5"];
-            break;
-        case 5:
-            select = [5, "-6", "-7"];
-            break;
-        case 6:
-            select = [6, "-8"];
-    }
-
-    let matches: any = await owcgame.find({ owc: owc_year.id, state: "open", round: { $in: select } });
+    return;
 }

@@ -189,7 +189,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
 }
 
-function buildmatch(match: any, place?: any) {
+export function buildmatch(match: any, place?: any) {
 
     let code1: string = getCode(match.team1_name);
     let code2: string = getCode(match.team2_name);

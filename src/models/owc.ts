@@ -13,6 +13,7 @@ const OwcSchema = new mongoose.Schema({
     tournament_type: String,
     state: String,
     current_round: Number,
+    unlocked_round: Array,
 });
 
 export default mongoose.model("owc", OwcSchema);

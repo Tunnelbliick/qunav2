@@ -1,6 +1,6 @@
 import { Message, MessageEmbed } from "discord.js";
 
-export function checkIfUserExists(userObject: any, message: Message, interaction?: any) {
+export function checkIfUserExists(userObject: any, message?: Message, interaction?: any) {
     if (userObject == null || userObject.userid == null) {
         let embed = new MessageEmbed()
             .setColor(0x737df9)
@@ -8,7 +8,7 @@ export function checkIfUserExists(userObject: any, message: Message, interaction
 
         if (interaction) {
             interaction.editReply({ embeds: [embed] });
-        } else {
+        } else if(message) {
             message.reply({ embeds: [embed] });
         }
         return true;
