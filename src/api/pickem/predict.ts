@@ -15,22 +15,39 @@ const { overwrite, getCode } = require('country-list');
 
 country_overwrite();
 
-let match_index: number = -1;
-let predictionMap: Map<any, any> = new Map<any, any>();
-let registration: any = undefined;
+let locked_round: any[] = [];
 
 export async function predict(interaction: any) {
 
+    let match_index: number = -1;
+    let predictionMap: Map<any, any> = new Map<any, any>();
+    let registration: any = undefined;
+
+    console.log(interaction.id);
+
     let owc_year: any = await owc.findOne({ url: current_tournament })
+
+    if (owc_year.locked_round !== undefined) {
+        locked_round = owc_year.locked_round;
+    }
+
     let user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
     checkIfUserExists(user, undefined, interaction);
 
     registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 
-    let select: any[] = [1];
+    if (registration == null) {
+        let embed = new MessageEmbed()
+            .setColor("#4b67ba")
+            .setTitle("Not registered")
+            .setDescription("You are **not registered** for the Quna 2022 Pick'em\nPlease register before you can enter any predictions!")
 
-    console.log(owc_year.current_round);
+        await interaction.editReply({ embeds: [embed] });
+        return;
+    }
+
+    let select: any[] = [1];
 
     switch (owc_year.current_round) {
         case 1:
@@ -52,21 +69,16 @@ export async function predict(interaction: any) {
             select = [6, "-8"];
     }
 
-    let matches: any = await owcgame.find({ owc: owc_year.id, state: "open", round: { $in: select } });
-
-    let unlocked: any = matches.filter((match: any) => owc_year.unlocked_round.includes(+match.round)).sort((a: any, b: any) => a.round - b.round);
-
+    let matches: any = await owcgame.find({ owc: owc_year.id, round: { $in: select } });
+    let unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
     let matchids: any[] = unlocked.map((match: any) => match.id);
-
     let predictions: any = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
 
     predictions.forEach((prediction: any) => {
         predictionMap.set(prediction.match.toString(), prediction);
     });
 
-    console.log(predictionMap);
-
-    let winners = "__**Winners Bracket**__\n";
+    let winners = "";
     let losers = "";
 
     let options: any[] = [];
@@ -75,10 +87,25 @@ export async function predict(interaction: any) {
     unlocked.forEach((match: any) => {
         index++;
 
-        let code1: string = getCode(match.team1_name).toLocaleLowerCase();
-        let code2: string = getCode(match.team2_name).toLocaleLowerCase();
+        let code1: string = getCode(match.team1_name === undefined ? "" : match.team1_name)
+        let code2: string = getCode(match.team2_name === undefined ? "" : match.team2_name)
+    
+        if(code1 === undefined) {
+            code1 = "TBD";
+        }
+    
+        if(code2 === undefined) {
+            code2 = "TBD";
+        }
+    
+        code1 = code1.toLocaleLowerCase();
+        code2 = code2.toLocaleLowerCase();
 
         if (+match.round > 0) {
+
+            if (winners === "") {
+                winners = "__**Winners Bracket**__\n";
+            }
 
             let option = {
                 label: `${code1} vs ${code2}`,
@@ -88,8 +115,6 @@ export async function predict(interaction: any) {
             options.push(option);
 
             let prediction = predictionMap.get(match.id);
-
-            console.log(match.id);
 
             if (prediction != null) {
                 winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
@@ -132,7 +157,7 @@ export async function predict(interaction: any) {
 
     })
 
-    let description: any = `${winners}\n\n${losers}`;
+    let description: any = `${winners}\n${losers}`;
 
     let bo_32: any = bo32;
 
@@ -179,25 +204,34 @@ export async function predict(interaction: any) {
 
     collector.on("collect", async (i: any) => {
 
+        let split = i.customId.split("_");
+        let interaction_id = split[1];
+
+        if (interaction.id !== interaction_id) {
+            return;
+        }
+
         await i.deferUpdate();
 
-        let method = i.customId.split("_")[0];
+        let method = split[0];
 
         switch (method) {
             case "next":
-                await nextPage(interaction, unlocked, button_row, select_row);
+                match_index = await nextPage(interaction, unlocked, predictionMap, match_index, button_row, select_row);
                 break;
             case "prior":
-                await priorPage(interaction, unlocked, button_row, select_row);
+                match_index = await priorPage(interaction, unlocked, predictionMap, match_index, button_row, select_row);
                 break;
             case "overview":
-                await overview(interaction, unlocked, button_row, select_row);
+                match_index = await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row);
                 break;
             case "score":
-                await predictMatch(interaction,unlocked,button_row,i.values[0]);
+                predictionMap = await predictMatch(interaction, registration, unlocked, predictionMap, match_index, button_row, i.values[0]);
                 break;
 
         }
+
+
 
     });
 
@@ -205,27 +239,32 @@ export async function predict(interaction: any) {
 
 function buildmatch(match: any, team1_score?: any, team2_score?: any) {
 
-    let code1: string = getCode(match.team1_name);
-    let code2: string = getCode(match.team2_name);
+    let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
+    let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
 
-    if (code2 === undefined) {
-        console.log(match.team2_name);
+    if(code1 === undefined) {
+        code1 = "AQ";
+        match.team1_name = "TBD";
     }
 
-    if (code1 === undefined) {
-        console.log(match.team1_name);
+    if(code2 === undefined) {
+        code2 = "AQ";
+        match.team2_name = "TBD";
     }
+
+    code1 = code1.toLocaleLowerCase();
+    code2 = code2.toLocaleLowerCase();
 
     let team1 = "";
     let team2 = "";
 
-    if(team1_score === undefined || team2_score === undefined) {
-    team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} **vs**`;
-    team2 = ` ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
-    return `${team1}${team2}`;
+    if (team1_score === undefined || team2_score === undefined) {
+        team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} **vs**`;
+        team2 = ` ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
+        return `${team1}${team2}`;
     }
 
-    if(team1_score > team2_score) {
+    if (team1_score > team2_score) {
         team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${team1_score}** - `;
         team2 = `${team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
         return `${team1}${team2}`;
@@ -234,28 +273,26 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any) {
         team2 = `**${team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
         return `${team1}${team2}`;
     }
-
-    return `${team1}${team2}`;
 }
 
 function getFirstTo(round: any) {
     switch (round) {
         case 1:
         case 2:
-        case "-1":
+        case -1:
             return 5;
         case 3:
         case 4:
-        case "-2":
-        case "-3":
-        case "-4":
-        case "-5":
+        case -2:
+        case -3:
+        case -4:
+        case -5:
             return 6;
         case 5:
         case 6:
-        case "-6":
-        case "-7":
-        case "-8":
+        case -6:
+        case -7:
+        case -8:
             return 7;
     }
 }
@@ -303,10 +340,10 @@ function buildSelect(firstTo: number, prediction?: any) {
 
 }
 
-async function predictMatch(interaction: any, unlocked: any, button_row: any, value: any) {
+async function predictMatch(interaction: any, registration: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, value: any) {
 
     if (value == null || value == undefined) {
-        return;
+        return predictionMap;
     }
 
     let current_match = unlocked[match_index];
@@ -316,7 +353,7 @@ async function predictMatch(interaction: any, unlocked: any, button_row: any, va
     let score = value.split("-");
 
     if (score.length != 2) {
-        return;
+        return predictionMap;
     }
 
     if (prediction == null) {
@@ -333,14 +370,15 @@ async function predictMatch(interaction: any, unlocked: any, button_row: any, va
     }
 
     await prediction.save();
+
     predictionMap.set(current_match.id, prediction);
 
-    await buildMatchPreditionEmbed(interaction, unlocked, button_row);
-    return;
+    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row);
+    return predictionMap;
 
 }
 
-async function buildMatchPreditionEmbed(interaction: any, unlocked: any, button_row: any) {
+async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any) {
     let current_match = unlocked[match_index];
     let current_prediction = predictionMap.get(current_match.id);
 
@@ -361,10 +399,33 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, button_
         .setOptions(select_options);
 
 
-    let code1: string = getCode(current_match.team1_name).toLocaleLowerCase();
-    let code2: string = getCode(current_match.team2_name).toLocaleLowerCase();
+    let code1: string = getCode(current_match.team1_name == undefined ? "" : current_match.team1_name)
+    let code2: string = getCode(current_match.team2_name == undefined ? "" : current_match.team2_name)
+
+    if(code1 === undefined) {
+        code1 = "AQ";
+        current_match.team1_name = "TBD";
+    }
+
+    if(code2 === undefined) {
+        code2 = "AQ";
+        current_match.team2_name = "TBD";
+    }
+
+    code1 = code1.toLocaleLowerCase();
+    code2 = code2.toLocaleLowerCase();
 
     let select_row = new MessageActionRow().setComponents(score_select);
+
+    let components = [button_row];
+
+    console.log(locked_round);
+
+    if (locked_round.includes(current_match.round)) {
+        components = [button_row];
+    } else {
+        components = [button_row, select_row];
+    }
 
     let embed = new MessageEmbed()
         .setColor("#4b67ba")
@@ -372,29 +433,33 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, button_
         .setDescription(description)
         .setFooter({ text: `Match ${match_index + 1} of ${unlocked.length}` });
 
-    await interaction.editReply({ embeds: [embed], components: [button_row, select_row] });
+    await interaction.editReply({ embeds: [embed], components: components });
 }
 
-async function nextPage(interaction: any, unlocked: any, button_row: any, select_row: any) {
+async function nextPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, select_row: any) {
+
+    console.log(match_index);
+    console.log(unlocked.length);
+
     if (match_index === -1) {
         match_index = 0;
-    } else if (match_index < unlocked.length) {
+    } else if (match_index < unlocked.length - 1) {
         match_index++;
     } else {
         match_index = -1;
     }
 
     if (match_index === -1) {
-        await overview(interaction, unlocked, button_row, select_row);
-        return;
+        await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row);
+        return match_index;
     }
 
-    await buildMatchPreditionEmbed(interaction, unlocked, button_row);
+    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row);
 
-    return;
+    return match_index;
 }
 
-async function priorPage(interaction: any, unlocked: any, button_row: any, select_row: any) {
+async function priorPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, select_row: any) {
     if (match_index === -1) {
         match_index = unlocked.length - 1;
     } else if (match_index > 0) {
@@ -404,20 +469,20 @@ async function priorPage(interaction: any, unlocked: any, button_row: any, selec
     }
 
     if (match_index === -1) {
-        await overview(interaction, unlocked, button_row, select_row);
-        return
+        await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row);
+        return match_index;
     }
 
-    await buildMatchPreditionEmbed(interaction, unlocked, button_row);
+    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row);
 
-    return;
+    return match_index;
 }
 
-async function overview(interaction: any, unlocked: any, button_row: any, select_row: any) {
+async function overview(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, select_row: any) {
 
     match_index = -1;
 
-    let winners = "__**Winners Bracket**__\n";
+    let winners = "";
     let losers = "";
 
     let index = 0;
@@ -425,6 +490,10 @@ async function overview(interaction: any, unlocked: any, button_row: any, select
         index++;
 
         if (+match.round > 0) {
+
+            if (winners === "") {
+                winners = "__**Winners Bracket**__\n";
+            }
 
             let prediction = predictionMap.get(match.id);
 
@@ -462,7 +531,7 @@ async function overview(interaction: any, unlocked: any, button_row: any, select
 
     })
 
-    let description: any = `${winners}\n\n${losers}`;
+    let description: any = `${winners}\n${losers}`;
 
     let bo_32: any = bo32;
 
@@ -474,6 +543,6 @@ async function overview(interaction: any, unlocked: any, button_row: any, select
         .setDescription(description);
 
     await interaction.editReply({ embeds: [embed], components: [button_row, select_row] });
-    return;
+    return match_index;
 
 }

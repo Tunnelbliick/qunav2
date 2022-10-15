@@ -6,9 +6,9 @@ export function checkIfUserExists(userObject: any, message?: Message, interactio
             .setColor(0x737df9)
             .setDescription(`No account linked to this User.\nPlease link your account with /link`)
 
-        if (interaction) {
+        if (interaction !== undefined) {
             interaction.editReply({ embeds: [embed] });
-        } else if(message) {
+        } else if(message !== undefined) {
             message.reply({ embeds: [embed] });
         }
         return true;

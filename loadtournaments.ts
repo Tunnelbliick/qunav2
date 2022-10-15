@@ -80,18 +80,18 @@ export function ongoingWorldCup() {
 
             if (checkIfRoundComplete([1], grouped)) {
                 current_round = 2;
-                let unlocked_round = [2, -1];
+                unlocked_round = [2, -1];
             } if (checkIfRoundComplete([2, -1], grouped)) {
-                let unlocked_round = [3, -2];
+                unlocked_round = [3, -2];
                 current_round = 3;
             } if (checkIfRoundComplete([3, -2, -3], grouped)) {
-                let unlocked_round = [4, -4];
+                unlocked_round = [4, -4];
                 current_round = 4;
             } if (checkIfRoundComplete([4, -4, -5], grouped)) {
-                let unlocked_round = [5, -5];
+                unlocked_round = [5, -5];
                 current_round = 5;
             } if (checkIfRoundComplete([5, -6, -7], grouped)) {
-                let unlocked_round = [6, -6];
+                unlocked_round = [6, -6];
                 current_round = 6;
             }
 
