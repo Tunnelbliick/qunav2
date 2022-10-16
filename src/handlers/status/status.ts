@@ -5,7 +5,8 @@ export default (client: Client) => {
     const statusOptions = [
 
         `${client.guilds.cache.size} servers | !help`,
-        `!owc | Preparing for a pick'em!`
+        `!owc | Preparing for a pick'em!`,
+        `!pickem | join the pickem!`,
 
     ]
     const updateStatus = () => {
