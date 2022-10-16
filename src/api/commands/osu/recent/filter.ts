@@ -103,7 +103,6 @@ export function optionsToFilter(interaction: any, default_mode: any) {
 
     let options = interaction.options;
 
-
     filter.mode = options.getString("mode") === null ? default_mode : options.getString("mode")!;
     filter.mods = options.getString("mods") === null ? [] : parseModString(options.getString("mods"));
     filter.search = options.getString("query") === null ? "" : options.getString("query")?.toLowerCase()!;

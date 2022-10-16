@@ -76,7 +76,7 @@ export default {
             return;
         }
 
-        await recent(message, args, interaction, "mania");
+        await recent(message, interaction, args, "mania");
 
     }
 
