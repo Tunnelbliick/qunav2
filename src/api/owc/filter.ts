@@ -9,11 +9,11 @@ export interface owc_filter {
 
 export function buildfilter(interaction: any, args: any, default_mode: any) {
 
-    let filter: owc_filter = { year: "2021", mode: default_mode, keys: "4K", country: undefined };
+    let filter: owc_filter = { year: "2022", mode: default_mode, keys: "4K", country: undefined };
 
     if (interaction != null) {
         let options = interaction.options;
-        filter.year = options.getString("year") === null ? "2021" : options.getString("year")!;
+        filter.year = options.getString("year") === null ? "2022" : options.getString("year")!;
         filter.mode = options.getString("mode") === null ? default_mode : options.getString("mode")!;
         filter.keys = options.getString("keys") === null ? "4K" : options.getString("keys")!;
         if (options.getString("country") !== null) {

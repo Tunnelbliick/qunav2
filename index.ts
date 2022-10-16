@@ -45,6 +45,9 @@ client.on('ready', async () => {
     } catch (err) {
         console.log(err);
     }
+
+    await loadTournaments();
+    ongoingWorldCup();
 })
 
 process.on('unhandledRejection', err => {
@@ -54,6 +57,3 @@ process.on('unhandledRejection', err => {
 client.on("warn", (e) => console.warn(e));
 
 client.login(process.env.token);
-
-loadTournaments();
-ongoingWorldCup();

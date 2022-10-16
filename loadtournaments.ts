@@ -5,7 +5,7 @@ import owcgame from "./src/models/owcgame";
 import pickemPrediction from "./src/models/pickemPrediction";
 import pickemRegistration from "./src/models/pickemRegistration";
 
-export function loadTournaments() {
+export async function loadTournaments() {
 
     // PLACE Challonge URL HERE
 
@@ -23,6 +23,7 @@ export function loadTournaments() {
         "OWC_2019",
         "OWC_2020",
         "OWC_2021",
+        "OWC22",
 
         // Catch
         "cwc_2012",
@@ -60,16 +61,16 @@ export function loadTournaments() {
         "MWC7K_2022",
     ]
 
-    tournaments.forEach((t: any) => {
-        getTournament(t);
+    tournaments.forEach(async (t: any) => {
+        await getTournament(t);
     })
 }
 
-export function ongoingWorldCup() {
+export  function ongoingWorldCup() {
 
     if (current_tournament !== undefined) {
         const updatecurrent = async () => {
-            getTournament(current_tournament!);
+            await getTournament(current_tournament!);
             let current: any = await owc.findOne({ url: current_tournament });
             let matches: any = await owcgame.find({ owc: current.id });
 
