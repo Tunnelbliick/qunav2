@@ -50,8 +50,6 @@ export default {
         locked_round.push(interaction.options.getNumber("round")!)
         owc_year.locked_round = locked_round;
 
-        console.log(owc_year.locked_round);
-
         await owc_year.save();
 
         let embed = new MessageEmbed()

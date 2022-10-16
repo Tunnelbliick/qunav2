@@ -77,7 +77,7 @@ export default {
             return;
         }
 
-        await recent(message, args, interaction, "taiko");
+        await recent(message, interaction, args, "taiko");
 
     }
 

@@ -31,8 +31,6 @@ export async function predictions(message: any, interaction: any, args: any) {
 
     let owc_year: any = await owc.findOne({ url: current_tournament })
 
-    console.log(owc_year);
-
     if(owc_year === null) {
         await noPickEm(message, interaction);
         return;

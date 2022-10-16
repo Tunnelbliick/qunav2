@@ -13,9 +13,7 @@ export async function recent(message: any, interaction: any, args: any, mode: an
     let default_mode = mode;
 
     let filter: RecentPlayFilter;
-
-    console.log(interaction);
-
+    
     if (interaction !== undefined) {
         filter = optionsToFilter(interaction, default_mode);
     } else {

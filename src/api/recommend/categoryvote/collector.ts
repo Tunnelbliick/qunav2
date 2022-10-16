@@ -33,8 +33,6 @@ export async function launcCollector(ids: Array<any>, interaction: any, componen
 
         let category = categories[index];
 
-        console.log(category);
-
         let upvotes = category.upvote;
 
         if (upvotes.includes(userObject.userid) === false) {
@@ -61,8 +59,6 @@ export async function launcCollector(ids: Array<any>, interaction: any, componen
     })
 
     collector.on("end", async () => {
-
-        console.log(components);
 
         components.forEach((button: any) => button.setDisabled(true));
 

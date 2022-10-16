@@ -51,8 +51,6 @@ export default {
         locked_round = owc_year.locked_round
         owc_year.locked_round = locked_round.filter((round: any) => round != remove);
 
-        console.log(owc_year.locked_round);
-
         await owc_year.save();
 
         let embed = new MessageEmbed()
