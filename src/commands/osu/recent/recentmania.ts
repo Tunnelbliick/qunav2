@@ -7,7 +7,7 @@ import { interaction_thinking, message_thinking } from "../../../embeds/utility/
 export default {
 
     category: "osu!",
-    aliases: ["maniar", "maniars"],
+    aliases: ["maniar", "maniars", "rm"],
     slash: "both",
     options: [
         {

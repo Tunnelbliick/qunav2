@@ -22,7 +22,7 @@ export async function getUser(userid: any, mode?: any) {
     });
 }
 
-export async function getUserByUsername(username: string, mode: any) {
+export async function getUserByUsername(username: string, mode?: any) {
     await login();
     if (mode == undefined) {
         mode = "osu"

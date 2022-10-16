@@ -145,7 +145,6 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
         }
 
         if(year.owc.current_round != null) {
-            console.log(+key > year.owc.current_round);
             if(+key > year.owc.current_round) {
                 continue;
             }

@@ -7,6 +7,8 @@ import { helpcard } from "../embeds/osu/card/help";
 import { helpcompare } from "../embeds/osu/compare/help";
 import { helpFarmdays, helpFarmhours, helpFarmMonth, helpFramWeeks } from "../embeds/osu/farm/help";
 import { helplink } from "../embeds/osu/link/help";
+import { helpWorldCup, helpWorldCupCompare } from "../embeds/osu/owc/help";
+import { helpPickem, helpPredictions } from "../embeds/osu/pickem/help";
 import { helpprofile } from "../embeds/osu/profile/help";
 import { helpRecent } from "../embeds/osu/recent/help";
 import { helprecentBest } from "../embeds/osu/recentbest/help";
@@ -119,6 +121,22 @@ export default {
             let embed = helpapex(prefix);
             message.reply({ embeds: [embed] });
             return;
+        } else if (["owc", "mwc", "twc", "cwc"].includes(args[0])) {
+            let embed = helpWorldCup(prefix);
+            message.reply({ embeds: [embed] });
+            return;
+        } else if (["wcc"].includes(args[0])) {
+            let embed = helpWorldCupCompare(prefix);
+            message.reply({ embeds: [embed] });
+            return;
+        } else if (["pickem"].includes(args[0])) {
+            let embed = helpPickem(prefix);
+            message.reply({ embeds: [embed] });
+            return;
+        } else if (["predictions"].includes(args[0])) {
+            let embed = helpPredictions(prefix);
+            message.reply({ embeds: [embed] });
+            return;
         } else {
             let embed = helpnotsupported(prefix);
             message.reply({ embeds: [embed] });
@@ -153,12 +171,31 @@ function buildGlobalHelp(prefix: string) {
             name: `**__osu! skills__**`,
             value: "`skills`: Displays the top skills for a given user\n" +
                 "`card`: Displays a usercard with stats\n"
-        }, {
+        },
+        {
+            name: "**__pick'em__**",
+            value: "`pickem`: Displays the current pickem\n" +
+                "`/predict`: Predict a current round in the pickem **slash only**\n" +
+                "`predictions`: Look at the predictions of a specific user\n" +
+                "`leaderboard`: Look at the leaderboard for the current pick'em"
+        },
+        {
+            name: "**__osu! World Cup__**",
+            value: "`owc`: Look at osu world cup results \n" +
+                "`mwc`: Look at mania world cup results\n" +
+                "`twc`: Look at taiko world cup results\n" +
+                "`cwc`: Look at catch world cup results\n" +
+                "`wcc`: Compare world cup results between countries (medal count)"
+        },
+        /*  Commented out cause this is broke until i fix it!
+        {
             name: `**__osu! recommend__**`,
             value: "`suggest`: Suggest a beatmap to Quna for its Suggestion engine engine\n" +
                 "`showsuggestions`: Shows the Suggestions a user has given / liked\n" +
                 "`recommend`: Request a beatmap recommendation from Quna\n"
-        }, {
+        }, 
+        */
+        {
             name: `**__osu! farm__**`,
             value: "`timezone`: Change the users local timezone\n" +
                 "`farmhours`: Displays a graph with the amount of top plays set at certain hours\n" +

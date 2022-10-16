@@ -34,7 +34,7 @@ export async function pickem(message: any, interaction: any, args: any) {
 
 
     let file = await imageToBase64(`assets/pickem/pickem_osu_2022.png`);
-    let uri = "data:image/jpeg;base64," + file
+    let uri = "data:image/png;base64," + file
 
     let register = new MessageButton()
         .setLabel("Register")
@@ -47,11 +47,16 @@ export async function pickem(message: any, interaction: any, args: any) {
         .setCustomId(`predict_${userid}`)
 
     let predictions = new MessageButton()
-        .setLabel("Your Predictions")
+        .setLabel("Predictions")
         .setStyle("SECONDARY")
-        .setCustomId(`predictions${userid}`)
+        .setCustomId(`predictions_${userid}`)
 
-    let row = new MessageActionRow().addComponents([register, predict, predictions]);
+    let leaderboard = new MessageButton()
+        .setLabel("Leaderboard")
+        .setStyle("SECONDARY")
+        .setCustomId(`leaderboard_${userid}`)
+
+    let row = new MessageActionRow().addComponents([register, predict, predictions, leaderboard]);
 
     let embed = new MessageEmbed()
         .setTitle("Quna OWC 2022 Pick'em Challenge")

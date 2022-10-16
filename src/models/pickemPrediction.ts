@@ -5,7 +5,9 @@ const pickemPredictionSchema = new mongoose.Schema({
     match: { type: mongoose.Schema.Types.ObjectId, ref: 'owcgame' },
     score: String,
     team1_score: Number,
-    team2_score: Number
+    team2_score: Number,
+    winner_index: Number,
+    calculated: Boolean,
 });
 
 export default mongoose.model("pickemPrediction", pickemPredictionSchema);

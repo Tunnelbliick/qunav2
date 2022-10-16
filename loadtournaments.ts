@@ -1,6 +1,9 @@
 import { getTournament } from "./src/api/owc/owc"
+import { current_tournament } from "./src/api/pickem/pickem";
 import owc from "./src/models/owc";
 import owcgame from "./src/models/owcgame";
+import pickemPrediction from "./src/models/pickemPrediction";
+import pickemRegistration from "./src/models/pickemRegistration";
 
 export function loadTournaments() {
 
@@ -65,13 +68,10 @@ export function loadTournaments() {
 
 export function ongoingWorldCup() {
 
-    let current_tournament = "r8ll3trn";
-
     if (current_tournament !== undefined) {
         const updatecurrent = async () => {
             getTournament(current_tournament);
             let current: any = await owc.findOne({ url: current_tournament });
-
             let matches: any = await owcgame.find({ owc: current.id });
 
             let current_round = 1;
@@ -99,9 +99,9 @@ export function ongoingWorldCup() {
             current.unlocked_round = unlocked_round;
 
             console.log(current_round);
-
             await current.save();
-            await setTimeout(updatecurrent, 1000 * 60);
+            calculateScores();
+            await setTimeout(updatecurrent, 1000 * 60 * 10);
         }
         updatecurrent();
     }
@@ -125,6 +125,73 @@ function checkIfRoundComplete(rounds: any[], grouped: Map<any, any>) {
     });
 
     return iscomplete;
+
+}
+
+async function calculateScores() {
+    let current: any = await owc.findOne({ url: current_tournament });
+    let matches: any = await owcgame.find({ owc: current.id, state: "complete" });
+    let predictionList: any = await pickemPrediction.find({ owc: current.id, calculated: false });
+    let prediction_save_list: any[] = [];
+    let registrationList: any = await pickemRegistration.find({ owc: current.id });
+
+    let registrationMap: Map<any, any> = new Map<any, any>();
+    let predictionMap: Map<any, any[]> = new Map<any, any[]>();
+
+    registrationList.forEach((registration: any) => {
+        registrationMap.set(registration.id, registration);
+    })
+
+    predictionList.forEach((prediction: any) => {
+
+        let predctions = predictionMap.get(prediction.match.toString());
+
+        if (predctions == null) {
+            predctions = [];
+        }
+
+        predctions.push(prediction);
+
+        predictionMap.set(prediction.match.toString(), predctions);
+    })
+
+    matches.forEach((match: any) => {
+
+        let predictions = predictionMap.get(match.id);
+
+        if (predictions === undefined) {
+            return;
+        }
+
+        predictions.forEach((prediction: any) => {
+
+            let registration = registrationMap.get(prediction.registration.toString());
+
+            if (registration === undefined) {
+                return;
+            }
+
+            if (prediction.winner_index === match.winner_index) {
+                registration.total_score += 1;
+            }
+
+            if (prediction.score === match.score) {
+                registration.total_score += 3;
+            }
+
+            prediction.calculated = true;
+
+            registrationMap.set(registration.id, registration);
+            prediction_save_list.push(prediction);
+
+            console.log(prediction);
+
+        })
+
+    });
+
+    await pickemRegistration.bulkSave(Array.from(registrationMap.values()));
+    await pickemPrediction.bulkSave(prediction_save_list);
 
 }
 

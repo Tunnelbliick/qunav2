@@ -8,7 +8,7 @@ import { interaction_thinking, message_thinking } from "../../../embeds/utility/
 export default {
 
     category: "osu!",
-    aliases: ["taikor", "taikors"],
+    aliases: ["taikor", "taikors", "rt"],
     slash: "both",
     options: [
         {

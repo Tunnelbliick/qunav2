@@ -7,7 +7,7 @@ import { interaction_thinking, message_thinking } from "../../../embeds/utility/
 export default {
 
     category: "osu!",
-    aliases: ["ctbr", "ctbrc", "catchr", "catchrs", "ctbrecent"],
+    aliases: ["ctbr", "ctbrc", "catchr", "catchrs", "ctbrecent", "rc"],
     slash: "both",
     options: [
         {
