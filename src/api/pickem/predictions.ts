@@ -1,6 +1,7 @@
 import { MessageActionRow, MessageEmbed, MessageSelectMenu } from "discord.js";
 import { country_overwrite } from "../../embeds/osu/owc/country_overwrites";
 import { bo32 } from "../../embeds/osu/owc/owc";
+import { noPickEm } from "../../embeds/osu/pickem/nopickem";
 import { checkIfUserExists } from "../../embeds/utility/nouserfound";
 import { message_thinking } from "../../embeds/utility/thinking";
 import owc from "../../models/owc";
@@ -29,6 +30,13 @@ export async function predictions(message: any, interaction: any, args: any) {
     let id: any = undefined;
 
     let owc_year: any = await owc.findOne({ url: current_tournament })
+
+    console.log(owc_year);
+
+    if(owc_year === null) {
+        await noPickEm(message, interaction);
+        return;
+    }
 
     if (interaction) {
         channel = interaction.channel;

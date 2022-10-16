@@ -1,4 +1,5 @@
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { noPickEm } from "../../embeds/osu/pickem/nopickem";
 import { checkIfUserExists } from "../../embeds/utility/nouserfound";
 import owc from "../../models/owc";
 import owcgame from "../../models/owcgame";
@@ -20,6 +21,12 @@ export async function leaderboard(message: any, interaction: any) {
     }
 
     let owc_year: any = await owc.findOne({ url: current_tournament });
+
+    if(owc_year === null) {
+        await noPickEm(message, interaction);
+        return;
+    }
+    
     let user: any = await User.findOne({ discordid: await encrypt(discordid) });
     let registration: any = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
     let user_position = await pickemRegistration.find({ owc: owc_year.id, user: { $ne: user.id }, total_score: { $gte: registration.total_score } }).sort({ total_score: -1 }).count().exec() + 1;

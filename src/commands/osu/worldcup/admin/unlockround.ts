@@ -5,6 +5,7 @@ import { interaction_thinking, message_thinking } from "../../../../embeds/utili
 import Pool from "../../../../models/Pool";
 import { current_tournament } from "../../../../api/pickem/pickem";
 import owc from "../../../../models/owc";
+import { noPickEm } from "../../../../embeds/osu/pickem/nopickem";
 
 export default {
 
@@ -33,6 +34,11 @@ export default {
         }
 
         let owc_year: any = await owc.findOne({ url: current_tournament });
+
+        if(owc_year === null) {
+            await noPickEm(undefined, interaction);
+            return;
+        }
 
         let locked_round: any[] = owc_year.locked_round;
 

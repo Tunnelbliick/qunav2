@@ -2,6 +2,7 @@ import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from
 import { launchCollector } from "../../embeds/osu/owc/collector";
 import { country_overwrite } from "../../embeds/osu/owc/country_overwrites";
 import { bo32 } from "../../embeds/osu/owc/owc";
+import { noPickEm } from "../../embeds/osu/pickem/nopickem";
 import { checkIfUserExists } from "../../embeds/utility/nouserfound";
 import { interaction_silent_thinking } from "../../embeds/utility/thinking";
 import owc from "../../models/owc";
@@ -24,6 +25,11 @@ export async function predict(interaction: any) {
     let registration: any = undefined;
 
     let owc_year: any = await owc.findOne({ url: current_tournament })
+    
+    if(owc_year === null) {
+        await noPickEm(undefined, interaction);
+        return;
+    }
 
     if (owc_year.locked_round !== undefined) {
         locked_round = owc_year.locked_round;

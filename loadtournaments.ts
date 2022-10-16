@@ -23,7 +23,6 @@ export function loadTournaments() {
         "OWC_2019",
         "OWC_2020",
         "OWC_2021",
-        "r8ll3trn",
 
         // Catch
         "cwc_2012",
@@ -70,7 +69,7 @@ export function ongoingWorldCup() {
 
     if (current_tournament !== undefined) {
         const updatecurrent = async () => {
-            getTournament(current_tournament);
+            getTournament(current_tournament!);
             let current: any = await owc.findOne({ url: current_tournament });
             let matches: any = await owcgame.find({ owc: current.id });
 
@@ -130,6 +129,11 @@ function checkIfRoundComplete(rounds: any[], grouped: Map<any, any>) {
 
 async function calculateScores() {
     let current: any = await owc.findOne({ url: current_tournament });
+
+    if(current === undefined) {
+        return;
+    }
+
     let matches: any = await owcgame.find({ owc: current.id, state: "complete" });
     let predictionList: any = await pickemPrediction.find({ owc: current.id, calculated: false });
     let prediction_save_list: any[] = [];

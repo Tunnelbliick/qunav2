@@ -1,4 +1,5 @@
 import { MessageEmbed } from "discord.js";
+import { noPickEm } from "../../embeds/osu/pickem/nopickem";
 import { checkIfUserExists } from "../../embeds/utility/nouserfound";
 import owc from "../../models/owc";
 import pickemRegistration from "../../models/pickemRegistration";
@@ -8,7 +9,13 @@ import { current_tournament } from "./pickem";
 
 export async function registerpickem(interaction: any) {
 
-    let owc_year: any = await owc.findOne({ url: current_tournament })
+    let owc_year: any = await owc.findOne({ url: current_tournament });
+
+    if(owc_year === null) {
+        await noPickEm(undefined, interaction);
+        return;
+    }
+
     let user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
     checkIfUserExists(user, undefined, interaction);

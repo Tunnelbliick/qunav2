@@ -1,4 +1,5 @@
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
+import { noPickEm } from "../../embeds/osu/pickem/nopickem";
 import { checkIfUserExists } from "../../embeds/utility/nouserfound";
 import owc from "../../models/owc";
 import owcgame from "../../models/owcgame";
@@ -8,24 +9,25 @@ import { encrypt } from "../../utility/encrypt";
 const imageToBase64 = require('image-to-base64');
 const DataImageAttachment = require("dataimageattachment");
 
-export const current_tournament = "r8ll3trn";
+export const current_tournament = undefined;
 
 export async function pickem(message: any, interaction: any, args: any) {
 
-    let default_mode = "osu"
-
     let userid: any = undefined;
-    let channel: any = undefined;
 
     if (interaction) {
         userid = interaction.user.id;
-        channel = interaction.channel;
     } else {
         userid = message.author.id;
-        channel = message.channel;
     }
 
-    let owc_year: any = await owc.findOne({ url: current_tournament })
+    let owc_year: any = await owc.findOne({ url: current_tournament });
+
+    if(owc_year === null) {
+        await noPickEm(message, interaction);
+        return;
+    }
+
     let user: any = await User.findOne({ discordid: await encrypt(userid) });
 
     checkIfUserExists(user, message, interaction);
