@@ -205,7 +205,8 @@ export async function predict(interaction: any) {
         return i.customId === prior_button.customId ||
             i.customId === overview_button.customId ||
             i.customId === next_button.customId ||
-            i.customId === select_match.customId;
+            i.customId === select_match.customId ||
+            i.customId === `score_${interaction.id}`;
     }
 
     const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
