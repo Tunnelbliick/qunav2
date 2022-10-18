@@ -8,7 +8,7 @@ export default {
     category: "osu!",
     slash: "both",
     aliases: ["worldcupcompare", "wccompare", "worldcupcompare", "owcc", "mwcc", "twcc", "mwcc"],
-    description: "Get Owc results for a specific year",
+    description: "Compare world cup results",
     options: [
         {
             name: 'mode',

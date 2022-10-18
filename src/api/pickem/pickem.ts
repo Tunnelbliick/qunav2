@@ -44,7 +44,7 @@ export async function pickem(message: any, interaction: any, args: any) {
         .setCustomId(`register_${userid}`)
 
     let predict = new MessageButton()
-        .setLabel("Predict")
+        .setLabel("Pick")
         .setStyle("PRIMARY")
         .setCustomId(`predict_${userid}`)
 
@@ -69,8 +69,7 @@ export async function pickem(message: any, interaction: any, args: any) {
             "<:gold:1028355775350964328> **3 months supporter** + **custom card title**\n" +
             "<:silver:1028355773660676146> **2 months supporter**\n" +
             "<:bronze:1028355772079407188> **1 month supporter**\n\n" +
-            `You are currently ${registration === null ? "**not registered**" : "**registered**"} for the Pick'em Challenge!\n` +
-            `${registration === null ? "**Please register with the button below.**" : ""}`)
+            `**Please register with the button below.**`)
         .setImage("attachment://pickem.png");
 
     if (interaction) {

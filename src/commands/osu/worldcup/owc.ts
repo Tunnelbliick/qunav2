@@ -7,7 +7,7 @@ export default {
 
     category: "osu!",
     slash: "both",
-    description: "Get Owc results for a specific year",
+    description: "Get osu! world cup results for a specific year",
     options: [
         {
             name: 'year',
