@@ -68,7 +68,7 @@ export async function pickem(message: any, interaction: any, args: any) {
             "**__Rewards__**\n" +
             "<:gold:1028355775350964328> **12 months supporter** + **custom card title**\n" +
             "<:silver:1028355773660676146> **6 months supporter**\n" +
-            "<:bronze:1028355772079407188> **4 month supporter**\n\n" +
+            "<:bronze:1028355772079407188> **4 months supporter**\n\n" +
             `**Please register with the button below.**`)
         .setImage("attachment://pickem.png");
 
