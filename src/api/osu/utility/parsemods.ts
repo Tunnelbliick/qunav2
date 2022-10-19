@@ -128,8 +128,6 @@ export function arraytoBinary(mods?: Array<any>) {
 export function arraytoBinaryFix(mods?: Array<any>) {
     let val = 0;
 
-    console.log(mods);
-
     if (mods != undefined)
     for (let mod of mods) {
         for (const [key, values] of Object.entries(binaries))
