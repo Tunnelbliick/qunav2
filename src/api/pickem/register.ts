@@ -18,7 +18,9 @@ export async function registerpickem(interaction: any) {
 
     let user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
-    checkIfUserExists(user, undefined, interaction);
+    if(checkIfUserExists(user, undefined, interaction)){
+        return;
+    }
 
     let registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 

@@ -37,7 +37,9 @@ export async function predict(interaction: any) {
 
     let user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
-    checkIfUserExists(user, undefined, interaction);
+    if(checkIfUserExists(user, undefined, interaction)) {
+        return
+    }
 
     registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 

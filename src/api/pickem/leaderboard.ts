@@ -1,8 +1,7 @@
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { noPickEm } from "../../embeds/osu/pickem/nopickem";
-import { checkIfUserExists } from "../../embeds/utility/nouserfound";
+import { checkIfUserIsLInked } from "../../embeds/utility/nouserfound";
 import owc from "../../models/owc";
-import owcgame from "../../models/owcgame";
 import pickemRegistration from "../../models/pickemRegistration";
 import User from "../../models/User";
 import { encrypt } from "../../utility/encrypt";
@@ -28,6 +27,11 @@ export async function leaderboard(message: any, interaction: any) {
     }
     
     let user: any = await User.findOne({ discordid: await encrypt(discordid) });
+
+    if(checkIfUserIsLInked(user, message, interaction)) {
+        return
+    }
+
     let registration: any = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
     let user_position = await pickemRegistration.find({ owc: owc_year.id, user: { $ne: user.id }, total_score: { $gte: registration.total_score } }).sort({ total_score: -1 }).count().exec() + 1;
     let top_20: any = await pickemRegistration.find({ owc: owc_year.id }).sort({ total_score: -1 }).limit(10).exec();

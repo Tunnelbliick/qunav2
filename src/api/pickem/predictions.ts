@@ -61,7 +61,10 @@ export async function predictions(message: any, interaction: any, args: any) {
         user = await User.findOne({ discordid: await encrypt(discordid) });
     }
 
-    checkIfUserExists(user, message, interaction);
+    if(checkIfUserExists(user, message, interaction)) {
+        return
+    }
+    
     registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 
     if (registration == null) {
