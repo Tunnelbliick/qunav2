@@ -1,6 +1,6 @@
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { noPickEm } from "../../embeds/osu/pickem/nopickem";
-import { checkIfUserIsLInked } from "../../embeds/utility/nouserfound";
+import { checkIfUserExists } from "../../embeds/utility/nouserfound";
 import owc from "../../models/owc";
 import pickemRegistration from "../../models/pickemRegistration";
 import User from "../../models/User";
@@ -28,7 +28,7 @@ export async function leaderboard(message: any, interaction: any) {
     
     let user: any = await User.findOne({ discordid: await encrypt(discordid) });
 
-    if(checkIfUserIsLInked(user, message, interaction)) {
+    if(checkIfUserExists(user, message, interaction)) {
         return
     }
 

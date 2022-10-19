@@ -64,7 +64,7 @@ export async function pickem(message: any, interaction: any, args: any) {
         .setTitle("Quna OWC 2022 Pick'em Challenge")
         .setColor("#4b67ba")
         .setDescription(
-            "Welcome to the Pick'em Challege.\n\n" +
+            "Welcome to the Pick'em Challenge.\n\n" +
             "**__Rewards__**\n" +
             "<:gold:1028355775350964328> **12 months supporter** + **custom card title**\n" +
             "<:silver:1028355773660676146> **6 months supporter**\n" +
