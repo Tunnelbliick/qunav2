@@ -128,6 +128,8 @@ export function arraytoBinary(mods?: Array<any>) {
 export function arraytoBinaryFix(mods?: Array<any>) {
     let val = 0;
 
+    console.log(mods);
+
     if (mods != undefined)
     for (let mod of mods) {
         for (const [key, values] of Object.entries(binaries))
@@ -155,13 +157,6 @@ export function arraytoBinaryFix(mods?: Array<any>) {
                     case "ht":
                         val += 256;
                 }
-
-                if(mod.trim().toLowerCase() == "nc") {
-                    val += 64;
-                } else if(mod.trim().toLowerCase() == "pf") {
-                    val += 16384;
-                }
-                val += parseInt(key);
             }
     }
     return val;
