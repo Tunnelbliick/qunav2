@@ -62,8 +62,6 @@ export async function compare(message: any, interaction: any, args: any) {
 
     }
 
-    console.log(url);
-
     // If no beatmap is in String
     if (url == "") {
 

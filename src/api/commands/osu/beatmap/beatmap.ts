@@ -15,7 +15,7 @@ export async function beatmap(message: any, interaction: any, args: any) {
         url = embed.url;
     }
 
-    if (!args[0] || !args[0].startsWith("https")) {
+    if (args.length === 0) {
         let channel = undefined;
 
         if (interaction) {
