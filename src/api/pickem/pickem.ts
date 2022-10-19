@@ -28,13 +28,6 @@ export async function pickem(message: any, interaction: any, args: any) {
         return;
     }
 
-    let user: any = await User.findOne({ discordid: await encrypt(userid) });
-
-    checkIfUserExists(user, message, interaction);
-
-    let registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
-
-
     let file = await imageToBase64(`assets/pickem/pickem_osu_2022.png`);
     let uri = "data:image/png;base64," + file
 
