@@ -85,7 +85,7 @@ export default {
             await interaction.deferReply({ ephemeral: true });
             await interaction.editReply({ embeds: [generateAuthEmbed(dm)] });
         } else {
-            message.reply("Sliding into dem DMs :eyes:");
+            await message.reply("Sliding into dem DMs :eyes:");
         }
 
         let checkForLink = retry(() => checkforLinkSucess(userObject.discordid), { delay: 5000, timeout: "INFINITELY", retries: 24 }).catch(() => {

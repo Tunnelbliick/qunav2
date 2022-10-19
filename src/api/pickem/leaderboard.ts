@@ -28,14 +28,13 @@ export async function leaderboard(message: any, interaction: any) {
 
     let user: any = await User.findOne({ discordid: await encrypt(discordid) });
 
-    if (checkIfUserExists(user, message, interaction)) {
-        return
-    }
+    let user_position: any = undefined;
+    let registration: any = undefined;
 
-    let user_position = undefined;
-    let registration: any = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
+    if (user !== null)
+        registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 
-    if (registration !== null)
+    if (registration !== undefined)
         user_position = await pickemRegistration.find({ owc: owc_year.id, user: { $ne: user.id }, total_score: { $gte: registration.total_score } }).sort({ total_score: -1 }).count().exec() + 1;
     let top_20: any = await pickemRegistration.find({ owc: owc_year.id }).sort({ total_score: -1 }).limit(10).exec();
     let top_20_userids = top_20.map((top: any) => top.user.toString());
@@ -75,7 +74,7 @@ export async function leaderboard(message: any, interaction: any) {
         index++;
     })
 
-    if (registration !== null) {
+    if (registration !== undefined) {
         let total_score = `${registration.total_score}`;
         let index_string = `${user_position}`;
 
