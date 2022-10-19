@@ -25,9 +25,7 @@ export async function compare(message: any, interaction: any, args: any) {
     }
 
     if (message) {
-        if (!args[0]) {
-            userid = message.author.id
-        }
+        userid = message.author.id
 
         for (let arg of args) {
 
@@ -63,6 +61,8 @@ export async function compare(message: any, interaction: any, args: any) {
         }
 
     }
+
+    console.log(url);
 
     // If no beatmap is in String
     if (url == "") {
@@ -111,7 +111,19 @@ export async function compare(message: any, interaction: any, args: any) {
     }
 
     let response: any
-    if (userid !== undefined) {
+    if (username !== "") {
+        response = await getScoresForUsernameForBeatMap(id, username);
+
+        if (response.user === undefined) {
+            noUserFound(message);
+            return;
+        }
+
+        if (response.scores === undefined) {
+            noPlayFoundEmbed(response.user, message)
+            return;
+        }
+    } else {
 
         let userObject: any = await User.findOne({ discordid: await encrypt(userid) });
 
@@ -122,18 +134,6 @@ export async function compare(message: any, interaction: any, args: any) {
         response = await getScoresForBeatMap(id, userObject!.userid);
 
         if (response.scores == undefined) {
-            noPlayFoundEmbed(response.user, message)
-            return;
-        }
-    } else {
-        response = await getScoresForUsernameForBeatMap(id, username);
-
-        if (response.user === undefined) {
-            noUserFound(message);
-            return;
-        }
-
-        if (response.scores === undefined) {
             noPlayFoundEmbed(response.user, message)
             return;
         }
