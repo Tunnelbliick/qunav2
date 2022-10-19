@@ -1,36 +1,48 @@
 import tinygradient from "tinygradient";
 
-export function getDifficultyColor(raiting: number): any {
+export function getDifficultyColor(difficulty: number): any {
+    const stops = [
+        { offset: 1.5, red: 79, green: 192, blue: 255 },
+        { offset: 2, red: 79, green: 255, blue: 213 },
+        { offset: 2.5, red: 124, green: 255, blue: 79 },
+        { offset: 3.375, red: 246, green: 240, blue: 92 },
+        { offset: 4.625, red: 255, green: 128, blue: 104 },
+        { offset: 5.875, red: 255, green: 60, blue: 113 },
+        { offset: 7, red: 101, green: 99, blue: 222 },
+        { offset: 8, red: 24, green: 21, blue: 142 }
+    ]
 
-    const gradient: any = tinygradient([
-        { color: '#4ebfff', pos: ((100 / 8 * 0) / 100) },
-        { color: '#4ebfff', pos: ((100 / 8 * 0.25) / 100) },
-        { color: '#4ebfff', pos: ((100 / 8 * 0.5) / 100) },
-        { color: '#4ebfff', pos: ((100 / 8 * 1) / 100) },
-        { color: '#4ebfff', pos: ((100 / 8 * 1.5) / 100) },
-        { color: '#4ef4db', pos: ((100 / 8 * 2) / 100) },
-        { color: '#70ff73', pos: ((100 / 8 * 2.3) / 100) },
-        { color: '#b0f854', pos: ((100 / 8 * 2.8) / 100) },
-        { color: '#f6ee5c', pos: ((100 / 8 * 3.3) / 100) },
-        { color: '#f9c560', pos: ((100 / 8 * 3.75) / 100) },
-        { color: '#fc9e65', pos: ((100 / 8 * 4.20) / 100) },
-        { color: '#ff7a69', pos: ((100 / 8 * 4.60) / 100) },
-        { color: '#ff666b', pos: ((100 / 8 * 5.10) / 100) },
-        { color: '#ff516e', pos: ((100 / 8 * 5.60) / 100) },
-        { color: '#ff3c70', pos: ((100 / 8 * 6) / 100) },
-        { color: '#bb4ca0', pos: ((100 / 8 * 6.40) / 100) },
-        { color: '#775ed1', pos: ((100 / 8 * 6.80) / 100) },
-        { color: '#4c49c3', pos: ((100 / 8 * 7.30) / 100) },
-        { color: '#2a27a1', pos: ((100 / 8 * 7.75) / 100) },
-        { color: '#181589', pos: ((100 / 8 * 8) / 100) }
-    ]);
+    let colour: any = {}
+    let i = -1;
 
-    if (raiting > 8) {
-        return [0, 0, 0];
+    if (difficulty || difficulty > 8) {
+        colour = { red: 0, green: 0, blue: 0 }
+    } else {
+        i = stops.findIndex((stop: any) => difficulty <= stop.offset)
     }
-    let index = (100 / 8 * raiting) / 100;
 
-    let c: any = gradient.rgbAt(index);
+    if (i == -1)
+        colour = { red: 0, green: 0, blue: 0 }
+    else if (i - 1 < 0)
+        colour = {
+            red: stops[i].red,
+            green: stops[i].green,
+            blue: stops[i].blue
+        }
+    else
+        colour = {
+            red: interpolate(difficulty, stops[i - 1].offset, stops[i].offset,
+                stops[i - 1].red, stops[i].red),
+            green: interpolate(difficulty, stops[i - 1].offset, stops[i].offset,
+                stops[i - 1].green, stops[i].green),
+            blue: interpolate(difficulty, stops[i - 1].offset, stops[i].offset,
+                stops[i - 1].blue, stops[i].blue),
+        }
 
-    return [c._r, c._g, c._b];
+    return [colour.red, colour.green, colour.blue];
+}
+
+
+function interpolate(value: any, sourceStart: any, sourceEnd: any, destStart: any, destEnd: any) {
+    return destStart + (destEnd - destStart) * ((value - sourceStart) / (sourceEnd - sourceStart))
 }
