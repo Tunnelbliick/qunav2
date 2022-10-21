@@ -9,7 +9,7 @@ export async function rebuildmatrix(message: any) {
         return;
     }
 
-    var procyon: any = new Procyon({
+    let procyon: any = new Procyon({
         className: 'maps'
     });
 
