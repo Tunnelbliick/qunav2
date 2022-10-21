@@ -17,7 +17,7 @@ export default {
 
                 // converting mins into hours
                 const mapDuration = res.data.battle_royale.next.DurationInMinutes
-                var mapHours = mapDuration / 60
+                let mapHours = mapDuration / 60
                 const mapMins = mapDuration % 60
 
                 if (mapHours == 1.5) {

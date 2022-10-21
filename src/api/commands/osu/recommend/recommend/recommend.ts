@@ -25,7 +25,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
 
     message.channel.sendTyping();
 
-    var procyon: any = new Procyon({
+    let procyon: any = new Procyon({
         className: 'maps'
     });
 

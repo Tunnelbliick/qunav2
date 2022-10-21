@@ -163,7 +163,7 @@ function genereateField(play: any) {
         return null;
     }
 
-    var currentTimeInSeconds = Math.floor(new Date(score.created_at).getTime() / 1000)
+    let currentTimeInSeconds = Math.floor(new Date(score.created_at).getTime() / 1000)
 
     const mods: Array<String> = score.mods;
     let appliedmods: any = "+";
