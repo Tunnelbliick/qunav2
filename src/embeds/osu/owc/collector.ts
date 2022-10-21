@@ -23,12 +23,12 @@ export async function launchCollector(message: any, interaction: any, reply: any
         return i.customId === customid
     }
 
-    let year = owc.year;
-    let rounds: Array<any[]> = [];
+    const year = owc.year;
+    const rounds: Array<any[]> = [];
 
     owc.year.matches.forEach((item: any) => {
 
-        let r = item.round;
+        const r = item.round;
 
         if (rounds[r] === undefined) {
             rounds[r] = [];
@@ -52,7 +52,7 @@ export async function launchCollector(message: any, interaction: any, reply: any
             tournament_type = bo8;
         }
 
-        let round_name = tournament_type[+i.values[0]].name;
+        const round_name = tournament_type[+i.values[0]].name;
 
         await i.deferUpdate({ content: `${round_name}` });
 
@@ -180,7 +180,7 @@ export async function launchCollector(message: any, interaction: any, reply: any
             }
         }
 
-        let embed = new MessageEmbed().
+        const embed = new MessageEmbed().
             setTitle(`${year.owc.name}`)
             .setColor("#4b67ba")
             .setDescription(description)
@@ -198,7 +198,7 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
         let description = `[**Challonge**](${year.owc.full_challonge_url})\n[**Bracket**](${year.owc.full_challonge_url}/module)\n\n`;
 
-        for (let team of year.team) {
+        for (const team of year.team) {
 
             let code: string = getCode(team.name);
 
@@ -206,12 +206,12 @@ export async function launchCollector(message: any, interaction: any, reply: any
                 code = "aq"
             }
 
-            let emote: any = owc_rank_icons[team.place];
+            const emote: any = owc_rank_icons[team.place];
 
             description += `${emote} :flag_${code.toLocaleLowerCase()}: **${team.name}** (#${team.seed}) \n`
         }
 
-        let embed = new MessageEmbed().
+        const embed = new MessageEmbed().
             setTitle(`${year.owc.name}`)
             .setColor("#4b67ba")
             .setDescription(description)
@@ -240,7 +240,7 @@ export function buildRow(rounds: any, info: row, podium?: 1 | 5, single?: boolea
     let losers2 = [];
     let description = "";
 
-    let matches = rounds[info.winner];
+    const matches = rounds[info.winner];
     if (info.loser != null)
         losers = rounds[info.loser];
     if (info.loser2 != null)

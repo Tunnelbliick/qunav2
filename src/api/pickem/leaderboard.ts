@@ -19,14 +19,14 @@ export async function leaderboard(message: any, interaction: any) {
         discordid = message.author.id;
     }
 
-    let owc_year: any = await owc.findOne({ url: current_tournament });
+    const owc_year: any = await owc.findOne({ url: current_tournament });
 
     if (owc_year === null) {
         await noPickEm(message, interaction);
         return;
     }
 
-    let user: any = await User.findOne({ discordid: await encrypt(discordid) });
+    const user: any = await User.findOne({ discordid: await encrypt(discordid) });
 
     let user_position: any = undefined;
     let registration: any = undefined;
@@ -36,11 +36,11 @@ export async function leaderboard(message: any, interaction: any) {
 
     if (registration !== undefined)
         user_position = await pickemRegistration.find({ owc: owc_year.id, user: { $ne: user.id }, total_score: { $gte: registration.total_score } }).sort({ total_score: -1 }).count().exec() + 1;
-    let top_20: any = await pickemRegistration.find({ owc: owc_year.id }).sort({ total_score: -1 }).limit(10).exec();
-    let top_20_userids = top_20.map((top: any) => top.user.toString());
-    let users: any = await User.find({ _id: { $in: top_20_userids } });
+    const top_20: any = await pickemRegistration.find({ owc: owc_year.id }).sort({ total_score: -1 }).limit(10).exec();
+    const top_20_userids = top_20.map((top: any) => top.user.toString());
+    const users: any = await User.find({ _id: { $in: top_20_userids } });
 
-    let usermap: Map<any, any> = new Map<any, any>();
+    const usermap: Map<any, any> = new Map<any, any>();
 
     users.forEach((user: any) => {
         usermap.set(user.id, user);
@@ -51,7 +51,7 @@ export async function leaderboard(message: any, interaction: any) {
     let index = 1;
 
     top_20.forEach((top: any) => {
-        let current_user = usermap.get(top.user.toString());
+        const current_user = usermap.get(top.user.toString());
         let total_score = `${top.total_score}`;
         let index_string = `${index}`;
 
@@ -98,14 +98,14 @@ export async function leaderboard(message: any, interaction: any) {
     }
     description += "```";
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor("#4b67ba")
         .setTitle(`Leaderboard pick'em ${owc_year.name}`)
         .setDescription(description)
         .setImage("attachment://pickem.png");
 
-    let file = await imageToBase64(`assets/pickem/pickem_osu_2022.png`);
-    let uri = "data:image/png;base64," + file;
+    const file = await imageToBase64(`assets/pickem/pickem_osu_2022.png`);
+    const uri = "data:image/png;base64," + file;
 
     if (interaction) {
         await interaction.editReply({ embeds: [embed], files: [new DataImageAttachment(uri, "pickem.png")] });

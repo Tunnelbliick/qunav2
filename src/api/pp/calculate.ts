@@ -4,7 +4,7 @@ const ppcalc = require('quna-pp');
 
 export async function calcualte(mapid: any, checksum: any, mode: any, mods?: any) {
 
-    let modbinary = arraytoBinary(mods);
+    const modbinary = arraytoBinary(mods);
 
     let map_pp = null;
 

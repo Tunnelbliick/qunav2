@@ -16,8 +16,8 @@ export async function addCategories(message: any, args: any) {
         return;
     } 
 
-    for(let arg of args) {
-        let category = new Category();
+    for(const arg of args) {
+        const category = new Category();
 
         category.name = arg.toLowerCase();
 

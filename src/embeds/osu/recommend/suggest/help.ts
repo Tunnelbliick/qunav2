@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 
 export function helpsuggest(prefix: string) {
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help suggest")
         .setColor(0x737df9)
         .setDescription("Suggest a beatmap for quna users")

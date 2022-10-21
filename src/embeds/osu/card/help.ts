@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpcard(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help card")
         .setDescription("Shows stats and represent them as a card")
         .setColor(0x737df9)

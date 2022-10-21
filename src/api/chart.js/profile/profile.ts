@@ -2,10 +2,10 @@ const { Canvas, loadImage } = require('skia-canvas');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
 export async function generateProfileChart(data:any) {
-    let background = await loadImage(data.cover_url);
+    const background = await loadImage(data.cover_url);
 
-    let dataset: any = [];
-    let label: any = [];
+    const dataset: any = [];
+    const label: any = [];
 
     if (data.rankHistory != null && data.rankHistory.data != null)
         data.rankHistory.data.forEach((data: any, index: any) => {
@@ -59,8 +59,8 @@ export async function generateProfileChart(data:any) {
         },
     };
 
-    let chartURL = await chartJSNodeCanvas.renderToDataURL(configuration);
-    let chart = await loadImage(chartURL);
+    const chartURL = await chartJSNodeCanvas.renderToDataURL(configuration);
+    const chart = await loadImage(chartURL);
 
     const canvas = new Canvas(background.width, background.height)
     const ctx = canvas.getContext('2d')

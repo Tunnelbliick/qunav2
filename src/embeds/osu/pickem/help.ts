@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpPickem(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help Pickem")
         .setDescription("Brings up the current pickem, more information in the pickem embed")
         .setColor(0x737df9)
@@ -23,7 +23,7 @@ export function helpPickem(prefix: string) {
 
 export function helpPredictions(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help Predictions")
         .setDescription("Shows the Predictions of a specific user")
         .setColor(0x737df9)

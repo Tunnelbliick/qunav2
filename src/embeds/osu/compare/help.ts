@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpcompare(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help compare")
         .setDescription("Shows user scores for a specific beatmap.\nIf no map is given, will choose the last map it can find in the last 50 messages.")
         .setColor(0x737df9)

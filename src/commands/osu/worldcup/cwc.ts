@@ -34,7 +34,7 @@ export default {
 
     callback: async ({ message, interaction, args, prefix,  }) => {
 
-        let default_mode = "catch"
+        const default_mode = "catch"
 
         await interaction_thinking(interaction);
         message_thinking(message);

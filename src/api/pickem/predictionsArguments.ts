@@ -10,7 +10,7 @@ export async function buildPredictionArguments(interaction: any, args: any) {
 
     if (interaction) {
 
-        let options = interaction.options;
+        const options = interaction.options;
 
         if (options !== undefined) {
             discordid = options.getMember("discord") === null ? undefined : options.getMember("discord")?.toString()!;
@@ -39,7 +39,7 @@ export async function buildPredictionArguments(interaction: any, args: any) {
         discordid = discordid.replace("<@", "").replace(">", "");
     }
 
-    let prediction_args: predictions_arguments = new predictions_arguments();
+    const prediction_args: predictions_arguments = new predictions_arguments();
 
     prediction_args.discordid = discordid;
     prediction_args.username = username;

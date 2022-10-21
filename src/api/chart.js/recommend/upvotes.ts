@@ -2,13 +2,13 @@ const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
 export async function updownvote(recommendation: any) {
 
-    let upvotes = recommendation.upvote.length;
-    let downvotes = recommendation.downvote.length;
+    const upvotes = recommendation.upvote.length;
+    const downvotes = recommendation.downvote.length;
 
-    let minmax = Math.max(upvotes, downvotes);
+    const minmax = Math.max(upvotes, downvotes);
 
-    let minval = -Math.abs(minmax);
-    let maxval = minmax;
+    const minval = -Math.abs(minmax);
+    const maxval = minmax;
 
     // Generate the chart
     const width = 50; //px
@@ -54,6 +54,6 @@ export async function updownvote(recommendation: any) {
         },
     };
 
-    let upvotedownvote_promise = await upvoteDownvoteChart.renderToDataURL(upvoteDownvoteChart_configuration);
+    const upvotedownvote_promise = await upvoteDownvoteChart.renderToDataURL(upvoteDownvoteChart_configuration);
     return upvotedownvote_promise;
 }

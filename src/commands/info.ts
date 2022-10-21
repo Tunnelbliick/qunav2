@@ -16,7 +16,7 @@ export default {
             isSlash = false;
         }
 
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setTitle("Quna information")
             .setDescription(
                 "**Yet another multipurpose (but mainly focused on osu!) Discord bot recode version 2.**\n\n" +

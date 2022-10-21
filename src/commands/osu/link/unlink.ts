@@ -16,7 +16,7 @@ export default {
     callback: async ({ message, args, interaction, prefix }) => {
         
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helpunlink(prefix);
+            const embed = helpunlink(prefix);
             message.reply({ embeds: [embed] });
             return;
         }

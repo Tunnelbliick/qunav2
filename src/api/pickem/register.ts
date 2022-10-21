@@ -9,14 +9,14 @@ import { current_tournament } from "./pickem";
 
 export async function registerpickem(interaction: any) {
 
-    let owc_year: any = await owc.findOne({ url: current_tournament });
+    const owc_year: any = await owc.findOne({ url: current_tournament });
 
     if(owc_year === null) {
         await noPickEm(undefined, interaction);
         return;
     }
 
-    let user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
+    const user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
     if(checkIfUserExists(user, undefined, interaction)){
         return;
@@ -33,7 +33,7 @@ export async function registerpickem(interaction: any) {
 
         await registration.save();
 
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle("Registered for pick'em!")
             .setDescription(`You have sucessfully registered for the pick'em`)
@@ -41,7 +41,7 @@ export async function registerpickem(interaction: any) {
 
         await interaction.editReply({ embeds: [embed] });
     } else {
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle("Already registered for pick'em!")
             .setDescription(`You are already registered for this years pick'em`)

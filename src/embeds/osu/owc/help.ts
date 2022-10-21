@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpWorldCup(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help world cup")
         .setDescription("Look at the results of a world cup")
         .setColor(0x737df9)
@@ -39,7 +39,7 @@ export function helpWorldCup(prefix: string) {
 
 export function helpWorldCupCompare(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help compare world cup")
         .setDescription("Compare world cup results")
         .setColor(0x737df9)

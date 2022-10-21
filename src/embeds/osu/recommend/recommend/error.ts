@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 
 export function queryError(message: any, error: any) {
-    let errorEmbed = new MessageEmbed()
+    const errorEmbed = new MessageEmbed()
         .setTitle("Search Query Failure")
         .setColor(0x737df9)
         .setDescription(`There were issues generating your query.\nUse \`!showrec -h\` to get available parameters.\n\n Error:\n${error}`);
@@ -10,7 +10,7 @@ export function queryError(message: any, error: any) {
 
 export function noRecs(message: any) {
 
-    let errorEmbed = new MessageEmbed()
+    const errorEmbed = new MessageEmbed()
         .setColor(0x737df9)
         .setTitle(`No recommendations`)
         .setDescription(`Quna currently has no personal recommendations for you.\nUse a filter to find normal maps`)

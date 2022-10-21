@@ -74,7 +74,7 @@ export function parseModString(input: string | null) {
     let modString = "";
     if (input != null)
         modString = input.replace("+", "").toLowerCase();
-    let parsedMods: any[] = [];
+    const parsedMods: any[] = [];
 
     mods.forEach((mod) => {
         if (modString.includes(mod[0].toLowerCase())) {
@@ -106,9 +106,9 @@ export function arraytoBinary(mods?: Array<any>) {
     let val = 0;
 
     if (mods != undefined)
-    for (let mod of mods) {
+    for (const mod of mods) {
         for (const [key, values] of Object.entries(binaries))
-            for (let arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
+            for (const arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
 
                 if(mod.trim().toLowerCase() == "td") {
                     continue;
@@ -129,9 +129,9 @@ export function arraytoBinaryFix(mods?: Array<any>) {
     let val = 0;
 
     if (mods != undefined)
-    for (let mod of mods) {
+    for (const mod of mods) {
         for (const [key, values] of Object.entries(binaries))
-            for (let arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
+            for (const arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
 
                 switch(mod.trim().toLowerCase()) {
                     case "nm":

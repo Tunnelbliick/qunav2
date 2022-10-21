@@ -46,9 +46,9 @@ export async function skill(message: any, args: any) {
 
     }
 
-    let top_100 = await getTopForUser(osu_user.id);
+    const top_100 = await getTopForUser(osu_user.id);
 
-    let skills: any = await getAllSkills(top_100);
+    const skills: any = await getAllSkills(top_100);
 
     if(skills === undefined) {
         stillProcessing(message);

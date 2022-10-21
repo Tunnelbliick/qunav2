@@ -41,12 +41,12 @@ export default {
     ],
     callback: async ({ message, interaction, args, prefix, client }) => {
 
-        let default_mode = "osu"
+        const default_mode = "osu"
 
         await interaction_thinking(interaction);
         message_thinking(message);
 
-        let pool: any = await Pool.findOne({}).sort({ _id : -1}).exec();
+        const pool: any = await Pool.findOne({}).sort({ _id : -1}).exec();
 
         let description = "";
 
@@ -76,11 +76,11 @@ export default {
                 break;
         }
 
-        for (let key in pool.pool) {
+        for (const key in pool.pool) {
 
             let prefix = "NM";
 
-            let value = pool.pool[key];
+            const value = pool.pool[key];
 
             switch (key) {
                 case "NoMod":
@@ -112,7 +112,7 @@ export default {
             description += "\n";
         }
 
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setTitle(`${pool.mode} World Cup ${pool.year} ${round}`)
             .setColor(0x737df9)
             .setDescription(description);

@@ -15,7 +15,7 @@ export default {
         message.channel.sendTyping();
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helpskills(prefix);
+            const embed = helpskills(prefix);
             message.reply({ embeds: [embed] });
             return;
         }

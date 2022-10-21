@@ -29,7 +29,7 @@ export async function simulateRecentPlay(recentplay: any) {
     const mode = recentplay.mode;
     const mods = recentplay.mods
 
-    let modbinary = arraytoBinary(mods);
+    const modbinary = arraytoBinary(mods);
 
     let map_pp = null;
     switch (mode) {
@@ -57,7 +57,7 @@ export async function simulateRecentPlayFC(recentplay: any, beatmap: any) {
     const mode = recentplay.mode;
     const mods = recentplay.mods
 
-    let modbinary = arraytoBinary(mods);
+    const modbinary = arraytoBinary(mods);
 
     let map_pp = null;
     switch (mode) {
@@ -74,7 +74,7 @@ export async function simulateRecentPlayFC(recentplay: any, beatmap: any) {
 
 export async function simulate(args: simulateArgs) {
 
-    let modbinary = arraytoBinary(args.mods);
+    const modbinary = arraytoBinary(args.mods);
 
     let map_pp = null;
     switch (args.mode) {
@@ -91,7 +91,7 @@ export async function simulate(args: simulateArgs) {
 
 export async function simulateFC(args: simulateArgs) {
 
-    let modbinary = arraytoBinary(args.mods);
+    const modbinary = arraytoBinary(args.mods);
 
     let map_pp = null;
     switch (args.mode) {

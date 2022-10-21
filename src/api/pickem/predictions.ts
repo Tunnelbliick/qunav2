@@ -20,7 +20,7 @@ country_overwrite();
 
 export async function predictions(message: any, interaction: any, args: any) {
 
-    let predictionsArgs = await buildPredictionArguments(interaction, args);
+    const predictionsArgs = await buildPredictionArguments(interaction, args);
 
     let channel = undefined;
     let osu: any = undefined;
@@ -29,7 +29,7 @@ export async function predictions(message: any, interaction: any, args: any) {
     let user: any = undefined;
     let id: any = undefined;
 
-    let owc_year: any = await owc.findOne({ url: current_tournament })
+    const owc_year: any = await owc.findOne({ url: current_tournament })
 
     if(owc_year === null) {
         await noPickEm(message, interaction);
@@ -68,7 +68,7 @@ export async function predictions(message: any, interaction: any, args: any) {
     registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 
     if (registration == null) {
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle("Not registered")
             .setDescription("You are **not registered** for the Quna 2022 Pick'em\nPlease register before you can enter any predictions!")
@@ -83,11 +83,11 @@ export async function predictions(message: any, interaction: any, args: any) {
     let rounds: any[] = [1];
     rounds = selectRound(owc_year.current_round);
 
-    let bo_32: any = bo32;
+    const bo_32: any = bo32;
     let round_name = bo_32[owc_year.current_round].name;
     let options: any[] = buildOptions(owc_year, round_name);
 
-    let select: any = new MessageSelectMenu().setCustomId(`select_${id}`)
+    const select: any = new MessageSelectMenu().setCustomId(`select_${id}`)
         .setPlaceholder('Select Round')
         .addOptions(options);
 
@@ -97,9 +97,9 @@ export async function predictions(message: any, interaction: any, args: any) {
         return i.customId === select.customId
     }
 
-    let description = await buildEmbed(owc_year, registration, rounds);
+    const description = await buildEmbed(owc_year, registration, rounds);
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor("#4b67ba")
         .setTitle(`${user.username} predictions for ${round_name}`)
         .setDescription(description);
@@ -115,7 +115,7 @@ export async function predictions(message: any, interaction: any, args: any) {
 
         i.deferUpdate();
 
-        let split = i.customId.split("_");
+        const split = i.customId.split("_");
 
         if (id !== split[1]) {
             return;
@@ -130,15 +130,15 @@ export async function predictions(message: any, interaction: any, args: any) {
 
                 options = buildOptions(owc_year, round_name);
 
-                let select: any = new MessageSelectMenu().setCustomId(`select_${id}`)
+                const select: any = new MessageSelectMenu().setCustomId(`select_${id}`)
                     .setPlaceholder('Select Round')
                     .addOptions(options);
 
                 const row = new MessageActionRow().addComponents(select);
 
-                let description = await buildEmbed(owc_year, registration, rounds);
+                const description = await buildEmbed(owc_year, registration, rounds);
 
-                let embed = new MessageEmbed()
+                const embed = new MessageEmbed()
                     .setColor("#4b67ba")
                     .setTitle(`${user.username} predictions for ${round_name}`)
                     .setDescription(description);
@@ -160,9 +160,9 @@ export async function predictions(message: any, interaction: any, args: any) {
 
         round_name = bo_32[owc_year.current_round].name;
 
-        let description = await buildEmbed(owc_year, registration, rounds);
+        const description = await buildEmbed(owc_year, registration, rounds);
 
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle(`${user.username} predictions for ${round_name}`)
             .setDescription(description);
@@ -215,11 +215,11 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any) {
 
 async function buildEmbed(owc: any, registration: any, rounds: any) {
 
-    let predictionMap: Map<any, any> = new Map<any, any>();
-    let matches: any = await owcgame.find({ owc: owc.id, round: { $in: rounds } });
-    let unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
-    let matchids: any[] = unlocked.map((match: any) => match.id);
-    let predictions: any = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
+    const predictionMap: Map<any, any> = new Map<any, any>();
+    const matches: any = await owcgame.find({ owc: owc.id, round: { $in: rounds } });
+    const unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
+    const matchids: any[] = unlocked.map((match: any) => match.id);
+    const predictions: any = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
 
     predictions.forEach((prediction: any) => {
         predictionMap.set(prediction.match.toString(), prediction);
@@ -247,7 +247,7 @@ async function buildEmbed(owc: any, registration: any, rounds: any) {
 
         if (+match.round > 0) {
 
-            let prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
                 index++;
@@ -265,7 +265,7 @@ async function buildEmbed(owc: any, registration: any, rounds: any) {
 
         } else {
 
-            let prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
                 index++;
@@ -321,7 +321,7 @@ function selectRound(round: any) {
 
 function buildOptions(owc: any, roundname: any) {
 
-    let options: any[] = [];
+    const options: any[] = [];
 
     for (const [key, value] of Object.entries(bo32)) {
 
@@ -336,14 +336,14 @@ function buildOptions(owc: any, roundname: any) {
         }
 
         if (roundname === value.name) {
-            let option = {
+            const option = {
                 label: `${value.name}`,
                 value: `${value.value}`,
                 default: true
             }
             options.push(option);
         } else {
-            let option = {
+            const option = {
                 label: `${value.name}`,
                 value: `${value.value}`
             }

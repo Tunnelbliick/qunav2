@@ -1,5 +1,5 @@
 export function calcRetries(recentplay: Array<any>, mapid: any, mods: any) {
-    let trys = recentplay.filter(r => (r.beatmap.id == mapid && arrayEquals(r.mods, mods)))
+    const trys = recentplay.filter(r => (r.beatmap.id == mapid && arrayEquals(r.mods, mods)))
     return trys.length;
 }
 
@@ -13,7 +13,7 @@ export function arrayEquals(a: any, b: any) {
 export function filterRecent(recentplays: any, filter: any) {
     return recentplays.findIndex((r: any) => {
 
-        let filterresults = [];
+        const filterresults = [];
 
         if (filter.search != null && filter.search != "") {
             filterresults.push(r.beatmapset.artist.toLowerCase().includes(filter.search) || r.beatmapset.title.toLowerCase().includes(filter.search) || r.beatmap.version.toLowerCase().includes(filter.search) || r.beatmapset.creator.toLowerCase().includes(filter.search))

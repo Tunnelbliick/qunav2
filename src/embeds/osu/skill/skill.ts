@@ -18,43 +18,43 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
     let speedString = "";
     let accString = "";
 
-    for (let a of skills.star.slice(0, 3)) {
+    for (const a of skills.star.slice(0, 3)) {
         // @ts-ignore 
-        let rank = rank_icons[a.score.rank];
-        let mods: Array<String> = a.score.mods;
+        const rank = rank_icons[a.score.rank];
+        const mods: Array<String> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
-        let map = `\`${a.value.toFixed(2)}★\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+        const map = `\`${a.value.toFixed(2)}★\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
         starString += map;
     }
 
-    for (let a of skills.aim.slice(0, 3)) {
+    for (const a of skills.aim.slice(0, 3)) {
         // @ts-ignore 
-        let rank = rank_icons[a.score.rank];
-        let mods: Array<String> = a.score.mods;
+        const rank = rank_icons[a.score.rank];
+        const mods: Array<String> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
-        let map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+        const map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
         aimString += map;
     }
 
-    for (let a of skills.speed.slice(0, 3)) {
+    for (const a of skills.speed.slice(0, 3)) {
         // @ts-ignore 
-        let rank = rank_icons[a.score.rank];
-        let mods: Array<String> = a.score.mods;
+        const rank = rank_icons[a.score.rank];
+        const mods: Array<String> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
-        let map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+        const map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
         speedString += map;
     }
 
-    for (let a of skills.acc.slice(0, 3)) {
+    for (const a of skills.acc.slice(0, 3)) {
         // @ts-ignore 
-        let rank = rank_icons[a.score.rank];
-        let mods: Array<String> = a.score.mods;
+        const rank = rank_icons[a.score.rank];
+        const mods: Array<String> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
-        let map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+        const map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
         accString += map;
     }
 
@@ -81,19 +81,19 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
 
     const row = new MessageActionRow();
 
-    let star_button = new MessageButton()
+    const star_button = new MessageButton()
         .setCustomId(`${message.id}_star`)
         .setLabel("Star")
         .setStyle('PRIMARY')
-    let aim_button = new MessageButton()
+    const aim_button = new MessageButton()
         .setCustomId(`${message.id}_aim`)
         .setLabel("Aim")
         .setStyle('PRIMARY')
-    let speed_button = new MessageButton()
+    const speed_button = new MessageButton()
         .setCustomId(`${message.id}_speed`)
         .setLabel("Speed")
         .setStyle('PRIMARY')
-    let acc_button = new MessageButton()
+    const acc_button = new MessageButton()
         .setCustomId(`${message.id}_acc`)
         .setLabel("Accuracy")
         .setStyle('PRIMARY')
@@ -114,7 +114,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
 
     collector.on("collect", async (i: any) => {
 
-        let para = i.customId.split("_")[1];
+        const para = i.customId.split("_")[1];
 
         let valuestring = "";
         let accumelated = 0;
@@ -127,14 +127,14 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
             case "star":
                 header = "**Top 20 star skills:**\n";
                 symbol = "★";
-                for (let a of skills.star.slice(0, 20)) {
+                for (const a of skills.star.slice(0, 20)) {
                     // @ts-ignore 
-                    let rank = rank_icons[a.score.rank];
-                    let mods: Array<String> = a.score.mods;
+                    const rank = rank_icons[a.score.rank];
+                    const mods: Array<String> = a.score.mods;
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
-                    let value = a.value;
-                    let map = `\`${value.toFixed(2)}★\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+                    const value = a.value;
+                    const map = `\`${value.toFixed(2)}★\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
                     accumelated += value;
                     valuestring += map;
                 }
@@ -144,16 +144,16 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                 header = "**Top 20 aim skills:**\n";
                 symbol = "p";
                 index = 0;
-                for (let a of skills.aim.slice(0, 20)) {
+                for (const a of skills.aim.slice(0, 20)) {
                     // @ts-ignore 
-                    let rank = rank_icons[a.score.rank];
-                    let mods: Array<String> = a.score.mods;
+                    const rank = rank_icons[a.score.rank];
+                    const mods: Array<String> = a.score.mods;
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
-                    let weight = Math.pow(0.95, index);
-                    let value = normalise(a.value);
-                    let valued = value * weight;
-                    let map = `\`${value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+                    const weight = Math.pow(0.95, index);
+                    const value = normalise(a.value);
+                    const valued = value * weight;
+                    const map = `\`${value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
                     accumelated += value;
                     valuestring += map;
                     index++;
@@ -163,16 +163,16 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                 header = "**Top 20 speed skills:**\n";
                 symbol = "p";
                 index = 0;
-                for (let a of skills.speed.slice(0, 20)) {
+                for (const a of skills.speed.slice(0, 20)) {
                     // @ts-ignore 
-                    let rank = rank_icons[a.score.rank];
-                    let mods: Array<String> = a.score.mods;
+                    const rank = rank_icons[a.score.rank];
+                    const mods: Array<String> = a.score.mods;
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
-                    let weight = Math.pow(0.95, index);
-                    let value = normalise(a.value);
-                    let valued = value * weight;
-                    let map = `\`${value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+                    const weight = Math.pow(0.95, index);
+                    const value = normalise(a.value);
+                    const valued = value * weight;
+                    const map = `\`${value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
                     accumelated += value;
                     valuestring += map;
                     index++;
@@ -182,16 +182,16 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                 header = "**Top 20 accuracy skills:**\n";
                 symbol = "p";
                 index = 0;
-                for (let a of skills.acc.slice(0, 20)) {
+                for (const a of skills.acc.slice(0, 20)) {
                     // @ts-ignore 
-                    let rank = rank_icons[a.score.rank];
-                    let mods: Array<String> = a.score.mods;
+                    const rank = rank_icons[a.score.rank];
+                    const mods: Array<String> = a.score.mods;
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
-                    let weight = Math.pow(0.95, index);
-                    let value = normalise(a.value);
-                    let valued = value * weight;
-                    let map = `\`${value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
+                    const weight = Math.pow(0.95, index);
+                    const value = normalise(a.value);
+                    const valued = value * weight;
+                    const map = `\`${value.toFixed(2)}p ${(weight * 100).toFixed(0)}% -> ${valued.toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
                     accumelated += value;
                     valuestring += map;
                     index++;
@@ -201,7 +201,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
 
         top_10_avg = accumelated / 20;
 
-        let edit_embed = new MessageEmbed()
+        const edit_embed = new MessageEmbed()
             .setThumbnail(`${user.avatar_url} `)
             .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)} pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url} `, url: `https://osu.ppy.sh/users/${user.id}` })
             .setColor("#4b67ba")

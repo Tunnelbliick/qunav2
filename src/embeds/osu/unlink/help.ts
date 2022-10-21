@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpunlink(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help unlink")
         .setDescription("unlinks ur osu! account with quna and deletes your entry from the database.")
         .setFields(
