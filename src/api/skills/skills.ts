@@ -248,4 +248,4 @@ export function normalise(value: number): number {
     const res = -101.0 * factor + 101.0;
 
     return res;
-};
+}
