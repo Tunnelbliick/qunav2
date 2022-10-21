@@ -8,9 +8,9 @@ export function builFilter(message: any, args: any, default_mode: any) {
     let mode = "";
     let search = "";
     let offset = 0;
-    let mods = [];
+    const mods = [];
     let rank = "";
-    let usernameargs = [];
+    const usernameargs = [];
     let discordid = message.author.id;
     let include_fails = 1;
     let gamemode = default_mode;
@@ -83,9 +83,9 @@ export function builFilter(message: any, args: any, default_mode: any) {
 
     }
 
-    let username = buildUsernameOfArgs(usernameargs);
+    const username = buildUsernameOfArgs(usernameargs);
 
-    let filter: RecentPlayFilter = new RecentPlayFilter;
+    const filter: RecentPlayFilter = new RecentPlayFilter;
     filter.mode = gamemode;
     filter.mods = mods;
     filter.search = search.toLowerCase();
@@ -99,9 +99,9 @@ export function builFilter(message: any, args: any, default_mode: any) {
 }
 
 export function optionsToFilter(interaction: any, default_mode: any) {
-    let filter: RecentPlayFilter = new RecentPlayFilter;
+    const filter: RecentPlayFilter = new RecentPlayFilter;
 
-    let options = interaction.options;
+    const options = interaction.options;
 
     filter.mode = options.getString("mode") === null ? default_mode : options.getString("mode")!;
     filter.mods = options.getString("mods") === null ? [] : parseModString(options.getString("mods"));

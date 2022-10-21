@@ -13,7 +13,7 @@ export async function loadacc100(mapid: any, checksum: any, mode: any, modArray:
 
             await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, mapid);
 
-            let maxpp: any = await max(mapid, checksum, mode, modArray).catch(() => {
+            const maxpp: any = await max(mapid, checksum, mode, modArray).catch(() => {
                 return reject(null);
             })
 
@@ -42,14 +42,14 @@ export async function loadacc100(mapid: any, checksum: any, mode: any, modArray:
 export async function loadacc100WithoutBeatMapDownload(mapid: any, checksum: any, modArray: any, mode: any) {
     return new Promise(async (resolve, reject) => {
 
-        let generatedpp: any = [];
+        const generatedpp: any = [];
         let returnpp: any;
 
         let ppObject = await PerformancePoints.findOne({ mapid: mapid, mods: modArray, mode: mode });
 
         if (ppObject == undefined || ppObject.pp == null || ppObject.pp[0] == null || ppObject.checksum != checksum) {
 
-            let maxpp: any = await max(mapid, checksum, mode, modArray).catch(() => {
+            const maxpp: any = await max(mapid, checksum, mode, modArray).catch(() => {
                 return reject(null);
             })
 

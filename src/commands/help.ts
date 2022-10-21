@@ -30,115 +30,115 @@ export default {
 
         // THIS is just a quick and dirty way of doing this shit
         if (args[0] == null) {
-            let embed = buildGlobalHelp(prefix);
+            const embed = buildGlobalHelp(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "c" || args[0] == "compare") {
-            let embed = helpcompare(prefix);
+            const embed = helpcompare(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "fh" || args[0] == "farmhours") {
-            let embed = helpFarmhours(prefix);
+            const embed = helpFarmhours(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "farmdays" || args[0] == "fd") {
-            let embed = helpFarmdays(prefix);
+            const embed = helpFarmdays(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "farmweeks" || args[0] == "fw") {
-            let embed = helpFramWeeks(prefix);
+            const embed = helpFramWeeks(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "farmmonth" || args[0] == "fm") {
-            let embed = helpFarmMonth(prefix);
+            const embed = helpFarmMonth(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "tz" || args[0] == "timezone") {
-            let embed = helpTimezone(prefix);
+            const embed = helpTimezone(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "link") {
-            let embed = helplink(prefix);
+            const embed = helplink(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "unlink") {
-            let embed = helpunlink(prefix);
+            const embed = helpunlink(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "m" || args[0] == "map") {
-            let embed = helpmap(prefix);
+            const embed = helpmap(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["profile", "o", "osu", "p", "isu", "pmania", "profilemania", "maniaprofile", "catch", "pcatch", "profilecatch", "catchprofile", "ptaiko", "profiletaiko", "taikoprofile"].includes(args[0])) {
-            let embed = helpprofile(prefix);
+            const embed = helpprofile(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["r", "rs", "recent", "maniar", "maniars", "maniarecent", "catchr", "catchrs", "catchrecent", "taikor", "taikors", "taikorecent"].includes(args[0])) {
-            let embed = helpRecent(prefix);
+            const embed = helpRecent(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["rb", "maniarb", "catchrb", "taikorb"].includes(args[0])) {
-            let embed = helprecentBest(prefix);
+            const embed = helprecentBest(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["top", "maniatop", "catchtop", "taikotop"].includes(args[0])) {
-            let embed = helpTop(prefix);
+            const embed = helpTop(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["ss", "showsugs", "shows", "showsug", "suggestions", "showsuggestions"].includes(args[0])) {
-            let embed = helpshowsuggestions(prefix);
+            const embed = helpshowsuggestions(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["s", "sug", "suggest"].includes(args[0])) {
-            let embed = helpsuggest(prefix);
+            const embed = helpsuggest(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["rec", "recommend"].includes(args[0])) {
-            let embed = helprecommend(prefix);
+            const embed = helprecommend(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "card") {
-            let embed = helpcard(prefix);
+            const embed = helpcard(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "skills" || args[0] == "topskills") {
-            let embed = helpskills(prefix);
+            const embed = helpskills(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "waifu" || args[0] == "rate" || args[0] == "waifuraiting") {
-            let embed = helpwaifu(prefix);
+            const embed = helpwaifu(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "choose") {
-            let embed = helpchoose(prefix);
+            const embed = helpchoose(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "8ball") {
-            let embed = help8ball(prefix);
+            const embed = help8ball(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (args[0] == "apex" || args[0] == "apexmap") {
-            let embed = helpapex(prefix);
+            const embed = helpapex(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["owc", "mwc", "twc", "cwc"].includes(args[0])) {
-            let embed = helpWorldCup(prefix);
+            const embed = helpWorldCup(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["wcc"].includes(args[0])) {
-            let embed = helpWorldCupCompare(prefix);
+            const embed = helpWorldCupCompare(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["pickem"].includes(args[0])) {
-            let embed = helpPickem(prefix);
+            const embed = helpPickem(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else if (["predictions"].includes(args[0])) {
-            let embed = helpPredictions(prefix);
+            const embed = helpPredictions(prefix);
             message.reply({ embeds: [embed] });
             return;
         } else {
-            let embed = helpnotsupported(prefix);
+            const embed = helpnotsupported(prefix);
             message.reply({ embeds: [embed] });
             return;
         }
@@ -147,7 +147,7 @@ export default {
 } as ICommand
 
 function buildGlobalHelp(prefix: string) {
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Quna commands")
         .setDescription(`Server prefix: \`${prefix}\`\n\`${prefix}info\`: For more info on Quna\nFor more help join our [Discord](https://discord.gg/azPWUfSMm3)`)
         .setFields([{
@@ -219,7 +219,7 @@ function buildGlobalHelp(prefix: string) {
 
 function helpnotsupported(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help not found")
         .setColor(0x737df9)
         .setDescription("This command doesnt have a help, or isnt supported yet.");

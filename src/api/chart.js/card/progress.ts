@@ -24,7 +24,7 @@ export async function buildProgressbar(blocks: any, colors: any) {
                         }
                         const chartArea = ctx.chart.chartArea;
                         const gradient = ctx.chart.ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-                        let gradient_stops = 1 / (colors.length - 1);
+                        const gradient_stops = 1 / (colors.length - 1);
                         colors.forEach((color: any, index: any) => {
                             gradient.addColorStop(gradient_stops * index, color);
                         });
@@ -51,7 +51,7 @@ export async function buildProgressbar(blocks: any, colors: any) {
                         }
                         const chartArea = ctx.chart.chartArea;
                         const gradient = ctx.chart.ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-                        let gradient_stops = 1 / (colors.length - 1);
+                        const gradient_stops = 1 / (colors.length - 1);
                         colors.forEach((color: any, index: any) => {
                             gradient.addColorStop(gradient_stops * index, color);
                         });
@@ -80,7 +80,7 @@ export async function buildProgressbar(blocks: any, colors: any) {
                         }
                         const chartArea = ctx.chart.chartArea;
                         const gradient = ctx.chart.ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
-                        let gradient_stops = 1 / (colors.length - 1);
+                        const gradient_stops = 1 / (colors.length - 1);
                         colors.forEach((color: any, index: any) => {
                             gradient.addColorStop(gradient_stops * index, color);
                         });

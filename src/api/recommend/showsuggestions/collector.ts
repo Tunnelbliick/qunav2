@@ -37,7 +37,7 @@ export async function launchShowSuggestionCollector(params: show_suggestion_coll
     if (collector != null)
         collector!.on("collect", async (i: any) => {
 
-            let para = i.customId.split("_")[1];
+            const para = i.customId.split("_")[1];
 
             switch (para) {
                 case "dec":
@@ -69,16 +69,16 @@ export async function launchShowSuggestionCollector(params: show_suggestion_coll
                     break;
             }
 
-            let pagecontent = suggestions.slice(index * 5, index + 5);
+            const pagecontent = suggestions.slice(index * 5, index + 5);
 
-            let embed_params: show_suggestion_embed = {
+            const embed_params: show_suggestion_embed = {
                 current_page: 0,
                 max: suggestions.length,
                 suggestions: pagecontent,
                 user: user
             }
 
-            let recommendationlist = buildshowSuggestions(embed_params);
+            const recommendationlist = buildshowSuggestions(embed_params);
 
             collector.resetTimer();
 
@@ -96,15 +96,15 @@ export async function launchShowSuggestionCollector(params: show_suggestion_coll
             skip_prior_button.setDisabled(true);
 
 
-            let pagecontent = suggestions.slice(index * 5, 5);
-            let embed_params: show_suggestion_embed = {
+            const pagecontent = suggestions.slice(index * 5, 5);
+            const embed_params: show_suggestion_embed = {
                 current_page: 0,
                 max: suggestions.length,
                 suggestions: pagecontent,
                 user: user
             }
 
-            let recommendationlist = buildshowSuggestions(embed_params);
+            const recommendationlist = buildshowSuggestions(embed_params);
 
             await message.edit({ embeds: [recommendationlist], components: [row] })
         });

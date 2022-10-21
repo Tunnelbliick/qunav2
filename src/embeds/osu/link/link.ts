@@ -3,7 +3,7 @@ import User from "../../../models/User";
 
 export function generateAuthEmbed(dm: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setAuthor({name: "Account Link", iconURL: "https://cdn.discordapp.com/emojis/950784507353628723.webp"})
         .setColor("#4b67ba")
         .setDescription(`[Click here](${dm}) to connect your osu! profile`)
@@ -13,7 +13,7 @@ export function generateAuthEmbed(dm: string) {
 }
 
 export async function timeoutAuthEmbed() {
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Failure.")
         .setDescription("You did not connect your profile in time! Please try again!")
         .setColor("#ff3333")
@@ -22,7 +22,7 @@ export async function timeoutAuthEmbed() {
 }
 
 export async function successfullAuthEmbed(username: String) {
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Success!")
         .setDescription(`Accounts connected!\nUsername: ${username}`)
         .setColor("#6aa84f")
@@ -31,7 +31,7 @@ export async function successfullAuthEmbed(username: String) {
 }
 
 export async function checkforLinkSucess(discordid: string) {
-    let userObject: any = await User.findOne({ discordid: discordid });
+    const userObject: any = await User.findOne({ discordid: discordid });
     return new Promise((resolve, reject) => {
         if (userObject.linksucess) {
             resolve(userObject.username);

@@ -25,7 +25,7 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
 
                 if (filterOptions.acc[0].includes(">")) {
 
-                    let num = filterOptions.acc[0].replace(">", "");
+                    const num = filterOptions.acc[0].replace(">", "");
                     if (isNaN(+num)) {
                         error += "The parameter for `-acc` is not a number\n";
                     } else
@@ -33,7 +33,7 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
 
                 } else if (filterOptions.acc[0].includes("<")) {
 
-                    let num = filterOptions.acc[0].replace("<", "");
+                    const num = filterOptions.acc[0].replace("<", "");
                     if (isNaN(+num)) {
                         error += "The parameter for `-acc` is not a number\n";
                     } else
@@ -41,7 +41,7 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
 
                 } else {
 
-                    let num = filterOptions.acc[0];
+                    const num = filterOptions.acc[0];
                     if (isNaN(+num)) {
                         error += "The parameter for `-acc` is not a number\n";
                     } else
@@ -51,7 +51,7 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
 
             } else {
 
-                let numbers: any = [];
+                const numbers: any = [];
 
                 for (let num of filterOptions.acc) {
                     if (isNaN(+num)) {
@@ -66,8 +66,8 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
                     }
                 }
 
-                let min = Math.min(...numbers);
-                let max = Math.max(...numbers);
+                const min = Math.min(...numbers);
+                const max = Math.max(...numbers);
 
                 return top.value.accuracy >= min && top.value.accuracy <= max;
             }
@@ -80,7 +80,7 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
 
                 if (filterOptions.combo[0].includes(">")) {
 
-                    let num = filterOptions.combo[0].replace(">", "");
+                    const num = filterOptions.combo[0].replace(">", "");
                     if (isNaN(+num)) {
                         error += "The parameter for `-combo` is not a number\n";
                     } else
@@ -88,7 +88,7 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
 
                 } else if (filterOptions.combo[0].includes("<")) {
 
-                    let num = filterOptions.combo[0].replace("<", "");
+                    const num = filterOptions.combo[0].replace("<", "");
                     if (isNaN(+num)) {
                         error += "The parameter for `-combo` is not a number\n";
                     } else
@@ -96,7 +96,7 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
 
                 } else {
 
-                    let num = filterOptions.combo[0];
+                    const num = filterOptions.combo[0];
                     if (isNaN(+num)) {
                         error += "The parameter for `-combo` is not a number\n";
                     } else
@@ -106,7 +106,7 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
 
             } else {
 
-                let numbers: any = [];
+                const numbers: any = [];
 
                 for (let num of filterOptions.combo) {
                     if (isNaN(+num)) {
@@ -121,8 +121,8 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
                     }
                 }
 
-                let min = Math.min(...numbers);
-                let max = Math.max(...numbers);
+                const min = Math.min(...numbers);
+                const max = Math.max(...numbers);
 
                 return top.value.combo >= min && top.value.combo <= max;
             }

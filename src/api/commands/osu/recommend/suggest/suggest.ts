@@ -5,29 +5,29 @@ import { suggest, suggestion } from "../../../../recommend/suggest/suggest";
 export async function suggestion(message: any, args: any, prefix: any) {
 
     let url = "";
-    let mods = "";
+    const mods = "";
     let optionmode = "";
     let error = undefined;
     let id;
     let setid = "";
     let isSet = false;
     let modstring = "";
-    let categories = [];
+    const categories = [];
 
     message.channel.sendTyping();
 
     if (message.reference !== null) {
-        let reference_id: any = message.reference?.messageId;
-        let reference_message = await message.channel.messages.fetch(reference_id);
-        let embed = reference_message.embeds[0];
+        const reference_id: any = message.reference?.messageId;
+        const reference_message = await message.channel.messages.fetch(reference_id);
+        const embed = reference_message.embeds[0];
         url = embed.url;
     }
 
-    for (let arg of args) {
+    for (const arg of args) {
         if (url !== undefined) {
             if (arg.includes("//osu.ppy.sh/beatmapsets/")) {
-                let split = arg.split("beatmapsets/")[1];
-                let para = split.split("/");
+                const split = arg.split("beatmapsets/")[1];
+                const para = split.split("/");
 
                 if (para.length == 2) {
                     id = sanitize(para[1]);
@@ -42,7 +42,7 @@ export async function suggestion(message: any, args: any, prefix: any) {
             }
 
             if (arg.includes("//osu.ppy.sh/beatmaps/")) {
-                let split = arg.split("beatmaps/")[1];
+                const split = arg.split("beatmaps/")[1];
                 id = sanitize(split);
                 isSet = false;
             }
@@ -94,9 +94,9 @@ export async function suggestion(message: any, args: any, prefix: any) {
         return;
     }
 
-    let beatmap = await getBeatmap(id);
+    const beatmap = await getBeatmap(id);
 
-    let suggestion: suggestion = {
+    const suggestion: suggestion = {
         beatmap: beatmap,
         mod_string: modstring,
         categories: categories

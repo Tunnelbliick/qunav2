@@ -52,27 +52,27 @@ export default {
         await interaction_thinking(interaction);
 
         if(interaction.user.id !== "203932549746130944") {
-            let embed = new MessageEmbed()
+            const embed = new MessageEmbed()
             .setTitle("Nice try!")
             .setDescription("This command is secured for only the bot owner")
 
             await interaction.editReply({embeds: [embed]});
         }
 
-        let options = interaction.options;
+        const options = interaction.options;
 
-        let year: any = options.getString("year");
-        let mode: any = options.getString("mode");
+        const year: any = options.getString("year");
+        const mode: any = options.getString("mode");
         let round: any = options.getString("round");
-        let keys: any = options.getString("key");
-        let maps: any = options.getString("pool")?.split("        ");
+        const keys: any = options.getString("key");
+        const maps: any = options.getString("pool")?.split("        ");
 
-        let mappool: Map<String, any[]> = new Map<String, any[]>();
+        const mappool: Map<String, any[]> = new Map<String, any[]>();
         let mod_maps: any[] = [];
         let mod = "NoMod";
 
-        for (let map of maps) {
-            let split = map.trim().replace("*   ", "").split("  ");
+        for (const map of maps) {
+            const split = map.trim().replace("*   ", "").split("  ");
             if (split.length === 1) {
                 if (mod_maps.length !== 0) {
                     mappool.set(mod, mod_maps);
@@ -88,7 +88,7 @@ export default {
 
         mappool.set(mod, mod_maps);
 
-        let pool = new Pool();
+        const pool = new Pool();
         pool.round = round;
         pool.year = year;
         pool.mode = mode;
@@ -125,11 +125,11 @@ export default {
                 break;
         }
 
-        for (let key in pool.pool) {
+        for (const key in pool.pool) {
 
             let prefix = "NM";
 
-            let value = pool.pool[key];
+            const value = pool.pool[key];
 
             switch (key) {
                 case "NoMod":
@@ -161,7 +161,7 @@ export default {
             description += "\n";
         }
 
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setTitle(`${pool.mode} World Cup ${pool.year} ${round}`)
             .setColor(0x737df9)
             .setDescription(description);

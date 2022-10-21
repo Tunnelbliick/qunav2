@@ -24,18 +24,18 @@ export async function recommend(suggestion: suggestion_collector_params, interac
     const suggest = suggestion.suggest;
     const discard = suggestion.discard;
 
-    let categoryVoteArray = [];
+    const categoryVoteArray = [];
 
     const existingrecomendation: any = await Recommendation.findOne({ mapid: beatmap.id, mods: mods });
 
-    let user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
+    const user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
     // CategoryVoting
-    for (let category of categories) {
-        let categoryVote: CategoryVote = new CategoryVote();
+    for (const category of categories) {
+        const categoryVote: CategoryVote = new CategoryVote();
 
         categoryVote.category = category;
-        let upvote = categoryVote.upvote;
+        const upvote = categoryVote.upvote;
 
         upvote.push(user.userid);
 
@@ -44,7 +44,7 @@ export async function recommend(suggestion: suggestion_collector_params, interac
         categoryVoteArray.push(categoryVote);
     }
 
-    let recomendation = new Recommendation();
+    const recomendation = new Recommendation();
     if (existingrecomendation == undefined) {
         recomendation.mapid = beatmap.id;
         recomendation.title = beatmap.beatmapset.title;
@@ -75,7 +75,7 @@ export async function recommend(suggestion: suggestion_collector_params, interac
 
     } else {
 
-        let upvote = existingrecomendation.upvote;
+        const upvote = existingrecomendation.upvote;
 
         if (upvote.includes(user.userid)) {
 
@@ -86,7 +86,7 @@ export async function recommend(suggestion: suggestion_collector_params, interac
             return undefined;
 
         } else {
-            let upvote: any = existingrecomendation.upvote;
+            const upvote: any = existingrecomendation.upvote;
             upvote.push(user.userid);
             existingrecomendation.upvote = upvote;
             await existingrecomendation.save();

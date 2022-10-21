@@ -31,7 +31,7 @@ export default {
         message_thinking(message);
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helpmap(prefix);
+            const embed = helpmap(prefix);
             message.reply({ embeds: [embed] });
             return;
         }

@@ -17,19 +17,19 @@ const DataImageAttachment = require("dataimageattachment");
 export async function top(message: any, args: any, mode: any) {
 
     let index = 0;
-    let max = 20;
+    const max = 20;
     let top100: any;
-    let username = "";
+    const username = "";
     let userid;
     let user: any;
-    let max_retry = 6;
+    const max_retry = 6;
     let retry_count = 0;
     
-    let discordid = message.author.id;
+    const discordid = message.author.id;
 
     message.channel.sendTyping();
 
-    let filterOptions = buildFilter(message, args, mode);
+    const filterOptions = buildFilter(message, args, mode);
 
     if (filterOptions.username !== "") {
 
@@ -38,7 +38,7 @@ export async function top(message: any, args: any, mode: any) {
         userid = user.id;
     } else {
 
-        let userObject: any = await User.findOne({ discordid: await encrypt(discordid) });
+        const userObject: any = await User.findOne({ discordid: await encrypt(discordid) });
 
         if (checkIfUserExists(userObject, message)) {
             return;
@@ -64,7 +64,7 @@ export async function top(message: any, args: any, mode: any) {
     const test = asyncBatch(top100,
         (task: any, taskIndex: number, workerIndex: number) => new Promise(
             async (resolve) => {
-                let dest = `${process.env.FOLDER_TEMP}${task.value.beatmap.id}_${task.value.beatmap.checksum}.osu`;
+                const dest = `${process.env.FOLDER_TEMP}${task.value.beatmap.id}_${task.value.beatmap.checksum}.osu`;
                 downloadAndOverrideBeatmap('https://osu.ppy.sh/osu/', dest, task.value.beatmap.id).then(() => { return resolve(true) });
             }
         ),
@@ -75,27 +75,27 @@ export async function top(message: any, args: any, mode: any) {
 
     await Promise.race([p1, test]);
 
-    let chartPromise = generateTopChart(top100);
+    const chartPromise = generateTopChart(top100);
 
-    let promises: Array<Promise<any>> = [];
+    const promises: Array<Promise<any>> = [];
     promises.push(topEmbed(top100, user, index, max));
     promises.push(chartPromise);
 
     const row = new MessageActionRow();
 
-    let skip_prior_button = new MessageButton()
+    const skip_prior_button = new MessageButton()
         .setCustomId(`${message.id}_skipdec`)
         .setEmoji("951823325586395167")
         .setStyle('PRIMARY')
-    let prior_button = new MessageButton()
+    const prior_button = new MessageButton()
         .setCustomId(`${message.id}_dec`)
         .setEmoji("951821813288140840")
         .setStyle('PRIMARY');
-    let next_button = new MessageButton()
+    const next_button = new MessageButton()
         .setCustomId(`${message.id}_inc`)
         .setEmoji("951821813460115527")
         .setStyle('PRIMARY');
-    let skip_next_button = new MessageButton()
+    const skip_next_button = new MessageButton()
         .setCustomId(`${message.id}_skipinc`)
         .setEmoji("951823325557047366")
         .setStyle('PRIMARY');
@@ -127,7 +127,7 @@ export async function top(message: any, args: any, mode: any) {
     if (collector != null)
         collector.on("collect", async (i: any) => {
 
-            let para = i.customId.split("_")[1];
+            const para = i.customId.split("_")[1];
 
             switch (para) {
                 case "dec":

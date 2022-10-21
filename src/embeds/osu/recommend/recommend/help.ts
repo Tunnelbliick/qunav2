@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 
 export function helprecommend(prefix: string) {
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help recommend")
         .setColor(0x737df9)
         .setDescription("Requests a beatmap recommendation.\n" +

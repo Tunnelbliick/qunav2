@@ -14,7 +14,7 @@ import { getLeaderBoard } from "./leaderboard";
 
 export async function getRecent(userid: any, include_fails?: number, limit?: number, mode?: string, offset?: number) {
     await login();
-    let params: any = {};
+    const params: any = {};
     if (include_fails != undefined)
         params.include_fails = include_fails;
     if (limit != undefined)
@@ -45,7 +45,7 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
     }
 
     // Filter last 50 plays for a specific filter
-    let filterFoundIndex = filterRecent(recentplays, filter);
+    const filterFoundIndex = filterRecent(recentplays, filter);
 
     // Check if there are any results other wise return null
     if (filterFoundIndex == -1) {
@@ -55,23 +55,23 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
     // Returns the first beatmap that matches the filter
     recentplays = recentplays.slice(filterFoundIndex);
 
-    let recentplay = recentplays[0];
-    let retries = calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods);
+    const recentplay = recentplays[0];
+    const retries = calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods);
 
     await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
 
     return new Promise(async (resolve, reject) => {
 
-        let user: any = getUser(userid, recentplay.mode);
-        let beatmap: any = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
-        let acc100: any = loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode);
-        let raiting: any = difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods);
+        const user: any = getUser(userid, recentplay.mode);
+        const beatmap: any = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
+        const acc100: any = loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode);
+        const raiting: any = difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods);
 
         // is ranked
         if (recentplay.pp === null) {
 
-            let ppOfPlay: any = simulateRecentPlay(recentplay);
-            let ppIffc: any = simulateRecentPlayFC(recentplay, beatmap);
+            const ppOfPlay: any = simulateRecentPlay(recentplay);
+            const ppIffc: any = simulateRecentPlayFC(recentplay, beatmap);
 
             Promise.allSettled([user, beatmap, acc100, ppOfPlay, ppIffc, raiting]).then((result: any) => {
 
@@ -90,16 +90,16 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
 
         } else {
 
-            let ppIffc = simulateRecentPlayFC(recentplay, beatmap);
-            let top100: any = getTopForUser(userid, undefined, undefined, recentplay.mode);
-            let leaderboard: any = getLeaderBoard(recentplay.beatmap.id, recentplay.mode);
+            const ppIffc = simulateRecentPlayFC(recentplay, beatmap);
+            const top100: any = getTopForUser(userid, undefined, undefined, recentplay.mode);
+            const leaderboard: any = getLeaderBoard(recentplay.beatmap.id, recentplay.mode);
 
             Promise.allSettled([user, beatmap, acc100, ppIffc, raiting, top100, leaderboard]).then((result: any) => {
 
-                let top100 = result[5].value.find((t: any) => t.value.id === recentplay.best_id);
+                const top100 = result[5].value.find((t: any) => t.value.id === recentplay.best_id);
                 let top_100_position = undefined;
 
-                let leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.best_id);
+                const leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.best_id);
                 let leaderboard_position = undefined;
 
                 if (top100 !== undefined)
@@ -125,7 +125,7 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
 }
 
 export async function getRecentPlaysForUserName(username: string, filter: RecentPlayFilter, mode?: any) {
-    let user: any = await getUserByUsername(username, mode);
+    const user: any = await getUserByUsername(username, mode);
 
     if (user.hasOwnProperty("error")) {
         return "nouser";
@@ -137,7 +137,7 @@ export async function getRecentPlaysForUserName(username: string, filter: Recent
         return "osuapierr";
     }
 
-    let filterFoundIndex = filterRecent(recentplays, filter);
+    const filterFoundIndex = filterRecent(recentplays, filter);
 
     if (filterFoundIndex == -1) {
         return null;
@@ -145,21 +145,21 @@ export async function getRecentPlaysForUserName(username: string, filter: Recent
 
     recentplays = recentplays.slice(filterFoundIndex);
 
-    let recentplay = recentplays[0];
-    let retries = calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods);
+    const recentplay = recentplays[0];
+    const retries = calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods);
 
     await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
 
     return new Promise(async (resolve, reject) => {
 
-        let beatmap: any = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
-        let acc100: any = loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode);
-        let raiting: any = difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods);
+        const beatmap: any = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
+        const acc100: any = loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode);
+        const raiting: any = difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods);
 
         if (recentplay.pp == null) {
 
-            let ppOfPlay: any = simulateRecentPlay(recentplay);
-            let ppIffc: any = simulateRecentPlayFC(recentplay, beatmap);
+            const ppOfPlay: any = simulateRecentPlay(recentplay);
+            const ppIffc: any = simulateRecentPlayFC(recentplay, beatmap);
 
             Promise.allSettled([user, beatmap, acc100, ppOfPlay, ppIffc, raiting]).then((result: any) => {
 
@@ -177,16 +177,16 @@ export async function getRecentPlaysForUserName(username: string, filter: Recent
 
         } else {
 
-            let ppIffc = simulateRecentPlayFC(recentplay, beatmap);
-            let top100: any = getTopForUser(user.id, 0, 100, recentplay.mode);
-            let leaderboard: any = getLeaderBoard(recentplay.beatmap.id, recentplay.mods);
+            const ppIffc = simulateRecentPlayFC(recentplay, beatmap);
+            const top100: any = getTopForUser(user.id, 0, 100, recentplay.mode);
+            const leaderboard: any = getLeaderBoard(recentplay.beatmap.id, recentplay.mods);
 
             Promise.allSettled([user, beatmap, acc100, ppIffc, raiting, top100, leaderboard]).then((result: any) => {
 
-                let top100 = result[5].value.find((t: any) => t.value.id === recentplay.best_id);
+                const top100 = result[5].value.find((t: any) => t.value.id === recentplay.best_id);
                 let top_100_position = undefined;
 
-                let leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.best_id);
+                const leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.best_id);
                 let leaderboard_position = undefined;
 
                 if (top100 !== undefined)

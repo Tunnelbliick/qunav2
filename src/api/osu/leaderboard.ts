@@ -18,13 +18,13 @@ async function loadLeaderBoard(mapid: any, mode: any) {
 
 export async function getLeaderBoard(mapid: any, mode: any) {
 
-    let leaderboard: any = await loadLeaderBoard(mapid, mode);
+    const leaderboard: any = await loadLeaderBoard(mapid, mode);
 
     if (leaderboard.hasOwnProperty("error")) {
         return "osuapierr";
     }
 
-    let leaderboardArray: Array<Object> = [];
+    const leaderboardArray: Array<Object> = [];
 
     if (leaderboard == undefined) {
         return null;
@@ -39,13 +39,13 @@ export async function getLeaderBoard(mapid: any, mode: any) {
 
 export async function getLeaderBoardPosition(mapid: any, mode: any, scoreid: any) {
 
-    let leaderboard: any = await loadLeaderBoard(mapid, mode);
+    const leaderboard: any = await loadLeaderBoard(mapid, mode);
 
     if (leaderboard.hasOwnProperty("error")) {
         return "osuapierr";
     }
 
-    let leaderboardArray: Array<Object> = [];
+    const leaderboardArray: Array<Object> = [];
 
     if (leaderboard == undefined) {
         return null;
@@ -55,7 +55,7 @@ export async function getLeaderBoardPosition(mapid: any, mode: any, scoreid: any
         leaderboardArray.push({ position: index, value: play });
     })
 
-    let leaderboard_found: any = leaderboardArray.find((t: any) => t.value.id === scoreid);
+    const leaderboard_found: any = leaderboardArray.find((t: any) => t.value.id === scoreid);
     let leaderboard_position = undefined;
 
     if (leaderboard_found !== undefined)

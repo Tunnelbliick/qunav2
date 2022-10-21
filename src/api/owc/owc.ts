@@ -25,7 +25,7 @@ export interface owc_year {
 
 export async function getInfo(message: any, interaction: any, args: any, default_mode: any) {
 
-    let filter: owc_filter = buildfilter(interaction, args, default_mode)!;
+    const filter: owc_filter = buildfilter(interaction, args, default_mode)!;
     let country: any = undefined;
 
     let year;
@@ -44,7 +44,7 @@ export async function getInfo(message: any, interaction: any, args: any, default
     if (filter.country != null)
         country = await getCountry(year.owc.id, filter.country);
 
-    let resp: owc_year = {
+    const resp: owc_year = {
         year: year,
         country: country,
     }
@@ -67,12 +67,12 @@ async function getYear(year: string, mode: string, keys: any) {
         return null;
     }
 
-    let teams: any = await owcteam.find({ owc: owc_year.id });
-    let matches: any = await owcgame.find({ owc: owc_year.id });
+    const teams: any = await owcteam.find({ owc: owc_year.id });
+    const matches: any = await owcgame.find({ owc: owc_year.id });
 
-    let sorted_teams = teams.sort((a: any, b: any) => { return a.place - b.place }).slice(0, 5);
+    const sorted_teams = teams.sort((a: any, b: any) => { return a.place - b.place }).slice(0, 5);
 
-    let resp: year = {
+    const resp: year = {
         owc: owc_year,
         team: sorted_teams,
         matches: matches,
@@ -84,10 +84,10 @@ async function getYear(year: string, mode: string, keys: any) {
 
 async function getCountry(owc_year: any, country: string) {
 
-    let team = await owcteam.findOne({ owc: owc_year, name: country });
-    let matches = await getCountryMatches(owc_year, country);
+    const team = await owcteam.findOne({ owc: owc_year, name: country });
+    const matches = await getCountryMatches(owc_year, country);
 
-    let resp: country = {
+    const resp: country = {
         team: team,
         matches: matches
     }
@@ -98,7 +98,7 @@ async function getCountry(owc_year: any, country: string) {
 
 export async function getCountryMatches(owc_year: any, team: any) {
 
-    let matches: any = await owcgame.find({
+    const matches: any = await owcgame.find({
         owc: owc_year,
         $or: [
             {
@@ -126,8 +126,8 @@ async function createOrUpdateMatches(owcid: any, matches: any) {
         let looser: any = null;
         let winner_index = 1;
 
-        let team1: any = await owcteam.findOne({ challonge_id: match.player1_id });
-        let team2: any = await owcteam.findOne({ challonge_id: match.player2_id });
+        const team1: any = await owcteam.findOne({ challonge_id: match.player1_id });
+        const team2: any = await owcteam.findOne({ challonge_id: match.player2_id });
 
         if (team1?.challonge_id === match.winner_id) {
             winner = team1;
@@ -148,8 +148,8 @@ async function createOrUpdateMatches(owcid: any, matches: any) {
             iswinner = false;
         }
 
-        let team1_score = match.scores_csv.split("-")[0];
-        let team2_score = match.scores_csv.split("-")[1];
+        const team1_score = match.scores_csv.split("-")[0];
+        const team2_score = match.scores_csv.split("-")[1];
 
         let owc_game: any = await owcgame.findOne({ matchid: match.id });
 
@@ -214,9 +214,9 @@ async function createOrUpdateParticipants(owcid: any, participants: any, mode: a
 
 async function createOrUpdateTournaments(tournament_string: any) {
 
-    let res: any = await viewTournament(tournament_string, "json");
+    const res: any = await viewTournament(tournament_string, "json");
 
-    let tournament = res.tournament;
+    const tournament = res.tournament;
     let mode = "osu";
 
     let gen_owc: any = await owc.findOne({ tournamentid: tournament.id });
@@ -243,7 +243,7 @@ async function createOrUpdateTournaments(tournament_string: any) {
         keys = "7K";
     }
 
-    let year = tournament.name.match("[0-9]{4}")[0];
+    const year = tournament.name.match("[0-9]{4}")[0];
     gen_owc.year = year;
     gen_owc.name = tournament.name;
     gen_owc.size = tournament.participants_count;

@@ -59,14 +59,14 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
         id = message.id;
     }
 
-    let year = owc.year;
-    let country = owc.country;
+    const year = owc.year;
+    const country = owc.country;
 
-    let team_country = country?.team;
-    let team_matches = country?.matches;
+    const team_country = country?.team;
+    const team_matches = country?.matches;
 
-    let file = await imageToBase64(`assets/owc/${year.owc.mode}${year.owc.keys === undefined ? "" : year.owc.keys}_${year.owc.year}.jpg`);
-    let uri = "data:image/jpeg;base64," + file
+    const file = await imageToBase64(`assets/owc/${year.owc.mode}${year.owc.keys === undefined ? "" : year.owc.keys}_${year.owc.year}.jpg`);
+    const uri = "data:image/jpeg;base64," + file
 
     let description = `[**Challonge**](${year.owc.full_challonge_url})\n[**Bracket**](${year.owc.full_challonge_url}/module)\n\n`;
 
@@ -82,7 +82,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
     if (team_country !== undefined && team_country !== null) {
 
-        let code: string = getCode(team_country.name);
+        const code: string = getCode(team_country.name);
 
         description += `Team :flag_${code.toLocaleLowerCase()}: **${team_country.name}**\nPlace: **#${team_country.place}**\nSeed: **#${team_country.seed}**\n\n**__Matches__**\n`
 
@@ -98,7 +98,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
         })
 
 
-        let embed = new MessageEmbed().
+        const embed = new MessageEmbed().
             setTitle(`Team ${team_country.name} ${year.owc.name}`)
             .setColor("#4b67ba")
             .setDescription(description)
@@ -116,7 +116,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
     let index = 0;
 
-    for (let team of year.team) {
+    for (const team of year.team) {
 
         index++;
 
@@ -127,7 +127,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
         let code: string = getCode(team.name.replace(/\s\w$/g, ""));
 
-        let emote: any = owc_rank_icons[team.place];
+        const emote: any = owc_rank_icons[team.place];
 
         if (code == undefined) {
             code = "aq";
@@ -136,7 +136,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
         description += `${emote} :flag_${code.toLocaleLowerCase()}: **${team.name}** ${team.name === "To be determined" ? "" : "(#"+team.seed+")"} \n`
     }
 
-    let options: any[] = [];
+    const options: any[] = [];
 
     for (const [key, value] of Object.entries(tournament_type)) {
 
@@ -155,7 +155,7 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
             continue;
         }
 
-        let option = {
+        const option = {
             label: `${value.name}`,
             value: `${value.value}`
         }
@@ -164,13 +164,13 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
     }
 
-    let select: any = new MessageSelectMenu().setCustomId(`select_${id}`)
+    const select: any = new MessageSelectMenu().setCustomId(`select_${id}`)
         .setPlaceholder('Select Round')
         .addOptions(options);
 
     const row = new MessageActionRow().addComponents(select);
 
-    let embed = new MessageEmbed().
+    const embed = new MessageEmbed().
         setTitle(`${year.owc.name}`)
         .setColor("#4b67ba")
         .setDescription(description)
@@ -190,8 +190,8 @@ export async function buildOwcEmbed(message: any, interaction: any, owc: owc_yea
 
 export function buildmatch(match: any, place?: any) {
 
-    let code1: string = getCode(match.team1_name);
-    let code2: string = getCode(match.team2_name);
+    const code1: string = getCode(match.team1_name);
+    const code2: string = getCode(match.team2_name);
 
     if (code2 === undefined) {
         console.log(match.team2_name);

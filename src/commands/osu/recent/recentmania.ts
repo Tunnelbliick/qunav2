@@ -71,7 +71,7 @@ export default {
         message_thinking(message);
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helpRecent(prefix);
+            const embed = helpRecent(prefix);
             message.reply({ embeds: [embed] });
             return;
         }

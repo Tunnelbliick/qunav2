@@ -61,11 +61,11 @@ export function getTitle(skills: all_skills) {
 
     let type: Type;
     let plays = [];
-    let aim = skills.aim_avg;
-    let speed = skills.speed_avg;
-    let acc = skills.acc_avg;
+    const aim = skills.aim_avg;
+    const speed = skills.speed_avg;
+    const acc = skills.acc_avg;
 
-    let max = Math.max(aim, speed, acc);
+    const max = Math.max(aim, speed, acc);
 
     switch (max) {
         case aim:
@@ -86,7 +86,7 @@ export function getTitle(skills: all_skills) {
             break;
     }
 
-    let most_used_mod_int: any = getMostFrequent(plays);
+    const most_used_mod_int: any = getMostFrequent(plays);
 
     let title = "Circle Clicker";
 
@@ -111,7 +111,7 @@ export function getTitle(skills: all_skills) {
 
 function getMostFrequent(arr: Array<any>) {
     const hashmap = arr.reduce((acc: any, val: any) => {
-        let string_val = arraytoBinaryFix(val.score.mods);
+        const string_val = arraytoBinaryFix(val.score.mods);
         acc[string_val] = (acc[string_val] || 0) + 1
         return acc
     }, {})

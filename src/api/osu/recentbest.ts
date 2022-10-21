@@ -3,7 +3,7 @@ import { v2 } from "osu-api-extended"
 
 export async function getRecentBest(userid: any, offset?: any, mode?: any) {
     await login();
-    let params: any = {};
+    const params: any = {};
     params.limit = 100;
     if (offset != undefined)
         params.offset = offset;
@@ -21,13 +21,13 @@ export async function getRecentBest(userid: any, offset?: any, mode?: any) {
 
 export async function getRecentBestForUser(userid: string, offset?: number, mode?: any) {
 
-    let bestplays: any = await getRecentBest(userid, offset, mode);
+    const bestplays: any = await getRecentBest(userid, offset, mode);
 
     if (bestplays.hasOwnProperty("error")) {
         return "osuapierr";
     }
 
-    let returnArray: Array<Object> = [];
+    const returnArray: Array<Object> = [];
 
     if (bestplays == undefined) {
         return null;

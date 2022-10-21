@@ -10,7 +10,7 @@ export default (client: Client) => {
 
         if (message.content.startsWith("https://osu.ppy.sh/beatmaps")) {
 
-            let url = message.content;
+            const url = message.content;
 
             let id = message.content;
             let setid: any = "";
@@ -18,8 +18,8 @@ export default (client: Client) => {
             let isSet = false;
 
             if (url.includes("//osu.ppy.sh/beatmapsets/")) {
-                let split = url.split("beatmapsets/")[1];
-                let para = split.split("/");
+                const split = url.split("beatmapsets/")[1];
+                const para = split.split("/");
 
                 if (para.length == 2) {
                     id = sanitize(para[1]);
@@ -34,8 +34,8 @@ export default (client: Client) => {
             }
 
             if (url.includes("//osu.ppy.sh/beatmaps/")) {
-                let split = url.split("beatmaps/")[1];
-                let para = split.split("/");
+                const split = url.split("beatmaps/")[1];
+                const para = split.split("/");
                 id = sanitize(para[0]);
                 isSet = false;
                 if (para.length > 1) {

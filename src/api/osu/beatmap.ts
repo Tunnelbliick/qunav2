@@ -10,7 +10,7 @@ export async function getBeatmap(mapid: any) {
 
         result.then(async (data: any) => {
 
-            let beatmapObject = new Beatmap();
+            const beatmapObject = new Beatmap();
 
             beatmapObject.checksum = data.checksum;
             beatmapObject.mapid = data.id;

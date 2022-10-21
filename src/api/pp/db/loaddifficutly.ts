@@ -12,7 +12,7 @@ export async function loaddifficulty(mapid: any, checksum: any, modArray: any, m
 
         if (ppObject == undefined || ppObject.difficulty == null || ppObject.checksum != checksum) {
 
-            let raiting: any = await difficulty(mapid, checksum, mode, modArray).catch(() => {
+            const raiting: any = await difficulty(mapid, checksum, mode, modArray).catch(() => {
                 return reject(null);
             })
 

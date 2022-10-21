@@ -9,7 +9,7 @@ export async function loadTournaments() {
 
     // PLACE Challonge URL HERE
 
-    let tournaments = [
+    const tournaments = [
         // Osu
         "owc_2010", //2010
         "owc_2011", //2011
@@ -71,8 +71,8 @@ export  function ongoingWorldCup() {
     if (current_tournament !== undefined) {
         const updatecurrent = async () => {
             await getTournament(current_tournament!);
-            let current: any = await owc.findOne({ url: current_tournament });
-            let matches: any = await owcgame.find({ owc: current.id });
+            const current: any = await owc.findOne({ url: current_tournament });
+            const matches: any = await owcgame.find({ owc: current.id });
 
             let current_round = 1;
             let unlocked_round = [1];
@@ -112,7 +112,7 @@ function checkIfRoundComplete(rounds: any[], grouped: Map<any, any>) {
     let iscomplete = true;
 
     rounds.forEach((round_number: any) => {
-        let round = grouped.get(round_number);
+        const round = grouped.get(round_number);
 
         round.forEach((match: any) => {
 
@@ -129,19 +129,19 @@ function checkIfRoundComplete(rounds: any[], grouped: Map<any, any>) {
 }
 
 async function calculateScores() {
-    let current: any = await owc.findOne({ url: current_tournament });
+    const current: any = await owc.findOne({ url: current_tournament });
 
     if(current === undefined) {
         return;
     }
 
-    let matches: any = await owcgame.find({ owc: current.id, state: "complete" });
-    let predictionList: any = await pickemPrediction.find({ owc: current.id, calculated: false });
-    let prediction_save_list: any[] = [];
-    let registrationList: any = await pickemRegistration.find({ owc: current.id });
+    const matches: any = await owcgame.find({ owc: current.id, state: "complete" });
+    const predictionList: any = await pickemPrediction.find({ owc: current.id, calculated: false });
+    const prediction_save_list: any[] = [];
+    const registrationList: any = await pickemRegistration.find({ owc: current.id });
 
-    let registrationMap: Map<any, any> = new Map<any, any>();
-    let predictionMap: Map<any, any[]> = new Map<any, any[]>();
+    const registrationMap: Map<any, any> = new Map<any, any>();
+    const predictionMap: Map<any, any[]> = new Map<any, any[]>();
 
     registrationList.forEach((registration: any) => {
         registrationMap.set(registration.id, registration);
@@ -162,7 +162,7 @@ async function calculateScores() {
 
     matches.forEach((match: any) => {
 
-        let predictions = predictionMap.get(match.id);
+        const predictions = predictionMap.get(match.id);
 
         if (predictions === undefined) {
             return;
@@ -170,7 +170,7 @@ async function calculateScores() {
 
         predictions.forEach((prediction: any) => {
 
-            let registration = registrationMap.get(prediction.registration.toString());
+            const registration = registrationMap.get(prediction.registration.toString());
 
             if (registration === undefined) {
                 return;

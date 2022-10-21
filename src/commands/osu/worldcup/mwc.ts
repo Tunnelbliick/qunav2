@@ -44,7 +44,7 @@ export default {
 
     callback: async ({ message, interaction, args, prefix,  }) => {
 
-        let default_mode = "mania";
+        const default_mode = "mania";
 
         await interaction_thinking(interaction);
         message_thinking(message);

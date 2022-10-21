@@ -7,7 +7,7 @@ import { getLeaderBoard } from "./leaderboard";
 
 export async function getTop(userid: any, offset?: any, limit?: any, mode?: any) {
     await login();
-    let params: any = {};
+    const params: any = {};
     params.limit = 100;
     if (limit != undefined)
         params.limit = limit;
@@ -28,13 +28,13 @@ export async function getTop(userid: any, offset?: any, limit?: any, mode?: any)
 
 export async function getTopForUser(userid: string, offset?: number, limit?: number, mode?: any) {
 
-    let bestplays: any = await getTop(userid, offset, limit, mode);
+    const bestplays: any = await getTop(userid, offset, limit, mode);
 
     if (bestplays.hasOwnProperty("error")) {
         return "osuapierr";
     }
 
-    let returnArray: Array<Object> = [];
+    const returnArray: Array<Object> = [];
 
     if (bestplays == undefined) {
         return null;
@@ -51,9 +51,9 @@ export async function getMaxForCurrentTopArray(input: any) {
 
     return new Promise(async (resolve, reject) => {
 
-        let beatmap: any = getBeatmapFromCache(input.value.beatmap.id, input.value.beatmap.checksum);
-        let acc100: any = loadacc100WithoutBeatMapDownload(input.value.beatmap.id, input.value.beatmap.checksum, input.value.mods, input.value.beatmap.mode);
-        let raiting: any = difficulty(input.value.beatmap.id, input.value.beatmap.checksum, input.value.mode, input.value.mods);
+        const beatmap: any = getBeatmapFromCache(input.value.beatmap.id, input.value.beatmap.checksum);
+        const acc100: any = loadacc100WithoutBeatMapDownload(input.value.beatmap.id, input.value.beatmap.checksum, input.value.mods, input.value.beatmap.mode);
+        const raiting: any = difficulty(input.value.beatmap.id, input.value.beatmap.checksum, input.value.mode, input.value.mods);
 
         acc100.catch(() => { return reject(null); });
 

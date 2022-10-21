@@ -3,7 +3,7 @@ import { owc_filter } from "../../../api/owc/filter";
 
 export async function buildOwcNotPortedError(message: any, interaction: any, filter: owc_filter) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Tournament not found")
         .setColor("#4b67ba")
         .setDescription(`There was no **${filter.mode}** World Cup found for the year **${filter.year}**\n

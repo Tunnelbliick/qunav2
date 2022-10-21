@@ -28,9 +28,9 @@ export async function generateCard(user: any, skills: all_skills, title: string)
     const speed = skills.speed_avg;
     const acc = skills.acc_avg;
 
-    let max = Math.max(aim, speed, acc);
+    const max = Math.max(aim, speed, acc);
 
-    let total = aim + speed + acc;
+    const total = aim + speed + acc;
 
     let currentTier: any;
     let nextTier: any;
@@ -44,12 +44,12 @@ export async function generateCard(user: any, skills: all_skills, title: string)
         }
     });
 
-    let missing = Math.round(total - currentTier.value) * 10;
+    const missing = Math.round(total - currentTier.value) * 10;
 
-    let blocks = [];
+    const blocks = [];
 
     for (let counter = 1; counter <= 3; counter++) {
-        let reminder = missing - 100 * counter;
+        const reminder = missing - 100 * counter;
         if (reminder > 0)
             blocks.push({ value: 100, miss: 0 });
         else if (reminder < -100)
@@ -59,26 +59,26 @@ export async function generateCard(user: any, skills: all_skills, title: string)
 
     }
 
-    let imagePromises = [];
+    const imagePromises = [];
 
     imagePromises.push(builddoughnut(aim, max - aim, "#fd5392", "#f86f64"));
     imagePromises.push(builddoughnut(speed, max - speed, "#4facfe", "#00f2fe"));
     imagePromises.push(builddoughnut(acc, max - acc, "#43ea80", "#38f8d4"));
     imagePromises.push(buildProgressbar(blocks, currentTier.colors))
 
-    let skills_perc = 100 / max;
+    const skills_perc = 100 / max;
 
-    let aim_perc = aim * skills_perc;
-    let speed_perc = speed * skills_perc;
-    let acc_perc = acc * skills_perc;
+    const aim_perc = aim * skills_perc;
+    const speed_perc = speed * skills_perc;
+    const acc_perc = acc * skills_perc;
 
     await Promise.allSettled(imagePromises);
 
     const canvas = createCanvas(650, 850)
     const ctx = canvas.getContext('2d')
 
-    let overlaySrc = "assets/card/overlay.png"
-    let userimgSrc = user.avatar_url;
+    const overlaySrc = "assets/card/overlay.png"
+    const userimgSrc = user.avatar_url;
 
     let accchartsrc = "";
     let speedchartsrc = "";
@@ -94,13 +94,13 @@ export async function generateCard(user: any, skills: all_skills, title: string)
 
     });
 
-    let backgroundProm = loadImage(`assets/card/${currentTier.background}`);
-    let overlayProm = loadImage(overlaySrc);
-    let userimgProm = loadImage(userimgSrc);
-    let progesschartProm = loadImage(progesschartsrc);
-    let accchartProm = loadImage(accchartsrc);
-    let speedchartProm = loadImage(speedchartsrc)
-    let aimchartProm = loadImage(aimchartsrc);
+    const backgroundProm = loadImage(`assets/card/${currentTier.background}`);
+    const overlayProm = loadImage(overlaySrc);
+    const userimgProm = loadImage(userimgSrc);
+    const progesschartProm = loadImage(progesschartsrc);
+    const accchartProm = loadImage(accchartsrc);
+    const speedchartProm = loadImage(speedchartsrc)
+    const aimchartProm = loadImage(aimchartsrc);
 
     let background: any;
     let overlay: any;
@@ -138,9 +138,9 @@ export async function generateCard(user: any, skills: all_skills, title: string)
     sWidth = ctx.canvas.width;
     sHeight = ctx.canvas.height;
 
-    let rng = new Prando(user.id);
-    let x = rng.next(1, (background.width - sWidth));
-    let y = rng.next(1, (background.height - sHeight));
+    const rng = new Prando(user.id);
+    const x = rng.next(1, (background.width - sWidth));
+    const y = rng.next(1, (background.height - sHeight));
 
     // offset point to crop the image
     sx = x
@@ -170,8 +170,8 @@ export async function generateCard(user: any, skills: all_skills, title: string)
     ctx.drawImage(background, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     ctx.restore();
 
-    let xoffset = (canvas.width - 612) / 2;
-    let yoffset = (canvas.height - 812) / 2;
+    const xoffset = (canvas.width - 612) / 2;
+    const yoffset = (canvas.height - 812) / 2;
 
     ctx.drawImage(overlay, xoffset, yoffset);
 
@@ -187,7 +187,7 @@ export async function generateCard(user: any, skills: all_skills, title: string)
     //ctx.rect(50, 200, 550, 600); // DEBUG
     // ctx.stroke();
     var gradient = ctx.createLinearGradient(325, 0, 500, 0);
-    let gradient_stops = 1 / (currentTier.colors.length - 1);
+    const gradient_stops = 1 / (currentTier.colors.length - 1);
     currentTier.colors.forEach((color: any, index: any) => {
         gradient.addColorStop(gradient_stops * index, color);
     });

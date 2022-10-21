@@ -3,11 +3,11 @@ const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
 export async function generateBeatmapChart(graph: any) {
 
-    let labels = [];
-    let dataset = [];
+    const labels = [];
+    const dataset = [];
 
     let time = 0;
-    for (let strains of graph.strains) {
+    for (const strains of graph.strains) {
 
         time += graph.section_length;
 
@@ -77,6 +77,6 @@ export async function generateBeatmapChart(graph: any) {
     };
 
 
-    let chartURL = await chartJSNodeCanvas.renderToDataURL(configuration);
+    const chartURL = await chartJSNodeCanvas.renderToDataURL(configuration);
     return chartURL;
 }

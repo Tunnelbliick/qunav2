@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpTimezone(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help timezone")
         .setDescription("Update your local timezone.\nIf no timezone is given will use the first timezone found for your country.")
         .setColor(0x737df9)

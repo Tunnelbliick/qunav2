@@ -1,7 +1,7 @@
 import { MessageEmbed } from "discord.js";
 
 export function helpshowsuggestions(prefix: string) {
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help show suggestions")
         .setColor(0x737df9)
         .setDescription("Shows your or other peoples suggestions")

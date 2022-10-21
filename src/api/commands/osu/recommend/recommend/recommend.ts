@@ -29,18 +29,18 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         className: 'maps'
     });
 
-    let userObject: any = await User.findOne({ discordid: await encrypt(message.author.id) });
-    let typeObject: any = await Type.find();
-    let userid: any = userObject.userid;
+    const userObject: any = await User.findOne({ discordid: await encrypt(message.author.id) });
+    const typeObject: any = await Type.find();
+    const userid: any = userObject.userid;
     let mods: any = [];
     let categoriestring = "";
-    let typeArray: any = [];
+    const typeArray: any = [];
     let recommendations: any;
-    let index = 0;
+    const index = 0;
     let max_index = 0;
     let recList: any;
 
-    for (let type of typeObject) {
+    for (const type of typeObject) {
         typeArray.push(type.name);
     }
 
@@ -75,14 +75,14 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
 
 
     max_index = recommendations.length;
-    let recommendation = recommendations.slice(index, 1)[0];
+    const recommendation = recommendations.slice(index, 1)[0];
 
     if (recommendation == null) {
         noRecs(message);
         return;
     }
 
-    let embedColor = getDifficultyColor(recommendation.star);
+    const embedColor = getDifficultyColor(recommendation.star);
 
     if (recommendation.mods != undefined)
         mods = recommendation.mods;
@@ -97,21 +97,21 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         mapDrain = mapDrain / 1.5
     }
 
-    let min = Math.floor(mapLength / 60)
-    let sec = Math.floor(mapLength - min * 60)
+    const min = Math.floor(mapLength / 60)
+    const sec = Math.floor(mapLength - min * 60)
     let strSec = sec.toFixed(0).toString()
 
     if (sec < 10) { strSec = "0" + sec }
 
-    let dmin = Math.floor(mapDrain / 60)
-    let dsec = Math.floor(mapDrain - dmin * 60)
+    const dmin = Math.floor(mapDrain / 60)
+    const dsec = Math.floor(mapDrain - dmin * 60)
     let strDSec = sec.toFixed(0).toString()
 
     if (dsec < 10) { strDSec = "0" + dsec }
 
     let mString = "";
 
-    for (let m of mods) {
+    for (const m of mods) {
         mString += `\`${m}\` `;
     }
 
@@ -119,47 +119,47 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         mString = `\`NM\``;
     }
 
-    for (let t of recommendation.type) {
+    for (const t of recommendation.type) {
         categoriestring += `\`${t.category}\` `;
     }
 
-    let upvotedownvoteChart = await updownvote(recommendation);
-    let typesChart = await categoriechart(recommendation);
+    const upvotedownvoteChart = await updownvote(recommendation);
+    const typesChart = await categoriechart(recommendation);
 
     const canvas = createCanvas(300, 150)
     const ctx = canvas.getContext('2d')
 
-    let upvoteDownvote = await loadImage(upvotedownvoteChart);
-    let types = await loadImage(typesChart);
+    const upvoteDownvote = await loadImage(upvotedownvoteChart);
+    const types = await loadImage(typesChart);
 
     ctx.drawImage(upvoteDownvote, 0, 0); // Or at whatever offset you like
     ctx.drawImage(types, canvas.width - types.width, 0);
 
-    let canvasBase = canvas.toDataURL();
+    const canvasBase = canvas.toDataURL();
 
-    let row = new MessageActionRow();
+    const row = new MessageActionRow();
 
-    let next = new MessageButton().
+    const next = new MessageButton().
         setCustomId(`recommendation_next_${userid}_${index}_${recList.id}_${recommendation.id}`)
         .setEmoji("951821813460115527")
         .setStyle("PRIMARY");
 
-    let prior = new MessageButton().
+    const prior = new MessageButton().
         setCustomId(`recommendation_prior_${userid}_${index}_${recList.id}_${recommendation.id}`)
         .setEmoji("951821813288140840")
         .setStyle("PRIMARY");
 
-    let upvote = new MessageButton()
+    const upvote = new MessageButton()
         .setCustomId(`recommendation_upvote_${userid}_${index}_${recList.id}_${recommendation.id}`)
         .setEmoji("955320158270922772")
         .setStyle("SUCCESS");
 
-    let downvote = new MessageButton()
+    const downvote = new MessageButton()
         .setCustomId(`recommendation_downvote_${userid}_${index}_${recList.id}_${recommendation.id}`)
         .setEmoji("955319940435574794")
         .setStyle("DANGER");
 
-    let vote = new MessageButton().
+    const vote = new MessageButton().
     setCustomId(`recommendation_vote_${userid}_${index}_${recList.id}_${recommendation.id}`)
     .setLabel("Vote")
     .setStyle("PRIMARY");
@@ -167,7 +167,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
 
     row.setComponents([prior, upvote, downvote, next, vote]);
 
-    let recommendationembed = new MessageEmbed()
+    const recommendationembed = new MessageEmbed()
         .setAuthor({ name: `Personal beatmap recommendation (${index + 1}/${max_index})` })
         .setColor(embedColor)
         .setTitle(`${recommendation.artist} - ${recommendation.title} [${recommendation.version}]`)

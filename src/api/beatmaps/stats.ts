@@ -16,7 +16,7 @@ export interface BeatmapStats {
 
 export function calcualteStatsFromSuggestion(suggestion: any) {
 
-    let stats: BeatmapStats = {
+    const stats: BeatmapStats = {
         cs: suggestion.cs,
         hp: suggestion.hp,
         bpm: suggestion.bpm,
@@ -31,7 +31,7 @@ export function calcualteStatsFromSuggestion(suggestion: any) {
 
 export function calcualteStatsFromBeatmapforMods(beatmap: any, mods: Array<string>) {
 
-    let stats: BeatmapStats = {
+    const stats: BeatmapStats = {
         cs: beatmap.cs,
         hp: beatmap.hp,
         bpm: beatmap.beatmapset.bpm,
@@ -75,12 +75,12 @@ export function calcualteStatsforMods(stats: BeatmapStats, mods: Array<string>) 
     }
 
     stats.min = Math.floor(stats.mapLength / 60)
-    let sec = Math.floor(stats.mapLength - stats.min * 60)
+    const sec = Math.floor(stats.mapLength - stats.min * 60)
     stats.strSec = sec.toFixed(0).toString()
     if (sec < 10) { stats.strSec = "0" + sec }
 
     stats.dmin = Math.floor(stats.mapDrain / 60)
-    let dsec = Math.floor(stats.mapDrain - stats.dmin * 60)
+    const dsec = Math.floor(stats.mapDrain - stats.dmin * 60)
     stats.strDsec = dsec.toFixed(0).toString()
     if (dsec < 10) { stats.strDsec = "0" + dsec }
 

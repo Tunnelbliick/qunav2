@@ -10,14 +10,14 @@ export function invalidMapUrl(url: any, message: Message, prefix: any) {
 }
 
 export function missingParameters(message: Message, prefix: any) {
-    let errembed = new MessageEmbed().setTitle("Suggest a beatmap")
+    const errembed = new MessageEmbed().setTitle("Suggest a beatmap")
         .setDescription(`To suggest a beatmap you have to atleast supply 1 map category`)
         .setFooter({ text: `Use ${prefix}help suggest for more info.` })
     message.reply({ embeds: [errembed] });
 }
 
 export function invalidcategorie(message: Message, category: any, prefix: any) {
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor(0x737df9)
         .setTitle(`Invalid Category`)
         .setDescription(`The Category \`${category}\` was not found!\nPlease check the available categories with \`${prefix}lc\` or \`${prefix}categories\``)
@@ -26,7 +26,7 @@ export function invalidcategorie(message: Message, category: any, prefix: any) {
 }
 
 export function alreadyUpvoted(beatmap: any, message: Message, row: any) {
-    let embed = new MessageEmbed().setAuthor({ name: `Already Suggested` })
+    const embed = new MessageEmbed().setAuthor({ name: `Already Suggested` })
         .setColor(0x737df9)
         .setTitle(`${beatmap.beatmapset.artist} - ${beatmap.beatmapset.title} [${beatmap.version}]`)
         .setURL(`${beatmap.url}`)

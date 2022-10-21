@@ -9,9 +9,9 @@ export async function beatmap(message: any, interaction: any, args: any) {
     let mods = "";
 
     if (message && message.reference != null) {
-        let reference_id: any = message.reference?.messageId;
-        let reference_message = await message.channel.messages.fetch(reference_id);
-        let embed = reference_message.embeds[0];
+        const reference_id: any = message.reference?.messageId;
+        const reference_message = await message.channel.messages.fetch(reference_id);
+        const embed = reference_message.embeds[0];
         url = embed.url;
     }
 
@@ -31,7 +31,7 @@ export async function beatmap(message: any, interaction: any, args: any) {
                     return;
                 }
 
-                for (let embed of mes.embeds) {
+                for (const embed of mes.embeds) {
                     if (embed.url != null && embed.url?.includes("//osu.ppy.sh/beatmap")) {
                         url = embed.url;
                     }
@@ -54,8 +54,8 @@ export async function beatmap(message: any, interaction: any, args: any) {
     let isSet = false;
 
     if (url.includes("//osu.ppy.sh/beatmapsets/")) {
-        let split = url.split("beatmapsets/")[1];
-        let para = split.split("/");
+        const split = url.split("beatmapsets/")[1];
+        const para = split.split("/");
 
         if (para.length == 2) {
             id = sanitize(para[1]);
@@ -70,7 +70,7 @@ export async function beatmap(message: any, interaction: any, args: any) {
     }
 
     if (url.includes("//osu.ppy.sh/beatmaps/")) {
-        let split = url.split("beatmaps/")[1];
+        const split = url.split("beatmaps/")[1];
         id = sanitize(split);
         isSet = false;
     }

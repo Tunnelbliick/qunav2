@@ -2,7 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 
 export function checkIfUserExists(userObject: any, message?: Message, interaction?: any) {
     if (userObject == null || userObject.userid == null) {
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setColor(0x737df9)
             .setDescription(`No account linked to this User.\nPlease link your account with /link`)
 
@@ -20,7 +20,7 @@ export function checkIfUserExists(userObject: any, message?: Message, interactio
 export function checkIfUserIsLInked(userObject: any, tag: any, message: Message) {
     if (userObject == null || userObject.userid == null) {
 
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setColor(0x737df9)
             .setDescription(`${tag} has no Profile linked`)
 
@@ -32,7 +32,7 @@ export function checkIfUserIsLInked(userObject: any, tag: any, message: Message)
 }
 
 export function noUserFound(message: Message) {
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor(0x737df9)
         .setDescription(`No user was found with this name`)
 

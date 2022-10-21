@@ -16,7 +16,7 @@ interface placement {
 
 export async function compareworldcups(message: any, interaction: any, args: any, default_mode: any) {
 
-    let filter: owc_filter = buildfilter(interaction, args, default_mode)!;
+    const filter: owc_filter = buildfilter(interaction, args, default_mode)!;
 
     let tournaments: any;
 
@@ -26,16 +26,16 @@ export async function compareworldcups(message: any, interaction: any, args: any
         tournaments = await owc.find({});
     }
 
-    let tournament_ids = tournaments.map((t: any) => {
+    const tournament_ids = tournaments.map((t: any) => {
         if(t.mode !== "catch" || t.year !== "2012") return t.id
     });
 
-    let teams = await owcteam.find({ owc: { $in: [...tournament_ids] }, place: { $in: [1, 2, 3] } });
+    const teams = await owcteam.find({ owc: { $in: [...tournament_ids] }, place: { $in: [1, 2, 3] } });
 
     let team_placements: Map<string, placement[]> = new Map<string, placement[]>();
 
     teams.forEach((t: any) => {
-        let placement = { mode: t.mode, place: t.place };
+        const placement = { mode: t.mode, place: t.place };
         let placements: any = team_placements.get(t.name);
 
         if (placements === undefined) {
@@ -57,8 +57,8 @@ export async function compareworldcups(message: any, interaction: any, args: any
             return;
         }
 
-        let code: string = getCode(k);
-        let medals = v.sort((a: any, b: any) => {
+        const code: string = getCode(k);
+        const medals = v.sort((a: any, b: any) => {
             if (a.place === b.place) {
                 return ('' + a.mode).localeCompare(b.mode);
             }
@@ -68,7 +68,7 @@ export async function compareworldcups(message: any, interaction: any, args: any
         description += `:flag_${code.toLocaleLowerCase()}: `
 
         medals.forEach((medal: placement) => {
-            let emote = owc_gamemode_icons[`${medal.mode}${medal.place}`]
+            const emote = owc_gamemode_icons[`${medal.mode}${medal.place}`]
             description += `${emote}`;
         })
 
@@ -77,7 +77,7 @@ export async function compareworldcups(message: any, interaction: any, args: any
     });
 
 
-    let embed = new MessageEmbed().
+    const embed = new MessageEmbed().
         setTitle(`Comparing World Cup Teams`)
         .setColor("#4b67ba")
         .setDescription(description)

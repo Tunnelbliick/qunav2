@@ -7,7 +7,7 @@ const { createCanvas, loadImage } = require('canvas')
 
 export async function buildDownvote(recommendation: any, index: any) {
 
-    let downvote = new MessageEmbed()
+    const downvote = new MessageEmbed()
     .setColor("#ed4245")
     .setTitle(`${recommendation.artist} - ${recommendation.title} [${recommendation.version}]`)
     .setDescription(`Successfully downvoted ${recommendation.title} [${recommendation.version}]`)
@@ -19,7 +19,7 @@ export async function buildDownvote(recommendation: any, index: any) {
 
 export async function buildUpvote(recommendation: any, index: any) {
 
-    let upvote = new MessageEmbed()
+    const upvote = new MessageEmbed()
     .setColor("#3ba55d")
     .setTitle(`${recommendation.artist} - ${recommendation.title} [${recommendation.version}]`)
     .setDescription(`Successfully upvoted ${recommendation.title} [${recommendation.version}]`)
@@ -30,19 +30,19 @@ export async function buildUpvote(recommendation: any, index: any) {
 }
 
 export async function buildRecommendation(recommendation: any, index: any, max: any) {
-    let embedColor = getDifficultyColor(recommendation.star);
+    const embedColor = getDifficultyColor(recommendation.star);
     let mods = [];
     let typestring = "";
 
     if (recommendation.mods != undefined)
         mods = recommendation.mods;
-    let bpm = recommendation.bpm;
+    const bpm = recommendation.bpm;
 
-    let stats = calcualteStatsFromSuggestion(recommendation);
+    const stats = calcualteStatsFromSuggestion(recommendation);
 
     let mString = "";
 
-    for (let m of mods) {
+    for (const m of mods) {
         mString += `\`${m}\` `;
     }
 
@@ -50,28 +50,28 @@ export async function buildRecommendation(recommendation: any, index: any, max: 
         mString = `\`NM\``;
     }
 
-    for (let t of recommendation.type) {
+    for (const t of recommendation.type) {
         typestring += `\`${t.category}\` `;
     }
 
-    let upvotedownvoteChart = await updownvote(recommendation);
-    let typesChart = await categoriechart(recommendation);
+    const upvotedownvoteChart = await updownvote(recommendation);
+    const typesChart = await categoriechart(recommendation);
 
     const canvas = createCanvas(300, 150)
     const ctx = canvas.getContext('2d')
 
-    let upvoteDownvote = await loadImage(upvotedownvoteChart);
-    let types = await loadImage(typesChart);
+    const upvoteDownvote = await loadImage(upvotedownvoteChart);
+    const types = await loadImage(typesChart);
 
     ctx.drawImage(upvoteDownvote, 0, 0); // Or at whatever offset you like
     ctx.drawImage(types, canvas.width - types.width, 0);
 
-    let canvasBase = await canvas.toDataURL();
+    const canvasBase = await canvas.toDataURL();
 
     // index is 0 bound display starts from 1 tho
     index++;
 
-    let recommendationembed = new MessageEmbed()
+    const recommendationembed = new MessageEmbed()
         .setAuthor({ name: `Personal beatmap recommendation (${index}/${max}` })
         .setColor(embedColor)
         .setTitle(`${recommendation.artist} - ${recommendation.title} [${recommendation.version}]`)

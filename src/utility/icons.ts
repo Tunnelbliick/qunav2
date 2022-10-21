@@ -17,7 +17,7 @@ export enum gamemode_icons {
     fruits = "<:catch:950584522951516242>"
 }
 
-export let owc_rank_icons: any = {
+export const owc_rank_icons: any = {
     1: "<:gold:1028355775350964328>",
     2: "<:silver:1028355773660676146>",
     3: "<:bronze:1028355772079407188>",
@@ -25,7 +25,7 @@ export let owc_rank_icons: any = {
     5: "<:tin:1028355768115794090>"
 }
 
-export let owc_gamemode_icons: any = {
+export const owc_gamemode_icons: any = {
     "osu1" : "<:osu_gold:1028352444142452856>",
     "osu2" : "<:osu_silver:1028352442385043546>",
     "osu3" : "<:osu_bronze:1028352440363397211>",

@@ -7,25 +7,25 @@ const DataImageAttachment = require("dataimageattachment");
 
 export async function categoryvote(currentid: any, userid: any, interaction: any) {
 
-    let recommendation: any = await Recommendation.findOne({ _id: currentid });
+    const recommendation: any = await Recommendation.findOne({ _id: currentid });
 
-    let categories = recommendation.type;
+    const categories = recommendation.type;
 
-    let chart = await categorieLabeledchart(categories);
+    const chart = await categorieLabeledchart(categories);
 
-    let row = new MessageActionRow();
+    const row = new MessageActionRow();
 
-    let components: any = [];
+    const components: any = [];
 
-    let ids: any = [];
+    const ids: any = [];
 
-    let recommendationembed = buildCategoryVoteEmbed(recommendation, null);
+    const recommendationembed = buildCategoryVoteEmbed(recommendation, null);
 
     categories.forEach((category: any) => {
 
-        let id = `category_vote_${category.category}_${currentid}_${userid}`
+        const id = `category_vote_${category.category}_${currentid}_${userid}`
 
-        let vote = new MessageButton()
+        const vote = new MessageButton()
             .setCustomId(id)
             .setLabel(`⬆️ ${category.category}`)
             .setStyle("PRIMARY");
