@@ -13,7 +13,7 @@ export default {
     callback: async ({ message, args, prefix }) => {
 
          if (args[0] == "-h" || args[0] == "-help" || args[0] == "h" || args[0] == "help") {
-             let embed = helpshowsuggestions(prefix);
+             const embed = helpshowsuggestions(prefix);
              message.reply({ embeds: [embed] });
              return;
          }

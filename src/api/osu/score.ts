@@ -37,11 +37,11 @@ export async function getBeatmapScore(beatmap: any, userid: any, mode?: any) {
 export async function getScoresForUsernameForBeatMap(mapid: string, username: any) {
 
 
-    let beatmap: any = await getBeatmap(mapid);
-    let user: any = await getUserByUsername(username, beatmap.mode);
-    let scoresPromise: any = getBeatmapScore(mapid, user.id, beatmap.mode);
-    let top100Promise: any = getTopForUser(user.id, undefined, undefined, undefined);
-    let leaderboardPromise: any = getLeaderBoard(mapid, undefined);
+    const beatmap: any = await getBeatmap(mapid);
+    const user: any = await getUserByUsername(username, beatmap.mode);
+    const scoresPromise: any = getBeatmapScore(mapid, user.id, beatmap.mode);
+    const top100Promise: any = getTopForUser(user.id, undefined, undefined, undefined);
+    const leaderboardPromise: any = getLeaderBoard(mapid, undefined);
     let top: any;
     let lb: any;
     let scores: any;
@@ -68,13 +68,13 @@ export async function getScoresForUsernameForBeatMap(mapid: string, username: an
 
     return new Promise((resolve, reject) => {
 
-        let promises: Array<Promise<any>> = []
+        const promises: Array<Promise<any>> = []
 
         scores.scores.forEach(async (score: any) => {
 
-            let top100 = top.find((t: any) => t.value.id === score.best_id);
+            const top100 = top.find((t: any) => t.value.id === score.best_id);
 
-            let leaderboard = lb.find((t: any) => t.value.id === score.best_id);
+            const leaderboard = lb.find((t: any) => t.value.id === score.best_id);
 
             if (top100 !== undefined)
                 top_100_position = top100.position;
@@ -82,7 +82,7 @@ export async function getScoresForUsernameForBeatMap(mapid: string, username: an
             if (leaderboard !== undefined)
                 leaderboard_position = leaderboard.position;
 
-            let promise: Promise<any> = new Promise((resolve, reject) => {
+            const promise: Promise<any> = new Promise((resolve, reject) => {
 
                 const args: simulateArgs = {
                     mapid: mapid,
@@ -145,10 +145,10 @@ export async function getScoresForUsernameForBeatMap(mapid: string, username: an
 
 export async function getScoresForBeatMap(mapid: string, userid: string) {
 
-    let scoresPromise: any = getBeatmapScore(mapid, userid)
-    let beatmapPromise: any = getBeatmap(mapid);
-    let top100: any = getTopForUser(userid, undefined, undefined, undefined);
-    let leaderboard: any = getLeaderBoard(mapid, undefined);
+    const scoresPromise: any = getBeatmapScore(mapid, userid)
+    const beatmapPromise: any = getBeatmap(mapid);
+    const top100: any = getTopForUser(userid, undefined, undefined, undefined);
+    const leaderboard: any = getLeaderBoard(mapid, undefined);
 
     let scores: any;
     let beatmap: any;
@@ -178,13 +178,13 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
 
     return new Promise((resolve, reject) => {
 
-        let promises: Array<Promise<any>> = []
+        const promises: Array<Promise<any>> = []
 
         scores.scores.forEach(async (score: any) => {
             
-            let top100 = top.find((t: any) => t.value.id === score.best_id);
+            const top100 = top.find((t: any) => t.value.id === score.best_id);
 
-            let leaderboard = lb.find((t: any) => t.value.id === score.best_id);
+            const leaderboard = lb.find((t: any) => t.value.id === score.best_id);
 
             if (top100 !== undefined)
                 top_100_position = top100.position;
@@ -192,7 +192,7 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
             if (leaderboard !== undefined)
                 leaderboard_position = leaderboard.position;
 
-            let promise: Promise<any> = new Promise(async (resolve, reject) => {
+            const promise: Promise<any> = new Promise(async (resolve, reject) => {
 
                 const args: simulateArgs = {
                     mapid: mapid,
@@ -207,12 +207,12 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
                     mods: score.mods
                 };
 
-                let acc100: any = loadacc100(mapid, beatmap.checksum, score.mode, score.mods);
-                let raiting: any = difficulty(mapid, beatmap.checksum, score.mode, score.mods);
+                const acc100: any = loadacc100(mapid, beatmap.checksum, score.mode, score.mods);
+                const raiting: any = difficulty(mapid, beatmap.checksum, score.mode, score.mods);
 
                 if (score.pp == null) {
 
-                    let ppOfPlay: any = simulate(args);
+                    const ppOfPlay: any = simulate(args);
 
                     Promise.allSettled([acc100, ppOfPlay, raiting]).then((result: any) => {
 

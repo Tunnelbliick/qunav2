@@ -17,19 +17,19 @@ export async function buildshowSuggestions(params: show_suggestion_embed) {
 
     let fields: any = "";
 
-    for (let content of pagecontent) {
+    for (const content of pagecontent) {
 
-        let stats = calcualteStatsFromSuggestion(content);
+        const stats = calcualteStatsFromSuggestion(content);
 
-        let mods: Array<String> = content.mods;
+        const mods: Array<String> = content.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
 
-        let categories: Array<String> = content.type;
+        const categories: Array<String> = content.type;
         let appliedcategories: any = "";
         categories.forEach((t: any) => { appliedcategories += `\`${t.category}\` ` });
 
-        let field: any = `[**${content.artist} - ${content.title} [${content.version}]**](https://osu.ppy.sh/beatmaps/${content.mapid})  ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} \n` +
+        const field: any = `[**${content.artist} - ${content.title} [${content.version}]**](https://osu.ppy.sh/beatmaps/${content.mapid})  ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} \n` +
             `Category: ${appliedcategories}\n` +
             `Length: \`${stats.min}:${stats.strSec}\` (\`${stats.dmin}:${stats.strDsec}\`) BPM: \`${content.bpm}\` Objects: \`${stats.total_objects}\`\n` +
             `CS:\`${content.cs}\` AR:\`${content.ar}\` OD:\`${content.od}\` HP:\`${content.hp}\` Stars: \`${content.star}★\`\n\n`;
@@ -41,7 +41,7 @@ export async function buildshowSuggestions(params: show_suggestion_embed) {
         fields = `No recommendations were found.`; // or if your Arumi: OI! you dont have anny recommendations... // shut the fuck up LOL
     }
 
-    let max_page = Math.ceil(max / 5);
+    const max_page = Math.ceil(max / 5);
 
     let recommendationlist
 

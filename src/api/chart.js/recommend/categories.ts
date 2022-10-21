@@ -2,11 +2,11 @@ const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
 export async function categoriechart(recommendation: any) {
 
-    let pielabel = [];
-    let pieValue = [];
-    let pieColors = [];
+    const pielabel = [];
+    const pieValue = [];
+    const pieColors = [];
 
-    for (let type of recommendation.type) {
+    for (const type of recommendation.type) {
         pielabel.push(type.category);
         var randomColor = Math.floor(Math.random()*16777215).toString(16);
         pieColors.push(`#${randomColor}`);
@@ -39,17 +39,17 @@ export async function categoriechart(recommendation: any) {
         },
     };
 
-    let types_promise = await typesChart.renderToDataURL(type_configuration);
+    const types_promise = await typesChart.renderToDataURL(type_configuration);
     return types_promise;
 }
 
 export async function categorieLabeledchart(categories: any) {
 
-    let pielabel = [];
-    let pieValue = [];
-    let pieColors = [];
+    const pielabel = [];
+    const pieValue = [];
+    const pieColors = [];
 
-    for (let category of categories) {
+    for (const category of categories) {
         pielabel.push(category.category);
         var randomColor = Math.floor(Math.random()*16777215).toString(16);
         pieColors.push(`#${randomColor}`);
@@ -82,6 +82,6 @@ export async function categorieLabeledchart(categories: any) {
         },
     };
 
-    let types_promise = await typesChart.renderToDataURL(type_configuration);
+    const types_promise = await typesChart.renderToDataURL(type_configuration);
     return types_promise;
 }

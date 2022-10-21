@@ -9,7 +9,7 @@ const ct = require('countries-and-timezones');
 
 export async function changetimezone(message: any, args: any, prefix: any) {
 
-    let userObject: any = await User.findOne({ discordid: await encrypt(message.author.id) });
+    const userObject: any = await User.findOne({ discordid: await encrypt(message.author.id) });
 
     if (checkIfUserExists(userObject, message)) {
         return;
@@ -17,15 +17,15 @@ export async function changetimezone(message: any, args: any, prefix: any) {
 
     message.channel.sendTyping();
 
-    let userid = userObject.userid;
+    const userid = userObject.userid;
 
-    let user: any = await getUser(userid, "osu");
+    const user: any = await getUser(userid, "osu");
 
     if (args[0] == "-r" || args[0] == "r") {
         userObject.timezone = undefined;
         await userObject.save();
 
-        let timezone = ct.getCountry(user.country_code).timezones[0];
+        const timezone = ct.getCountry(user.country_code).timezones[0];
 
         const embed = new MessageEmbed()
             .setTitle("Timezone Edited!")
@@ -36,7 +36,7 @@ export async function changetimezone(message: any, args: any, prefix: any) {
         return;
     }
 
-    let time = new moment();
+    const time = new moment();
 
     let input: any = args[0]
 

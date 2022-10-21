@@ -34,9 +34,9 @@ export async function buildProfileEmbed(data: any, message: Message, mode: strin
     }
 
     // @ts-ignore 
-    let gamemode = gamemode_icons[mode];
+    const gamemode = gamemode_icons[mode];
 
-    let result = await generateProfileChart(data);
+    const result = await generateProfileChart(data);
 
     const embed = new MessageEmbed()
         .setColor(0x737df9)

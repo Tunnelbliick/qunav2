@@ -20,55 +20,55 @@ export default (client: Client) => {
     client.on('interactionCreate', async (interaction: any) => {
 
         if (interaction.customId != undefined) {
-            let customid = interaction.customId;
+            const customid = interaction.customId;
 
-            let message: Message = interaction.message;
+            const message: Message = interaction.message;
 
-            let para = customid.split("_");
+            const para = customid.split("_");
 
-            let userObject: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
+            const userObject: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
             if (para[0] == "recommendation") {
 
-                let method = para[1];
-                let userid = para[2];
+                const method = para[1];
+                const userid = para[2];
                 let index = para[3];
-                let reclistid = para[4];
+                const reclistid = para[4];
                 let currentid = para[5];
 
                 switch (method) {
                     case "upvote": {
 
-                        let recommendation: any = await Recommendation.findOne({ _id: currentid });
+                        const recommendation: any = await Recommendation.findOne({ _id: currentid });
 
                         currentid = recommendation.id;
 
-                        let row = new MessageActionRow();
+                        const row = new MessageActionRow();
 
                         const canvas = createCanvas(1, 1);
-                        let img = await canvas.toDataURL();
+                        const img = await canvas.toDataURL();
 
-                        let next = new MessageButton().
+                        const next = new MessageButton().
                             setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
                             .setEmoji("951821813460115527")
                             .setStyle("PRIMARY");
 
-                        let prior = new MessageButton().
+                        const prior = new MessageButton().
                             setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
                             .setEmoji("951821813288140840")
                             .setStyle("PRIMARY");
 
-                        let upvote = new MessageButton()
+                        const upvote = new MessageButton()
                             .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
                             .setEmoji("955320158270922772")
                             .setStyle("SUCCESS");
 
-                        let downvote = new MessageButton()
+                        const downvote = new MessageButton()
                             .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
                             .setEmoji("955319940435574794")
                             .setStyle("DANGER");
 
-                        let vote = new MessageButton().
+                        const vote = new MessageButton().
                             setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
                             .setLabel("Vote")
                             .setStyle("PRIMARY");
@@ -76,7 +76,7 @@ export default (client: Client) => {
 
                         row.setComponents([prior, upvote, downvote, next, vote]);
 
-                        let embed = await buildUpvote(recommendation, index);
+                        const embed = await buildUpvote(recommendation, index);
 
                         await procyon.liked(index, currentid);
                         await Recommendation.updateOne({ _id: currentid }, { $addToSet: { upvote: userObject.userid }, $pull: { downvote: userObject.userid } });
@@ -91,33 +91,33 @@ export default (client: Client) => {
 
                     case "downvote": {
 
-                        let recommendation: any = await Recommendation.findOne({ _id: currentid });
+                        const recommendation: any = await Recommendation.findOne({ _id: currentid });
 
                         currentid = recommendation.id;
 
-                        let row = new MessageActionRow();
+                        const row = new MessageActionRow();
 
-                        let next = new MessageButton().
+                        const next = new MessageButton().
                             setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
                             .setEmoji("951821813460115527")
                             .setStyle("PRIMARY");
 
-                        let prior = new MessageButton().
+                        const prior = new MessageButton().
                             setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
                             .setEmoji("951821813288140840")
                             .setStyle("PRIMARY");
 
-                        let upvote = new MessageButton()
+                        const upvote = new MessageButton()
                             .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
                             .setEmoji("955320158270922772")
                             .setStyle("SUCCESS");
 
-                        let downvote = new MessageButton()
+                        const downvote = new MessageButton()
                             .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
                             .setEmoji("955319940435574794")
                             .setStyle("DANGER");
 
-                        let vote = new MessageButton().
+                        const vote = new MessageButton().
                             setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
                             .setLabel("Vote")
                             .setStyle("PRIMARY");
@@ -125,7 +125,7 @@ export default (client: Client) => {
 
                         row.setComponents([prior, upvote, downvote, next, vote]);
 
-                        let embed = await buildDownvote(recommendation, index);
+                        const embed = await buildDownvote(recommendation, index);
 
                         await procyon.disliked(index, currentid);
                         await Recommendation.updateOne({ _id: currentid }, { $addToSet: { downvote: userObject.userid }, $pull: { upvote: userObject.userid } });
@@ -139,47 +139,47 @@ export default (client: Client) => {
 
                     case "next": {
 
-                        let reclist = await RecommndationList.findById({ _id: reclistid });
+                        const reclist = await RecommndationList.findById({ _id: reclistid });
 
                         if (reclist != undefined) {
 
-                            let max = reclist.mongoids.length;
+                            const max = reclist.mongoids.length;
 
                             if (index == max) {
 
                                 const canvas = createCanvas(1, 1)
 
-                                let img = await canvas.toDataURL();
+                                const img = await canvas.toDataURL();
 
-                                let errorEmbed = new MessageEmbed()
+                                const errorEmbed = new MessageEmbed()
                                     .setColor(0x737df9)
                                     .setTitle(`No more recommendations`)
                                     .setImage("attachment://recommendation.png")
                                     .setDescription(`Quna currently has no more personal recommendations for you.\n\nUse a filter to find more maps`)
 
-                                let row = new MessageActionRow();
+                                const row = new MessageActionRow();
 
-                                let next = new MessageButton().
+                                const next = new MessageButton().
                                     setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setEmoji("951821813460115527")
                                     .setStyle("PRIMARY");
 
-                                let prior = new MessageButton().
+                                const prior = new MessageButton().
                                     setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setEmoji("951821813288140840")
                                     .setStyle("PRIMARY");
 
-                                let upvote = new MessageButton()
+                                const upvote = new MessageButton()
                                     .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setEmoji("955320158270922772")
                                     .setStyle("SUCCESS");
 
-                                let downvote = new MessageButton()
+                                const downvote = new MessageButton()
                                     .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setEmoji("955319940435574794")
                                     .setStyle("DANGER");
 
-                                let vote = new MessageButton().
+                                const vote = new MessageButton().
                                     setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setLabel("Vote")
                                     .setStyle("PRIMARY");
@@ -199,33 +199,33 @@ export default (client: Client) => {
 
                             }
 
-                            let recommendation: any = await Recommendation.findOne({ _id: reclist.mongoids[index] });
+                            const recommendation: any = await Recommendation.findOne({ _id: reclist.mongoids[index] });
                             currentid = recommendation.id;
 
-                            let row = new MessageActionRow();
+                            const row = new MessageActionRow();
 
-                            let next = new MessageButton().
+                            const next = new MessageButton().
                                 setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setEmoji("951821813460115527")
                                 .setStyle("PRIMARY");
 
-                            let prior = new MessageButton().
+                            const prior = new MessageButton().
                                 setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setEmoji("951821813288140840")
                                 .setStyle("PRIMARY");
 
-                            let upvote = new MessageButton()
+                            const upvote = new MessageButton()
                                 .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setEmoji("955320158270922772")
                                 .setStyle("SUCCESS");
 
-                            let downvote = new MessageButton()
+                            const downvote = new MessageButton()
                                 .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setEmoji("955319940435574794")
                                 .setStyle("DANGER");
 
 
-                            let vote = new MessageButton().
+                            const vote = new MessageButton().
                                 setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setLabel("Vote")
                                 .setStyle("PRIMARY");
@@ -233,7 +233,7 @@ export default (client: Client) => {
 
                             row.setComponents([prior, upvote, downvote, next, vote]);
 
-                            let result: any = await buildRecommendation(recommendation, index, max);
+                            const result: any = await buildRecommendation(recommendation, index, max);
 
                             await message.edit({ embeds: [result.embed], components: [row], files: [new DataImageAttachment(result.img, "recommendation.png")] });
                             await interaction.deferUpdate();
@@ -247,39 +247,39 @@ export default (client: Client) => {
 
                     case "prior": {
 
-                        let reclist: any = await RecommndationList.findById({ _id: reclistid });
+                        const reclist: any = await RecommndationList.findById({ _id: reclistid });
 
-                        let max = reclist.mongoids.length;
+                        const max = reclist.mongoids.length;
 
                         if (reclist != undefined) {
 
                             if (index == 0) {
 
-                                let recommendation: any = await Recommendation.findOne({ _id: reclist.mongoids[index] });
+                                const recommendation: any = await Recommendation.findOne({ _id: reclist.mongoids[index] });
 
-                                let row = new MessageActionRow();
+                                const row = new MessageActionRow();
 
-                                let next = new MessageButton().
+                                const next = new MessageButton().
                                     setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setEmoji("951821813460115527")
                                     .setStyle("PRIMARY");
 
-                                let prior = new MessageButton().
+                                const prior = new MessageButton().
                                     setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setEmoji("951821813288140840")
                                     .setStyle("PRIMARY");
 
-                                let upvote = new MessageButton()
+                                const upvote = new MessageButton()
                                     .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setEmoji("955320158270922772")
                                     .setStyle("SUCCESS");
 
-                                let downvote = new MessageButton()
+                                const downvote = new MessageButton()
                                     .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setEmoji("955319940435574794")
                                     .setStyle("DANGER");
 
-                                let vote = new MessageButton().
+                                const vote = new MessageButton().
                                     setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
                                     .setLabel("Vote")
                                     .setStyle("PRIMARY");
@@ -287,7 +287,7 @@ export default (client: Client) => {
 
                                 row.setComponents([prior, upvote, downvote, next, vote]);
 
-                                let result: any = await buildRecommendation(recommendation, index, max);
+                                const result: any = await buildRecommendation(recommendation, index, max);
 
                                 await message.edit({ embeds: [result.embed], components: [row], files: [new DataImageAttachment(result.img, "recommendation.png")] });
                                 await interaction.deferUpdate();
@@ -300,32 +300,32 @@ export default (client: Client) => {
 
                             }
 
-                            let recommendation: any = await Recommendation.findOne({ _id: reclist.mongoids[index] });
+                            const recommendation: any = await Recommendation.findOne({ _id: reclist.mongoids[index] });
                             currentid = recommendation.id;
 
-                            let row = new MessageActionRow();
+                            const row = new MessageActionRow();
 
-                            let next = new MessageButton().
+                            const next = new MessageButton().
                                 setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setEmoji("951821813460115527")
                                 .setStyle("PRIMARY");
 
-                            let prior = new MessageButton().
+                            const prior = new MessageButton().
                                 setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setEmoji("951821813288140840")
                                 .setStyle("PRIMARY");
 
-                            let upvote = new MessageButton()
+                            const upvote = new MessageButton()
                                 .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setEmoji("955320158270922772")
                                 .setStyle("SUCCESS");
 
-                            let downvote = new MessageButton()
+                            const downvote = new MessageButton()
                                 .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setEmoji("955319940435574794")
                                 .setStyle("DANGER");
 
-                            let vote = new MessageButton().
+                            const vote = new MessageButton().
                                 setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
                                 .setLabel("Vote")
                                 .setStyle("PRIMARY");
@@ -333,7 +333,7 @@ export default (client: Client) => {
 
                             row.setComponents([prior, upvote, downvote, next, vote]);
 
-                            let result: any = await buildRecommendation(recommendation, index, max);
+                            const result: any = await buildRecommendation(recommendation, index, max);
 
                             await message.edit({ embeds: [result.embed], components: [row], files: [new DataImageAttachment(result.img, "recommendation.png")] });
                             await interaction.deferUpdate();
@@ -347,7 +347,7 @@ export default (client: Client) => {
 
                     case "vote": {
 
-                        let message = await categoryvote(currentid, userid, interaction)
+                        const message = await categoryvote(currentid, userid, interaction)
 
 
                     }

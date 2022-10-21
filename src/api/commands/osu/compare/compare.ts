@@ -18,16 +18,16 @@ export async function compare(message: any, interaction: any, args: any) {
     let tag;
 
     if (message && message.reference != null) {
-        let reference_id: any = message.reference?.messageId;
-        let reference_message = await message.channel.messages.fetch(reference_id);
-        let embed = reference_message.embeds[0];
+        const reference_id: any = message.reference?.messageId;
+        const reference_message = await message.channel.messages.fetch(reference_id);
+        const embed = reference_message.embeds[0];
         url = embed.url;
     }
 
     if (message) {
         userid = message.author.id
 
-        for (let arg of args) {
+        for (const arg of args) {
 
             // If Argument is tag
             if (arg.startsWith("<@")) {
@@ -50,7 +50,7 @@ export async function compare(message: any, interaction: any, args: any) {
         }
     } else {
 
-        let options = interaction.options;
+        const options = interaction.options;
 
         url = options.getString("map") === null ? "" : options.getString("map")!;
         userid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")?.toString()!;
@@ -78,7 +78,7 @@ export async function compare(message: any, interaction: any, args: any) {
                 if (url != "") {
                     return;
                 }
-                for (let embed of mes.embeds) {
+                for (const embed of mes.embeds) {
                     if (embed.url != null && embed.url?.includes("//osu.ppy.sh/beatmap")) {
                         url = embed.url;
                     }
@@ -92,15 +92,15 @@ export async function compare(message: any, interaction: any, args: any) {
     }
 
     if (url.includes("//osu.ppy.sh/beatmapsets/")) {
-        let split = url.split("beatmapsets/")[1];
-        let para = split.split("/");
+        const split = url.split("beatmapsets/")[1];
+        const para = split.split("/");
 
         if (para.length == 2) {
             id = sanitize(para[1]);
         }
     }
     if (url.includes("//osu.ppy.sh/beatmaps/")) {
-        let split = url.split("beatmaps/")[1];
+        const split = url.split("beatmaps/")[1];
         id = sanitize(split);
     }
     if (!id) {
@@ -123,7 +123,7 @@ export async function compare(message: any, interaction: any, args: any) {
         }
     } else {
 
-        let userObject: any = await User.findOne({ discordid: await encrypt(userid) });
+        const userObject: any = await User.findOne({ discordid: await encrypt(userid) });
 
         if (checkIfUserIsLInked(userObject, tag, message)) {
             return;
@@ -138,9 +138,9 @@ export async function compare(message: any, interaction: any, args: any) {
     }
 
     user = response.user;
-    let map = response.beatmap;
+    const map = response.beatmap;
 
-    let scoreList: Array<any> = [];
+    const scoreList: Array<any> = [];
 
     const top = response.top;
     const leaderboard = response.leaderboard;

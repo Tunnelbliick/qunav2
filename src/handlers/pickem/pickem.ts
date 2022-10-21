@@ -15,7 +15,7 @@ export default (client: Client) => {
             return;
         }
 
-        let split = interaction.customId.split("_");
+        const split = interaction.customId.split("_");
 
         if (slector.includes(split[0]) == false) {
             return;

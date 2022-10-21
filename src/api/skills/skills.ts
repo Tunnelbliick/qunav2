@@ -35,7 +35,7 @@ export async function getTotalSkills(top_100: any) {
         (task: any, taskIndex: number, workerIndex: number) => new Promise(
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
-                    let dest = `${process.env.FOLDER_TEMP}${task.value.beatmap.id}_${task.value.beatmap.checksum}.osu`;
+                    const dest = `${process.env.FOLDER_TEMP}${task.value.beatmap.id}_${task.value.beatmap.checksum}.osu`;
                     downloadAndOverrideBeatmap('https://osu.ppy.sh/osu/', dest, task.value.beatmap.id).then(() => { return resolve(true) });
                 } else {
                     return resolve(null);
@@ -47,7 +47,7 @@ export async function getTotalSkills(top_100: any) {
 
     const skip = new Promise((res) => setTimeout(() => res("skip"), 5000));
 
-    let check_which_won = await Promise.race([skip, dopwnload_beatmaps]);
+    const check_which_won = await Promise.race([skip, dopwnload_beatmaps]);
 
     if (check_which_won === "skip") {
         return undefined;
@@ -66,7 +66,7 @@ export async function getTotalSkills(top_100: any) {
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
 
-                    let sim: simulateArgs = {
+                    const sim: simulateArgs = {
                         mode: task.value.mode,
                         checksum: task.value.beatmap.checksum,
                         mapid: task.value.beatmap.id,
@@ -105,7 +105,7 @@ export async function getTotalSkills(top_100: any) {
     speed = speed.sort((a: any, b: any) => { return b - a; })
 
     for (let i = 0; i < 100; i++) {
-        let weight = Math.pow(0.95, i);
+        const weight = Math.pow(0.95, i);
         aimpp += aim[i] * weight;
         accpp += acc[i] * weight;
         speedpp += speed[i] * weight;
@@ -116,7 +116,7 @@ export async function getTotalSkills(top_100: any) {
     accpp = normalise(accpp / weight_sum);
     speedpp = normalise(speedpp / weight_sum);
 
-    let skills: skills = {
+    const skills: skills = {
         aim: aimpp,
         acc: accpp,
         speed: speedpp
@@ -136,7 +136,7 @@ export async function getAllSkills(top_100: any) {
         (task: any, taskIndex: number, workerIndex: number) => new Promise(
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
-                    let dest = `${process.env.FOLDER_TEMP}${task.value.beatmap.id}_${task.value.beatmap.checksum}.osu`;
+                    const dest = `${process.env.FOLDER_TEMP}${task.value.beatmap.id}_${task.value.beatmap.checksum}.osu`;
                     downloadAndOverrideBeatmap('https://osu.ppy.sh/osu/', dest, task.value.beatmap.id).then(() => { return resolve(true) });
                 } else {
                     return resolve(null);
@@ -148,7 +148,7 @@ export async function getAllSkills(top_100: any) {
 
     const skip = new Promise((res) => setTimeout(() => res("skip"), 5000));
 
-    let check_which_won = await Promise.race([skip, dopwnload_beatmaps]);
+    const check_which_won = await Promise.race([skip, dopwnload_beatmaps]);
 
     if (check_which_won === "skip") {
         return undefined;
@@ -164,7 +164,7 @@ export async function getAllSkills(top_100: any) {
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
 
-                    let sim: simulateArgs = {
+                    const sim: simulateArgs = {
                         mode: task.value.mode,
                         checksum: task.value.beatmap.checksum,
                         mapid: task.value.beatmap.id,
@@ -209,7 +209,7 @@ export async function getAllSkills(top_100: any) {
     let weight_sum = 0;
 
     for (let i = 0; i < 100; i++) {
-        let weight = Math.pow(0.95, i);
+        const weight = Math.pow(0.95, i);
         aim_avg += aim[i].value * weight;
         acc_avg += acc[i].value * weight;
         speed_avg += speed[i].value * weight;
@@ -223,7 +223,7 @@ export async function getAllSkills(top_100: any) {
     star.forEach((a: any) => star_avg += a.value);
     star_avg = star_avg / star.length;
 
-    let skills: all_skills = {
+    const skills: all_skills = {
         aim: aim,
         acc: acc,
         speed: speed,
@@ -245,7 +245,7 @@ export function normalise(value: number): number {
 
     factor = Math.pow(factor, 10)
 
-    let res = -101.0 * factor + 101.0;
+    const res = -101.0 * factor + 101.0;
 
     return res;
 };

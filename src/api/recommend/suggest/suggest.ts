@@ -27,13 +27,13 @@ export async function suggest(suggestion: suggestion, message: any, prefix: any)
     let error;
     let categories_string = "";
     let mod_string = "";
-    let available_categoreis = [];
+    const available_categoreis = [];
 
-    for (let category of category_objects) {
+    for (const category of category_objects) {
         available_categoreis.push(category.name);
     }
 
-    for (let c of categories) {
+    for (const c of categories) {
         if (!available_categoreis.includes(c))
             error = c;
         else
@@ -45,7 +45,7 @@ export async function suggest(suggestion: suggestion, message: any, prefix: any)
         return;
     }
 
-    for (let m of mods) {
+    for (const m of mods) {
         mod_string += `\`${m}\` `;
     }
 
@@ -53,7 +53,7 @@ export async function suggest(suggestion: suggestion, message: any, prefix: any)
         mod_string = `\`NM\``;
     }
 
-    let suggestion_embed = new MessageEmbed()
+    const suggestion_embed = new MessageEmbed()
         .setAuthor({ name: `Confirm Beatmap Suggestion` })
         .setColor(embedColor)
         .setTitle(`${beatmap.beatmapset.artist} - ${beatmap.beatmapset.title} [${beatmap.version}]`)
@@ -72,14 +72,14 @@ export async function suggest(suggestion: suggestion, message: any, prefix: any)
         .setURL(`${beatmap.url}`)
 
     const row = new MessageActionRow();
-    let suggest = new MessageButton().setCustomId(`suggest_${message.id}_${message.author.id}`).setLabel("Suggest").setStyle("SUCCESS");
-    let discard = new MessageButton().setCustomId(`discard_${message.id}_${message.author.id}`).setLabel("Discard").setStyle("SECONDARY");
+    const suggest = new MessageButton().setCustomId(`suggest_${message.id}_${message.author.id}`).setLabel("Suggest").setStyle("SUCCESS");
+    const discard = new MessageButton().setCustomId(`discard_${message.id}_${message.author.id}`).setLabel("Discard").setStyle("SECONDARY");
 
     row.addComponents([suggest, discard]);
 
-    let msg = await message.reply({ embeds: [suggestion_embed], components: [row] });
+    const msg = await message.reply({ embeds: [suggestion_embed], components: [row] });
 
-    let collector_params: suggestion_collector_params = {
+    const collector_params: suggestion_collector_params = {
         beatmap: beatmap,
         difficulty: difficulty,
         stats: stats,

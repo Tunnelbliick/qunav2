@@ -12,7 +12,7 @@ export default {
     callback: async ({ message, args, prefix }) => {
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helprecentBest(prefix);
+            const embed = helprecentBest(prefix);
             message.reply({ embeds: [embed] });
             return;
         }

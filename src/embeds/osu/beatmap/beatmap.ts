@@ -20,7 +20,7 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
         return;
     }
 
-    let modArray = parseModString(mods);
+    const modArray = parseModString(mods);
     let modString = "";
 
     if (modArray.length >= 1) {
@@ -38,21 +38,21 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
     if (map_stats != undefined) {
         difficulty = map_stats.difficulty;
         graph = map_stats.graph;
-        let acc100 = map_stats.pp[100].toFixed(1);
-        let acc99 = map_stats.pp[99].toFixed(1);
-        let acc97 = map_stats.pp[97].toFixed(1);
-        let acc95 = map_stats.pp[95].toFixed(1);
+        const acc100 = map_stats.pp[100].toFixed(1);
+        const acc99 = map_stats.pp[99].toFixed(1);
+        const acc97 = map_stats.pp[97].toFixed(1);
+        const acc95 = map_stats.pp[95].toFixed(1);
 
         ppString = buildpp(acc100, acc99, acc97, acc95, data.mode);
     } else {
         ppString = "Could not load PP values";
     }
 
-    let background = await loadImage(data.beatmapset.covers.cover);
+    const background = await loadImage(data.beatmapset.covers.cover);
 
-    let chartURL = await generateBeatmapChart(graph);
+    const chartURL = await generateBeatmapChart(graph);
 
-    let chart = await loadImage(chartURL);
+    const chart = await loadImage(chartURL);
 
     const canvas = new Canvas(background.width, background.height)
     const ctx = canvas.getContext('2d')
@@ -62,7 +62,7 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
     ctx.filter = 'none';
     ctx.drawImage(chart, 0, 0);
 
-    let result = canvas.toDataURLSync();
+    const result = canvas.toDataURLSync();
 
     let stats: BeatmapStats = {
         cs: data.cs,
@@ -79,9 +79,9 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
     var embedColor = getDifficultyColor(difficulty.star.toFixed(2))
 
     // @ts-ignore 
-    let modeEmote = gamemode_icons[data.mode];
+    const modeEmote = gamemode_icons[data.mode];
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setAuthor({ name: `Mapset by ${data.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${data.beatmapset.user_id}`, url: `https://osu.ppy.sh/users/${data.beatmapset.user_id}` })
         .setColor(embedColor)
         .setTitle(`${data.beatmapset.artist} - ${data.beatmapset.title}`)
@@ -140,9 +140,9 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
 }
 
 function center(text: string, length: number): string {
-    let space = length - text.length;
-    let spac: String = " ";
-    let count = Math.round(space / 2);
+    const space = length - text.length;
+    const spac: String = " ";
+    const count = Math.round(space / 2);
     if (space % 2) {
         return spac.repeat(count - 1) + text + spac.repeat(count);
     }
@@ -152,7 +152,7 @@ function center(text: string, length: number): string {
 
 function buildpp(acc100: any, acc99: any, acc97: any, acc95: any, mode: any): string {
 
-    let seper = "─";
+    const seper = "─";
 
     let a95 = "95%";
     let a97 = "97%";
@@ -177,11 +177,11 @@ function buildpp(acc100: any, acc99: any, acc97: any, acc95: any, mode: any): st
         a99 = center(a99, acc99.toString().length + 2);
     }
 
-    let fill = `────┼${seper.repeat(a95.length)}┼${seper.repeat(a97.length)}┼${seper.repeat(a99.length)}┼`
+    const fill = `────┼${seper.repeat(a95.length)}┼${seper.repeat(a97.length)}┼${seper.repeat(a99.length)}┼`
 
-    let total_length = fill.length + acc100.toString().length + 2
+    const total_length = fill.length + acc100.toString().length + 2
 
-    let buildString = `${pre} │${a95}│${a97}│${a99}│ ${a100}\n${fill}${seper.repeat(total_length - fill.length)}\nPP  │ ${acc95} │ ${acc97} │ ${acc99} │ ${acc100}`;
+    const buildString = `${pre} │${a95}│${a97}│${a99}│ ${a100}\n${fill}${seper.repeat(total_length - fill.length)}\nPP  │ ${acc95} │ ${acc97} │ ${acc99} │ ${acc100}`;
 
     return buildString;
 

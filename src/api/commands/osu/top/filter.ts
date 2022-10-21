@@ -8,13 +8,13 @@ export function buildFilter(message: any, args: any, default_mode: any) {
     let search = "";
     let offset = 0;
     let mods = "";
-    let rank = [];
-    let usernameargs = [];
+    const rank = [];
+    const usernameargs = [];
     let discordid = message.author.id;
     let gamemode = default_mode;
     let arg_index = 0;
-    let acc = [];
-    let combo = [];
+    const acc = [];
+    const combo = [];
     let sort = "position";
     let reverse = false;
 
@@ -110,9 +110,9 @@ export function buildFilter(message: any, args: any, default_mode: any) {
 
     }
 
-    let username = buildUsernameOfArgs(usernameargs);
+    const username = buildUsernameOfArgs(usernameargs);
 
-    let filter: TopPlaysfilter = new TopPlaysfilter();
+    const filter: TopPlaysfilter = new TopPlaysfilter();
     filter.gamemode = gamemode;
     filter.search = search;
     filter.mods = parseModString(mods);

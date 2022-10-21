@@ -1,7 +1,7 @@
 import { Message, MessageEmbed } from "discord.js"
 
 export function fetchBeatmapError(message: Message) {
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor(0x737df9)
         .setDescription("Error 727: Beatmap not found in previous 50 messages.")
     message.channel.send({ embeds: [embed] })

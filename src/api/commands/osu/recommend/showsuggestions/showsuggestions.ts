@@ -21,7 +21,7 @@ export async function showsuggestions(message: any, args: any, prefix: any) {
 
     message.channel.sendTyping();
 
-    let option_filter: suggestion_filter = filterRecommends(args);
+    const option_filter: suggestion_filter = filterRecommends(args);
 
     if (args[0] && args[0].startsWith("<@")) {
         userid = args[0].replace("<@", "").replace(">", "");
@@ -48,30 +48,30 @@ export async function showsuggestions(message: any, args: any, prefix: any) {
         return;
     }
 
-    let recommendations: any = await Recommendation.find(query);
+    const recommendations: any = await Recommendation.find(query);
 
-    let skip_prior_button = new MessageButton()
+    const skip_prior_button = new MessageButton()
         .setCustomId(`${message.id}_skipdec`)
         .setEmoji("951823325586395167")
         .setStyle('PRIMARY');
-    let prior_button = new MessageButton()
+    const prior_button = new MessageButton()
         .setCustomId(`${message.id}_dec`)
         .setEmoji("951821813288140840")
         .setStyle('PRIMARY');
-    let next_button = new MessageButton()
+    const next_button = new MessageButton()
         .setCustomId(`${message.id}_inc`)
         .setEmoji("951821813460115527")
         .setStyle('PRIMARY');
-    let skip_next_button = new MessageButton()
+    const skip_next_button = new MessageButton()
         .setCustomId(`${message.id}_skipinc`)
         .setEmoji("951823325557047366")
         .setStyle('PRIMARY');
 
     const row = new MessageActionRow();
-    let max = recommendations.length;
-    let pagecontent = recommendations.slice(0 * 5, 0 + 5);
+    const max = recommendations.length;
+    const pagecontent = recommendations.slice(0 * 5, 0 + 5);
 
-    let embed_params: show_suggestion_embed = {
+    const embed_params: show_suggestion_embed = {
         current_page: 0,
         max: recommendations.length,
         suggestions: pagecontent,
@@ -80,13 +80,13 @@ export async function showsuggestions(message: any, args: any, prefix: any) {
 
     let msg: any;
 
-    let recommendationlist = await buildshowSuggestions(embed_params);
+    const recommendationlist = await buildshowSuggestions(embed_params);
 
     if (max > 5) {
         row.addComponents([skip_prior_button, prior_button, next_button, skip_next_button])
         msg = await message.reply({ embeds: [recommendationlist], components: [row] });
 
-        let collector_params: show_suggestion_collector_params = {
+        const collector_params: show_suggestion_collector_params = {
             message: msg,
             row: row,
             next_button: next_button,

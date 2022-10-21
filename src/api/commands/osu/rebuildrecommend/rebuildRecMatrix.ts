@@ -13,12 +13,12 @@ export async function rebuildmatrix(message: any) {
         className: 'maps'
     });
 
-    let reccommendation = await Recommendation.find({});
-    for (let rec of reccommendation) {
-        for (let user of rec.upvote) {
+    const reccommendation = await Recommendation.find({});
+    for (const rec of reccommendation) {
+        for (const user of rec.upvote) {
             await procyon.liked(user, rec.id)
         }
-        for (let user of rec.downvote) {
+        for (const user of rec.downvote) {
             await procyon.disliked(user, rec.id)
         }
     }

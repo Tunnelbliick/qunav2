@@ -12,12 +12,12 @@ export default {
     callback: async ({ message, args, prefix }) => {
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helpprofile(prefix);
+            const embed = helpprofile(prefix);
             message.reply({ embeds: [embed] });
             return;
         }
 
-        let mode: any = "osu"
+        const mode: any = "osu"
         
         await profile(message, args, mode);
     }

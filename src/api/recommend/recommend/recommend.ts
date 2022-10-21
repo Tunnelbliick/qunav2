@@ -13,29 +13,29 @@ export async function buildRecommendsBasedOnPriorLikes(userid: any) {
     const ONE_HOUR = 60 * 60 * 1000; /* ms */
     let recommendations: any;
 
-    let userlikes = await Recommendation.find({ upvote: parseInt(userid) });
-    let recentrecommends: any = await LastRec.findOne({ userid: userid });
-    let taglist = [];
-    let difficulty: any = [];
-    let disallowedids: any = [];
-    for (let likes of userlikes) {
+    const userlikes = await Recommendation.find({ upvote: parseInt(userid) });
+    const recentrecommends: any = await LastRec.findOne({ userid: userid });
+    const taglist = [];
+    const difficulty: any = [];
+    const disallowedids: any = [];
+    for (const likes of userlikes) {
         difficulty.push(likes.star);
-        for (let type of likes.type) {
+        for (const type of likes.type) {
             taglist.push(type.type);
         }
     }
 
     const timenow: any = new Date();
 
-    let removedtimeout: any = [];
+    const removedtimeout: any = [];
 
     if (recentrecommends != undefined) {
-        for (let recentreco of recentrecommends.mongoids) {
+        for (const recentreco of recentrecommends.mongoids) {
 
             if ((timenow - recentreco.date) < ONE_HOUR) {
                 disallowedids.push(ObjectId(recentreco.mongoid));
 
-                let lastrecobj: LastRecObject = new LastRecObject();
+                const lastrecobj: LastRecObject = new LastRecObject();
                 lastrecobj.mongoid = recentreco.mongoid;
                 lastrecobj.date = recentreco.date;
 
@@ -51,8 +51,8 @@ export async function buildRecommendsBasedOnPriorLikes(userid: any) {
         recommendations = await Recommendation.find({ upvote: { $nin: [parseInt(userid)] }, downvote: { $nin: [parseInt(userid)] }, "type.type": { $in: taglist } });
 
     if (recommendations == undefined || recommendations.length == 0) {
-        let min = Math.min(...difficulty);
-        let max = Math.max(...difficulty);
+        const min = Math.min(...difficulty);
+        const max = Math.max(...difficulty);
 
         if (disallowedids.length != 0)
             recommendations = await Recommendation.find({ upvote: { $nin: [parseInt(userid)] }, downvote: { $nin: [parseInt(userid)] }, star: { $gte: min, $lte: max }, _id: { $nin: disallowedids } });
@@ -64,12 +64,12 @@ export async function buildRecommendsBasedOnPriorLikes(userid: any) {
         // Save last 10 Recommendations to prevent re-recommending the same map in the next 10 recommendations
         if (recentrecommends == undefined || recentrecommends.length == 0) {
 
-            let lastrec = new LastRec();
+            const lastrec = new LastRec();
             lastrec.userid = userid;
 
-            let lastrecarr: any = [];
+            const lastrecarr: any = [];
 
-            let lastrecobj: LastRecObject = new LastRecObject();
+            const lastrecobj: LastRecObject = new LastRecObject();
             lastrecobj.mongoid = recommendations.id;
             lastrecobj.date = new Date();
 
@@ -82,7 +82,7 @@ export async function buildRecommendsBasedOnPriorLikes(userid: any) {
             // 
         } else {
 
-            let lastrecobj: LastRecObject = new LastRecObject();
+            const lastrecobj: LastRecObject = new LastRecObject();
             lastrecobj.mongoid = recommendations.id;
             lastrecobj.date = new Date();
 
@@ -111,7 +111,7 @@ export async function buildRecommendByPrycon(recommendations: any) {
 export async function buildRecommendByQuery(message: any, args: any, ) {
 
     let recommendations: any;
-    let option_filter: suggestion_filter = filterRecommends(args);
+    const option_filter: suggestion_filter = filterRecommends(args);
 
     let query: any = {};
     try {
@@ -135,9 +135,9 @@ export async function buildRecList(recommendations: any, userid: any) {
 
     if (recList == undefined) {
         recList = new RecommndationList();
-        let mongoids = [];
+        const mongoids = [];
 
-        for (let rec of recommendations) {
+        for (const rec of recommendations) {
             mongoids.push(rec.id);
         }
 
@@ -146,9 +146,9 @@ export async function buildRecList(recommendations: any, userid: any) {
 
         recList.save();
     } else {
-        let mongoids = [];
+        const mongoids = [];
 
-        for (let rec of recommendations) {
+        for (const rec of recommendations) {
             mongoids.push(rec.id);
             recList.mongoids = mongoids;
         }

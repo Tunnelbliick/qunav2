@@ -18,7 +18,7 @@ export default {
 
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "h" || args[0] == "help") {
-             let embed = helprecommend(prefix);
+             const embed = helprecommend(prefix);
              message.reply({ embeds: [embed] });
              return;
          }

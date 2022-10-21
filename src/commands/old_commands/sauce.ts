@@ -13,7 +13,7 @@ export default {
 
         message.attachments.forEach(attachment => {
             sauce(attachment.proxyURL).then((response:any) => {
-                let data = response[0]
+                const data = response[0]
 
                 const embed = new MessageEmbed()
                 .setColor(0x737df9)

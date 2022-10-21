@@ -1,9 +1,9 @@
 import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 
 export function generateRecentBestChart(top100: any) {
-    let dataset: any = [];
+    const dataset: any = [];
 
-    for (let top of top100.slice().reverse()) {
+    for (const top of top100.slice().reverse()) {
 
         dataset.push({ x: top.value.created_at, y: top.value.pp.toString() });
     }
@@ -52,7 +52,7 @@ export function generateRecentBestChart(top100: any) {
             },
         },
     };
-    let chartPromise = chartJSNodeCanvas.renderToDataURL(configuration);
+    const chartPromise = chartJSNodeCanvas.renderToDataURL(configuration);
 
     return chartPromise;
 

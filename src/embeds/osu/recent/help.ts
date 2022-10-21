@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpRecent(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help recent")
         .setDescription("Shows the most recent play of a user.")
         .setColor(0x737df9)

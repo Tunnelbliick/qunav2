@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpFarmhours(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help farm hours")
         .setDescription("Shows amount of top 100 Scores set at specific hours of day.")
         .setColor(0x737df9)
@@ -39,7 +39,7 @@ export function helpFarmhours(prefix: string) {
 
 export function helpFarmdays(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help farm days")
         .setDescription("Shows amount of top 100 Scores set at specific days of week.")
         .setColor(0x737df9)
@@ -80,7 +80,7 @@ export function helpFarmdays(prefix: string) {
 
 export function helpFramWeeks(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help farm weeks")
         .setDescription("Shows amount of top 100 Scores set at specific week of year.")
         .setColor(0x737df9)
@@ -117,7 +117,7 @@ export function helpFramWeeks(prefix: string) {
 
 export function helpFarmMonth(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help farm months")
         .setDescription("Shows amount of top 100 Scores set at specific month of year.")
         .setColor(0x737df9)

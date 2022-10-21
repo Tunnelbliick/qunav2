@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function noPickEm(message: any, interaction: any) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("No Pick'em")
         .setDescription("Theres currently no Pickem going on.\nPlease come back later.")
         .setColor(0x737df9);

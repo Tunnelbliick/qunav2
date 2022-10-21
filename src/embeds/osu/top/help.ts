@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpTop(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help top")
         .setDescription("Shows the top plays of a user.")
         .setColor(0x737df9)

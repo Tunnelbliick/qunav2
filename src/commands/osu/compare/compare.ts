@@ -37,7 +37,7 @@ export default {
         message_thinking(message);
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helpcompare(prefix);
+            const embed = helpcompare(prefix);
             message.reply({ embeds: [embed] });
             return;
         }

@@ -35,8 +35,8 @@ export async function launchSuggestionCollector(params: suggestion_collector_par
 
     collector.on("collect", async (i: any) => {
 
-        let para = i.customId.split("_")
-        let authorid = para[2]
+        const para = i.customId.split("_")
+        const authorid = para[2]
 
         if (i.user.id != authorid) {
             i.reply("This is not your recommendation!")
@@ -46,7 +46,7 @@ export async function launchSuggestionCollector(params: suggestion_collector_par
         switch (para[0]) {
             case "suggest":
 
-                let rec = await recommend(params, i);
+                const rec = await recommend(params, i);
 
                 if (rec === undefined) {
                     await i.deferUpdate();

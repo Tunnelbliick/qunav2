@@ -18,7 +18,7 @@ export default {
     callback: async ({ message, args, interaction, prefix }) => {
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helplink(prefix);
+            const embed = helplink(prefix);
             message.reply({ embeds: [embed] });
             return;
         }
@@ -88,7 +88,7 @@ export default {
             await message.reply("Sliding into dem DMs :eyes:");
         }
 
-        let checkForLink = retry(() => checkforLinkSucess(userObject.discordid), { delay: 5000, timeout: "INFINITELY", retries: 24 }).catch(() => {
+        const checkForLink = retry(() => checkforLinkSucess(userObject.discordid), { delay: 5000, timeout: "INFINITELY", retries: 24 }).catch(() => {
 
             timeoutAuthEmbed().then((embed: any) => {
 

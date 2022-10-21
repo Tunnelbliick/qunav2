@@ -3,11 +3,11 @@ import { ChartJSNodeCanvas } from "chartjs-node-canvas";
 export function generateTopChart(top100: any) {
     let max = 20;
 
-    let labels: any = [];
-    let dataset: any = [];
+    const labels: any = [];
+    const dataset: any = [];
     max = Math.ceil(top100.length / 5);
 
-    for (let top of top100.slice().reverse()) {
+    for (const top of top100.slice().reverse()) {
 
         labels.push((top.position + 1).toString());
         dataset.push(top.value.pp.toString());
@@ -64,7 +64,7 @@ export function generateTopChart(top100: any) {
         },
     };
 
-    let chartPromise = chartJSNodeCanvas.renderToDataURL(configuration);
+    const chartPromise = chartJSNodeCanvas.renderToDataURL(configuration);
 
     return chartPromise;
 }

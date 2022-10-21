@@ -34,7 +34,7 @@ export default {
     ],
     callback: async ({ message, interaction, args, prefix, client }) => {
 
-        let default_mode = "osu"
+        const default_mode = "osu"
 
         await interaction_thinking(interaction);
         message_thinking(message);

@@ -47,18 +47,18 @@ export async function card(message: any, args: any) {
 
     }
 
-    let top_100 = await getTopForUser(osu_user.id);
+    const top_100 = await getTopForUser(osu_user.id);
 
-    let skills: any = await getAllSkills(top_100);
+    const skills: any = await getAllSkills(top_100);
 
     if(skills === undefined) {
         stillProcessing(message);
         return;
     }
 
-    let title = "";
+    const title = "";
 
-    let card = await generateCard(osu_user, skills, title);
+    const card = await generateCard(osu_user, skills, title);
 
     await message.reply({ files: [new DataImageAttachment(card, `${osu_user.username}_card.png`)] });
 }

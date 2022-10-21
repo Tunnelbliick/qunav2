@@ -38,7 +38,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
         return;
     }
 
-    let receipient = interaction;
+    const receipient = interaction;
 
     const retries = result.retries;
     const user = result.user;
@@ -65,16 +65,16 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     // Play data
     // @ts-ignore 
-    let rankEmote: any = rank_icons[rank];
+    const rankEmote: any = rank_icons[rank];
 
-    let mods: Array<string> = play.mods;
+    const mods: Array<string> = play.mods;
     let appliedmods: any = "+";
     mods.forEach(m => { appliedmods += m });
 
     let progressString: any = "";
 
     if (play.rank == "F") {
-        let progress = 100 / (map.count_circles + map.count_sliders + map.count_spinners) * (play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_50 + play.statistics.count_miss);
+        const progress = 100 / (map.count_circles + map.count_sliders + map.count_spinners) * (play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_50 + play.statistics.count_miss);
         progressString = `(${replaceFirstDots(progress.toFixed(2))}%)`;
     }
 
@@ -88,13 +88,13 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
         mapDrain: map.hit_length
     }
 
-    let difficulty = result.difficulty;
+    const difficulty = result.difficulty;
 
-    let color = getDifficultyColor(difficulty.star.toFixed(2));
+    const color = getDifficultyColor(difficulty.star.toFixed(2));
 
     stats = calcualteStatsforMods(stats, mods);
 
-    let total_object = map.count_circles + map.count_sliders + map.count_spinners;
+    const total_object = map.count_circles + map.count_sliders + map.count_spinners;
 
     let fc_acc = 100;
 
@@ -112,7 +112,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
             break;
     }
 
-    let param: RecentEmbedParameters = {
+    const param: RecentEmbedParameters = {
         play: play,
         rank: rankEmote,
         progress: progressString,
@@ -168,7 +168,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     if (interaction) {
         interaction.editReply({ content: `Try #${retries}`, embeds: [fullsize] }).then(() => setTimeout(function () {
             var currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
-            let compact = new MessageEmbed()
+            const compact = new MessageEmbed()
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
                 .setColor(color)
@@ -224,7 +224,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     } else {
         message.reply({ content: `Try #${retries}`, embeds: [fullsize] }).then((msg) => setTimeout(function () {
             var currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
-            let compact = new MessageEmbed()
+            const compact = new MessageEmbed()
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
                 .setColor(color)

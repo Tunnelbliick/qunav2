@@ -27,14 +27,14 @@ export default {
         await interaction_thinking(interaction);
 
         if (interaction.user.id !== "203932549746130944") {
-            let embed = new MessageEmbed()
+            const embed = new MessageEmbed()
                 .setTitle("Nice try!")
                 .setDescription("This command is secured for only the bot owner")
 
             await interaction.editReply({ embeds: [embed] });
         }
 
-        let owc_year: any = await owc.findOne({ url: current_tournament });
+        const owc_year: any = await owc.findOne({ url: current_tournament });
 
         if(owc_year === null) {
             await noPickEm(undefined, interaction);
@@ -52,7 +52,7 @@ export default {
 
         await owc_year.save();
 
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setTitle("Locked round")
             .setDescription(`The rounds ${owc_year.locked_round} are now locked`)
 

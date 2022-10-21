@@ -4,7 +4,7 @@ const ppcalc = require('quna-pp');
 
 export async function max(mapid: any, checksum: any, mode: any, mods?: Array<any>) {
 
-    let modbinary = arraytoBinary(mods);
+    const modbinary = arraytoBinary(mods);
 
     let max_pp = null;
 

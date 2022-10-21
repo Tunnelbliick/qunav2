@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function helpprofile(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help profile")
         .setDescription("Shows the user profile.")
         .setColor(0x737df9)

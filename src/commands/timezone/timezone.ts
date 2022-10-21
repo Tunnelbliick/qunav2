@@ -17,7 +17,7 @@ export default {
     callback: async ({ message, args, prefix }) => {
 
         if (args[0] == "-h" || args[0] == "-help" || args[0] == "help" || args[0] == "h") {
-            let embed = helpTimezone(prefix);
+            const embed = helpTimezone(prefix);
             message.reply({ embeds: [embed] });
             return;
         }

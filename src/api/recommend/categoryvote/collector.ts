@@ -23,17 +23,17 @@ export async function launcCollector(ids: Array<any>, interaction: any, componen
 
         await i.deferReply({ ephemeral: true });
 
-        let userObject: any = await User.findOne({ discordid: await encrypt(i.user.id) });
+        const userObject: any = await User.findOne({ discordid: await encrypt(i.user.id) });
 
-        let recommendation: any = await Recommendation.findOne({ _id: currentid });
+        const recommendation: any = await Recommendation.findOne({ _id: currentid });
 
-        let categories: any = recommendation.type;
+        const categories: any = recommendation.type;
 
-        let index = categories.findIndex((category: any) => category.category === category_string);
+        const index = categories.findIndex((category: any) => category.category === category_string);
 
-        let category = categories[index];
+        const category = categories[index];
 
-        let upvotes = category.upvote;
+        const upvotes = category.upvote;
 
         if (upvotes.includes(userObject.userid) === false) {
 
@@ -44,13 +44,13 @@ export async function launcCollector(ids: Array<any>, interaction: any, componen
 
             await Recommendation.updateOne({ _id: currentid }, { type: categories });
 
-            let embed = buildUpvote(recommendation, category_string);
+            const embed = buildUpvote(recommendation, category_string);
 
             await i.editReply({ embeds: [embed] });
 
         } else {
 
-            let embed = alraedyUpvoted(recommendation, category_string);
+            const embed = alraedyUpvoted(recommendation, category_string);
 
             await i.editReply({ embeds: [embed] });
 

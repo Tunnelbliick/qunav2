@@ -22,7 +22,7 @@ const ct = require('countries-and-timezones');
 
 export async function farmgraph(message: any, args: any, prefix: any, mode: any) {
 
-    let index = 0;
+    const index = 0;
     let top100: any;
     let username = "";
     let userid;
@@ -30,17 +30,17 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
     let user: any;
     let userObject: any;
     let timezone;
-    let usernameargs = [];
+    const usernameargs = [];
 
     let default_mode = "osu";
 
-    let gamemode = ["osu", "mania", "taiko", "catch", "ctb", "fruits"]
+    const gamemode = ["osu", "mania", "taiko", "catch", "ctb", "fruits"]
 
     let select_mode = "";
 
     message.channel.sendTyping();
 
-    for (let arg of args) {
+    for (const arg of args) {
 
         if (select_mode = "gamemode") {
             if (gamemode.includes(arg)) {
@@ -66,7 +66,7 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
 
                 } else if (!isNaN(+arg) && (+arg <= 12 && +arg >= -12)) {
 
-                    let time = moment();
+                    const time = moment();
 
                     let input: any = arg;
 
@@ -110,16 +110,16 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
         return;
     }
 
-    let hours: any = [];
+    const hours: any = [];
 
     if (timezone == null && userObject != null)
         timezone = userObject.timezone;
     if (timezone == null)
         timezone = ct.getCountry(top100[0].value.user.country_code).timezones[0];
 
-    let shortzone = moment().tz(timezone).format("Z");
+    const shortzone = moment().tz(timezone).format("Z");
 
-    for (let top of top100) {
+    for (const top of top100) {
         let n = null;
         switch (mode) {
             case "hour":
@@ -186,7 +186,7 @@ export async function farmgraph(message: any, args: any, prefix: any, mode: any)
         .setImage("attachment://farmhours.png")
         .setFooter({ text: `🕐 Timezone UTC${shortzone} | Use ${prefix}tz to change your timezone` })
 
-    let reply = await message.reply({ embeds: [compact], files: [new DataImageAttachment(chart, "farmhours.png")] });
+    const reply = await message.reply({ embeds: [compact], files: [new DataImageAttachment(chart, "farmhours.png")] });
 }
 
 function getZoneFromOffset(offsetString: string) {

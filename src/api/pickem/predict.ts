@@ -24,7 +24,7 @@ export async function predict(interaction: any) {
     let predictionMap: Map<any, any> = new Map<any, any>();
     let registration: any = undefined;
 
-    let owc_year: any = await owc.findOne({ url: current_tournament })
+    const owc_year: any = await owc.findOne({ url: current_tournament })
     
     if(owc_year === null) {
         await noPickEm(undefined, interaction);
@@ -35,7 +35,7 @@ export async function predict(interaction: any) {
         locked_round = owc_year.locked_round;
     }
 
-    let user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
+    const user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
     if(checkIfUserExists(user, undefined, interaction)) {
         return
@@ -44,7 +44,7 @@ export async function predict(interaction: any) {
     registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 
     if (registration == null) {
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle("Not registered")
             .setDescription("You are **not registered** for the Quna 2022 Pick'em\nPlease register before you can enter any predictions!")
@@ -75,10 +75,10 @@ export async function predict(interaction: any) {
             select = [6, "-8"];
     }
 
-    let matches: any = await owcgame.find({ owc: owc_year.id, round: { $in: select } });
-    let unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
-    let matchids: any[] = unlocked.map((match: any) => match.id);
-    let predictions: any = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
+    const matches: any = await owcgame.find({ owc: owc_year.id, round: { $in: select } });
+    const unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
+    const matchids: any[] = unlocked.map((match: any) => match.id);
+    const predictions: any = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
 
     predictions.forEach((prediction: any) => {
         predictionMap.set(prediction.match.toString(), prediction);
@@ -87,7 +87,7 @@ export async function predict(interaction: any) {
     let winners = "";
     let losers = "";
 
-    let options: any[] = [];
+    const options: any[] = [];
 
     let split_index = 0;
     let index = 0;
@@ -114,14 +114,14 @@ export async function predict(interaction: any) {
                 winners = "__**Winners Bracket**__\n";
             }
 
-            let option = {
+            const option = {
                 label: `${code1} vs ${code2}`,
                 value: `${index}`
             }
 
             options.push(option);
 
-            let prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
                 winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
@@ -140,14 +140,14 @@ export async function predict(interaction: any) {
                 losers = "__**Losers Bracket**__\n";
             }
 
-            let option = {
+            const option = {
                 label: `${code1} vs ${code2} (LS)`,
                 value: `${index}`
             }
 
             options.push(option);
 
-            let prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
                 losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
@@ -167,36 +167,36 @@ export async function predict(interaction: any) {
     })
     
 
-    let description: any = `${winners}\n${losers}`;
+    const description: any = `${winners}\n${losers}`;
 
-    let bo_32: any = bo32;
+    const bo_32: any = bo32;
 
-    let round_name = bo_32[unlocked[0].round].name;
+    const round_name = bo_32[unlocked[0].round].name;
 
-    let next_button = new MessageButton()
+    const next_button = new MessageButton()
         .setCustomId(`next_${interaction.id}`)
         .setEmoji("951821813460115527")
         .setStyle("SECONDARY")
 
-    let overview_button = new MessageButton()
+    const overview_button = new MessageButton()
         .setCustomId(`overview_${interaction.id}`)
         .setLabel("Back to Menu")
         .setStyle("SECONDARY")
 
-    let prior_button = new MessageButton()
+    const prior_button = new MessageButton()
         .setCustomId(`prior_${interaction.id}`)
         .setEmoji("951821813288140840")
         .setStyle("SECONDARY")
 
-    let select_match = new MessageSelectMenu()
+    const select_match = new MessageSelectMenu()
         .setCustomId(`select_${interaction.id}`)
         .setPlaceholder("Select a specific match")
         .setOptions(options);
 
-    let button_row = new MessageActionRow().setComponents([prior_button, overview_button, next_button]);
-    let select_row = new MessageActionRow().setComponents(select_match);
+    const button_row = new MessageActionRow().setComponents([prior_button, overview_button, next_button]);
+    const select_row = new MessageActionRow().setComponents(select_match);
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor("#4b67ba")
         .setTitle(`Open Predictions ${round_name}`)
         .setDescription(description);
@@ -215,8 +215,8 @@ export async function predict(interaction: any) {
 
     collector.on("collect", async (i: any) => {
 
-        let split = i.customId.split("_");
-        let interaction_id = split[1];
+        const split = i.customId.split("_");
+        const interaction_id = split[1];
 
         if (interaction.id !== interaction_id) {
             return;
@@ -224,7 +224,7 @@ export async function predict(interaction: any) {
 
         await i.deferUpdate();
 
-        let method = split[0];
+        const method = split[0];
 
         switch (method) {
             case "next":
@@ -263,7 +263,7 @@ export async function predict(interaction: any) {
                     winners = "__**Winners Bracket**__\n";
                 }
 
-                let prediction = predictionMap.get(match.id);
+                const prediction = predictionMap.get(match.id);
 
                 if (prediction != null) {
                     winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
@@ -282,7 +282,7 @@ export async function predict(interaction: any) {
                     losers = "__**Losers Bracket**__\n";
                 }
 
-                let prediction = predictionMap.get(match.id);
+                const prediction = predictionMap.get(match.id);
 
                 if (prediction != null) {
                     losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
@@ -299,13 +299,13 @@ export async function predict(interaction: any) {
 
         })
 
-        let description: any = `${winners}\n${losers}`;
+        const description: any = `${winners}\n${losers}`;
 
-        let bo_32: any = bo32;
+        const bo_32: any = bo32;
 
-        let round_name = bo_32[unlocked[0].round].name;
+        const round_name = bo_32[unlocked[0].round].name;
 
-        let embed = new MessageEmbed()
+        const embed = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle(`Open Predictions ${round_name}`)
             .setDescription(description)
@@ -379,7 +379,7 @@ function getFirstTo(round: any) {
 
 function buildSelect(firstTo: number, prediction?: any) {
 
-    let options: any[] = [];
+    const options: any[] = [];
     let predicted_score = undefined;
 
     if (prediction != null) {
@@ -388,7 +388,7 @@ function buildSelect(firstTo: number, prediction?: any) {
 
     for (let score2 = firstTo - 1; score2 >= 0; score2--) {
 
-        let option: any = {
+        const option: any = {
             label: `${firstTo} - ${score2}`,
             value: `${firstTo}-${score2}`,
         }
@@ -403,7 +403,7 @@ function buildSelect(firstTo: number, prediction?: any) {
 
     for (let score1 = 0; score1 < firstTo; score1++) {
 
-        let option: any = {
+        const option: any = {
             label: `${score1} - ${firstTo}`,
             value: `${score1}-${firstTo}`
         }
@@ -426,17 +426,17 @@ async function predictMatch(interaction: any, registration: any, unlocked: any, 
         return predictionMap;
     }
 
-    let current_match = unlocked[match_index];
+    const current_match = unlocked[match_index];
 
     let prediction = predictionMap.get(current_match.id);
 
-    let score = value.split("-");
+    const score = value.split("-");
 
     if (score.length != 2) {
         return predictionMap;
     }
 
-    let winner_index = score[0] > score[1] ? 1 : 2;
+    const winner_index = score[0] > score[1] ? 1 : 2;
 
     if (prediction == null) {
         prediction = new pickemPrediction();
@@ -464,8 +464,8 @@ async function predictMatch(interaction: any, registration: any, unlocked: any, 
 }
 
 async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any) {
-    let current_match = unlocked[match_index];
-    let current_prediction = predictionMap.get(current_match.id);
+    const current_match = unlocked[match_index];
+    const current_prediction = predictionMap.get(current_match.id);
 
     let description = ""
 
@@ -475,10 +475,10 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predict
         description = buildmatch(current_match, current_prediction.team1_score, current_prediction.team2_score);
     }
 
-    let firstTo: any = getFirstTo(current_match.round);
-    let select_options: any = buildSelect(firstTo, current_prediction);
+    const firstTo: any = getFirstTo(current_match.round);
+    const select_options: any = buildSelect(firstTo, current_prediction);
 
-    let score_select = new MessageSelectMenu()
+    const score_select = new MessageSelectMenu()
         .setCustomId(`score_${interaction.id}`)
         .setPlaceholder("Score prediction of the match")
         .setOptions(select_options);
@@ -500,11 +500,11 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predict
     code1 = code1.toLocaleLowerCase();
     code2 = code2.toLocaleLowerCase();
 
-    let select_row = new MessageActionRow().setComponents(score_select);
+    const select_row = new MessageActionRow().setComponents(score_select);
 
     let components = [button_row];
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor("#4b67ba")
         .setTitle(`Prediction ${code1} vs ${code2}`)
         .setDescription(description)
@@ -586,7 +586,7 @@ async function overview(interaction: any, unlocked: any, predictionMap: any, mat
                 winners = "__**Winners Bracket**__\n";
             }
 
-            let prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
                 winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
@@ -605,7 +605,7 @@ async function overview(interaction: any, unlocked: any, predictionMap: any, mat
                 losers = "__**Losers Bracket**__\n";
             }
 
-            let prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
                 losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
@@ -622,7 +622,7 @@ async function overview(interaction: any, unlocked: any, predictionMap: any, mat
 
     })
 
-    let components = [];
+    const components = [];
 
     if (button_row !== undefined) {
         components.push(button_row);
@@ -632,13 +632,13 @@ async function overview(interaction: any, unlocked: any, predictionMap: any, mat
         components.push(select_row);
     }
 
-    let description: any = `${winners}\n${losers}`;
+    const description: any = `${winners}\n${losers}`;
 
-    let bo_32: any = bo32;
+    const bo_32: any = bo32;
 
-    let round_name = bo_32[unlocked[0].round].name;
+    const round_name = bo_32[unlocked[0].round].name;
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setColor("#4b67ba")
         .setTitle(`Open Predictions ${round_name}`)
         .setDescription(description);

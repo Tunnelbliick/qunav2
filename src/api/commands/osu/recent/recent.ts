@@ -9,8 +9,8 @@ import { builFilter, optionsToFilter } from "./filter";
 
 export async function recent(message: any, interaction: any, args: any, mode: any) {
 
-    let arg_index = 0;
-    let default_mode = mode;
+    const arg_index = 0;
+    const default_mode = mode;
 
     let filter: RecentPlayFilter;
     
@@ -25,7 +25,7 @@ export async function recent(message: any, interaction: any, args: any, mode: an
     if (filter.username !== "") {
         result = await getRecentPlaysForUserName(filter.username, filter, filter.mode);
     } else {
-        let userObject: any = await User.findOne({ discordid: await encrypt(filter.discordid) });
+        const userObject: any = await User.findOne({ discordid: await encrypt(filter.discordid) });
         if (checkIfUserExists(userObject, message)) {
             return;
         }

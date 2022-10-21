@@ -2,7 +2,7 @@ import { MessageEmbed } from "discord.js";
 
 export function help8ball(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help 8ball")
         .setDescription("Ask Quna and her magic 8-Ball about something!")
         .setColor(0x737df9)
@@ -23,7 +23,7 @@ export function help8ball(prefix: string) {
 
 export function helpchoose(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help choose")
         .setDescription("Let Quna pick from multiple options!")
         .setColor(0x737df9)
@@ -44,7 +44,7 @@ export function helpchoose(prefix: string) {
 
 export function helpwaifu(prefix: string) {
 
-    let embed = new MessageEmbed()
+    const embed = new MessageEmbed()
         .setTitle("Help waifurating")
         .setDescription("Quna will rate a name you give her!")
         .setColor(0x737df9)

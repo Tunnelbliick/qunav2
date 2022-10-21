@@ -5,7 +5,7 @@ const ppcalc = require('quna-pp');
 
 export async function simulateFull(args: simulateArgs) {
 
-    let modbinary = arraytoBinary(args.mods);
+    const modbinary = arraytoBinary(args.mods);
 
     let map_pp = null;
     switch (args.mode) {

@@ -31,7 +31,7 @@ export default (client: Client) => {
         let tournaments: any = await owc.find({ mode: default_mode });
 
         if (default_mode === "mania") {
-            let default_keys = interaction.options.getString("keys") === null ? "4K" : interaction.options.getString("keys");
+            const default_keys = interaction.options.getString("keys") === null ? "4K" : interaction.options.getString("keys");
             tournaments = await owc.find({ mode: default_mode, keys: default_keys });
         }
 
@@ -77,7 +77,7 @@ export default (client: Client) => {
         let participants;
         let tournament: any;
 
-        let year = interaction.options.getString("year");
+        const year = interaction.options.getString("year");
 
         if (year !== null) {
             tournament = await owc.findOne({ mode: default_mode, year: year });

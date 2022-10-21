@@ -33,18 +33,18 @@ export async function topEmbed(data: any, user: any, index: number, max: number)
     if (country_rank == null)
         country_rank = 0;
 
-    let min = index * 5;
+    const min = index * 5;
 
-    let currentlyDisplayed = data.slice(min, min + 5);
+    const currentlyDisplayed = data.slice(min, min + 5);
 
-    let plays: Array<any> = [];
+    const plays: Array<any> = [];
 
-    let promises = []
-    for (let item of currentlyDisplayed) {
+    const promises = []
+    for (const item of currentlyDisplayed) {
         promises.push(getMaxForCurrentTopArray(item));
     }
 
-    let playsPromiseList: any = await Promise.all(promises).catch(error => {
+    const playsPromiseList: any = await Promise.all(promises).catch(error => {
         console.error("Page still processing, retry in 10 seconds");
         return;
     })
@@ -55,7 +55,7 @@ export async function topEmbed(data: any, user: any, index: number, max: number)
 
     if (plays.length != 1) {
         plays.forEach((play: any) => {
-            let field = genereateField(play);
+            const field = genereateField(play);
             if (field != null)
                 fields += field;
         })
@@ -72,22 +72,22 @@ export async function topEmbed(data: any, user: any, index: number, max: number)
     } else {
 
 
-        let score = plays[0].value;
-        let beatmap = plays[0].beatmap.value;
-        let maxpp = plays[0].maxpp.value.pp[100];
-        let diff = await difficulty(beatmap.id, beatmap.checksum, score.mode, score.mods);
-        let leaderboard = await getLeaderBoardPosition(beatmap.id, score.mode, score.id);
+        const score = plays[0].value;
+        const beatmap = plays[0].beatmap.value;
+        const maxpp = plays[0].maxpp.value.pp[100];
+        const diff = await difficulty(beatmap.id, beatmap.checksum, score.mode, score.mods);
+        const leaderboard = await getLeaderBoardPosition(beatmap.id, score.mode, score.id);
 
         if (score == null || beatmap == null || maxpp == null) {
             return null;
         }
 
-        let mods: Array<String> = score.mods;
+        const mods: Array<String> = score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
 
         // @ts-ignore 
-        let rankEmote: any = rank_icons[score.rank];
+        const rankEmote: any = rank_icons[score.rank];
 
         let stats: BeatmapStats = {
             cs: beatmap.cs,
@@ -99,7 +99,7 @@ export async function topEmbed(data: any, user: any, index: number, max: number)
 
         stats = calcualteStatsforMods(stats, score.mods);
 
-        let total_object = beatmap.count_circles + beatmap.count_sliders + beatmap.count_spinners;
+        const total_object = beatmap.count_circles + beatmap.count_sliders + beatmap.count_spinners;
 
         const fullsize = new MessageEmbed()
             .setThumbnail(`${user.avatar_url}`)
@@ -121,7 +121,7 @@ export async function topEmbed(data: any, user: any, index: number, max: number)
             fullsize.setDescription(description);
         }
 
-        let param: TopEmbedParameters = {
+        const param: TopEmbedParameters = {
             play: score,
             rank: rankEmote,
             appliedmods: appliedmods,
@@ -154,10 +154,10 @@ export async function topEmbed(data: any, user: any, index: number, max: number)
 
 function genereateField(play: any) {
 
-    let score = play.value;
-    let beatmap = play.beatmap.value;
-    let maxpp = play.maxpp.value.pp[100];
-    let difficulty = play.difficulty.value;
+    const score = play.value;
+    const beatmap = play.beatmap.value;
+    const maxpp = play.maxpp.value.pp[100];
+    const difficulty = play.difficulty.value;
 
     if (score == null || beatmap == null || maxpp == null) {
         return null;
@@ -165,12 +165,12 @@ function genereateField(play: any) {
 
     var currentTimeInSeconds = Math.floor(new Date(score.created_at).getTime() / 1000)
 
-    let mods: Array<String> = score.mods;
+    const mods: Array<String> = score.mods;
     let appliedmods: any = "+";
     mods.forEach(m => { appliedmods += m });
 
     // @ts-ignore 
-    let rankEmote: any = rank_icons[score.rank];
+    const rankEmote: any = rank_icons[score.rank];
 
     let scoreField = ""
 

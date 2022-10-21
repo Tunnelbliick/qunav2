@@ -14,16 +14,16 @@ export interface suggestion_filter {
 export function filterRecommends(args: any) {
     let searchString = "";
     let mode = "";
-    let ar: any = [];
-    let cs: any = [];
-    let od: any = [];
-    let hp: any = [];
-    let bpm: any = [];
-    let star: any = [];
-    let category: any = [];
+    const ar: any = [];
+    const cs: any = [];
+    const od: any = [];
+    const hp: any = [];
+    const bpm: any = [];
+    const star: any = [];
+    const category: any = [];
     let usernameargs: any = "";
 
-    for (let arg of args) {
+    for (const arg of args) {
 
         if (arg == "-s") {
             mode = "SEARCHSTRING";
@@ -93,7 +93,7 @@ export function filterRecommends(args: any) {
             star.push(arg)
     }
 
-    let filter: suggestion_filter = {
+    const filter: suggestion_filter = {
         ar: ar,
         bpm: bpm,
         cs: cs,
