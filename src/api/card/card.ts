@@ -132,8 +132,8 @@ export async function generateCard(user: any, skills: all_skills, title: string)
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.restore();
-    var sx, sy, dx, dy;
-    var sWidth, sHeight, dWidth, dHeight;
+    let sx, sy, dx, dy;
+    let sWidth, sHeight, dWidth, dHeight;
 
     sWidth = ctx.canvas.width;
     sHeight = ctx.canvas.height;
@@ -186,7 +186,7 @@ export async function generateCard(user: any, skills: all_skills, title: string)
     //ctx.strokeStyle = "green";
     //ctx.rect(50, 200, 550, 600); // DEBUG
     // ctx.stroke();
-    var gradient = ctx.createLinearGradient(325, 0, 500, 0);
+    let gradient = ctx.createLinearGradient(325, 0, 500, 0);
     const gradient_stops = 1 / (currentTier.colors.length - 1);
     currentTier.colors.forEach((color: any, index: any) => {
         gradient.addColorStop(gradient_stops * index, color);

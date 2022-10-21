@@ -75,8 +75,8 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
     stats = calcualteStatsforMods(stats, modArray);
 
     // extras
-    var successrate = Math.round((data.passcount / data.playcount) * 100)
-    var embedColor = getDifficultyColor(difficulty.star.toFixed(2))
+    let successrate = Math.round((data.passcount / data.playcount) * 100)
+    let embedColor = getDifficultyColor(difficulty.star.toFixed(2))
 
     // @ts-ignore 
     const modeEmote = gamemode_icons[data.mode];
