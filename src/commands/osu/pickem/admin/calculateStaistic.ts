@@ -43,7 +43,7 @@ export default {
 
         all_predictions.forEach((prediction: any) => {
 
-            if (prediction_map.has(prediction.match)) {
+            if (prediction_map.has(prediction.match.toString())) {
                 let predictions: any[] = prediction_map.get(prediction.match)!;
                 predictions?.push(prediction);
                 prediction_map.set(prediction.match.toString(), predictions);
