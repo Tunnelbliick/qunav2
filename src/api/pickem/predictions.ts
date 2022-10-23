@@ -226,8 +226,8 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
         points_gained = ` | +**${points}**`
     }
 
-    let country1 = getCountryISO3(code1).toLocaleLowerCase();
-    let country2 = getCountryISO3(code2).toLocaleLowerCase();
+    let country1 = getCountryISO3(code1)
+    let country2 = getCountryISO3(code2)
 
     if (code1 === undefined) {
         code1 = "AQ";
@@ -240,6 +240,9 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
         match.team2_name = "TBD";
         country2 = "TBD";
     }
+
+    country1 = country1.charAt(0) + country1.substring(1).toLowerCase();
+    country2 = country2.charAt(0) + country2.substring(1).toLowerCase();
 
     code1 = code1.toLocaleLowerCase();
     code2 = code2.toLocaleLowerCase();
