@@ -2,17 +2,17 @@ import { arraytoBinary } from "../osu/utility/parsemods";
 
 const ppcalc = require('quna-pp');
 
-export class simulateArgs {
-    mapid: any;
-    checksum: any;
-    misses: any;
-    mehs: any;
-    goods: any;
-    great: any;
-    combo: any;
-    score: any;
-    mode: any;
-    mods: any;
+export interface simulateArgs {
+    mapid: string;
+    checksum: string;
+    misses: number;
+    mehs: number;
+    goods: number;
+    great: number;
+    combo: number;
+    score: number;
+    mode: string;
+    mods: string[];
 
 }
 

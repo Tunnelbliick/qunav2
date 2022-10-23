@@ -17,7 +17,7 @@ const DataImageAttachment = require("dataimageattachment");
 export async function recentbest(message: any, args: any, mode: any) {
 
     let index = 0;
-    const max = 20;
+    let max = 20;
     let top100: any;
     const username = "";
     let userid;
@@ -78,6 +78,12 @@ export async function recentbest(message: any, args: any, mode: any) {
     await Promise.race([p1, test]);
 
     const chartPromise = generateRecentBestChart(orderedtop100ByDate);
+
+    max = Math.ceil(top100.length / 5);
+
+    if (max < 1) {
+        max = 1;
+    }
 
     const promises: Array<Promise<any>> = [];
     promises.push(recentbestEmbed(orderedtop100ByDate, user, index, max));

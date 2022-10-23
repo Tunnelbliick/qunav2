@@ -8,7 +8,7 @@ export async function getUser(userid: any, mode?: any) {
     if (mode == undefined) {
         mode = "osu"
     }
-
+    
     return new Promise((resolve, reject) => {
         const user = v2.user.details(userid, mode, "id")
 

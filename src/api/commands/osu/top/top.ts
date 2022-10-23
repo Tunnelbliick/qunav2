@@ -17,7 +17,7 @@ const DataImageAttachment = require("dataimageattachment");
 export async function top(message: any, args: any, mode: any) {
 
     let index = 0;
-    const max = 20;
+    let max = 20;
     let top100: any;
     const username = "";
     let userid;
@@ -76,6 +76,12 @@ export async function top(message: any, args: any, mode: any) {
     await Promise.race([p1, test]);
 
     const chartPromise = generateTopChart(top100);
+
+    max = Math.ceil(top100.length / 5);
+
+    if(max < 1) {
+        max = 1;
+    }
 
     const promises: Array<Promise<any>> = [];
     promises.push(topEmbed(top100, user, index, max));

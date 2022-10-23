@@ -7,6 +7,7 @@ import { helpcard } from "../embeds/osu/card/help";
 import { helpcompare } from "../embeds/osu/compare/help";
 import { helpFarmdays, helpFarmhours, helpFarmMonth, helpFramWeeks } from "../embeds/osu/farm/help";
 import { helplink } from "../embeds/osu/link/help";
+import { helpNoChocke } from "../embeds/osu/nochocke/help";
 import { helpWorldCup, helpWorldCupCompare } from "../embeds/osu/owc/help";
 import { helpPickem, helpPredictions } from "../embeds/osu/pickem/help";
 import { helpprofile } from "../embeds/osu/profile/help";
@@ -137,6 +138,10 @@ export default {
             const embed = helpPredictions(prefix);
             message.reply({ embeds: [embed] });
             return;
+        } else if (["nochocke", "nc"].includes(args[0])) {
+            const embed = helpNoChocke(prefix);
+            message.reply({ embeds: [embed] });
+            return;
         } else {
             const embed = helpnotsupported(prefix);
             message.reply({ embeds: [embed] });
@@ -165,6 +170,7 @@ function buildGlobalHelp(prefix: string) {
                 "`osu`: Displays the user profile with some stats\n" +
                 "`top`: Displays the user top scores\n" +
                 "`recentbest`: Displays the user top plays sorted by most recent\n" +
+                "`nochocke`: Displays the user top scores unchocked\n" +
                 "`recent`: Displays a users recent score\n" +
                 "All commands have a gamemode version!"
         }, {

@@ -69,7 +69,7 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
                 const min = Math.min(...numbers);
                 const max = Math.max(...numbers);
 
-                return top.value.accuracy >= min && top.value.accuracy <= max;
+                return top.value.accuracy * 100 >= min && top.value.accuracy * 100 <= max;
             }
         });
 
@@ -134,28 +134,60 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
     } else if (filterOptions.sort == "combo") {
         top = top.sort((a: any, b: any) => { return a.value.max_combo - b.value.max_combo }).reverse();
     } else if (filterOptions.sort == "length") {
-        top = top.sort((a: any, b: any) => { 
-            
+        top = top.sort((a: any, b: any) => {
+
             let a_length = a.value.beatmap.total_length;
             let b_length = b.value.beatmap.total_length;
 
-            if(a.value.mods.includes("DT") || a.value.mods.includes("NC")) {
+            if (a.value.mods.includes("DT") || a.value.mods.includes("NC")) {
                 a_length = a_length * 1.5;
             }
 
-            if(b.value.mods.includes("DT") || b.value.mods.includes("NC")) {
+            if (b.value.mods.includes("DT") || b.value.mods.includes("NC")) {
                 b_length = b_length * 1.5;
             }
 
-            return a_length - b_length }).reverse();
+            return a_length - b_length
+        }).reverse();
     }
 
-    if(filterOptions.reverse) {
+    if (filterOptions.reverse) {
         top = top.reverse();
     }
 
     return top;
 
+}
+
+export function sortAndReverse(top: any, filterOptions: TopPlaysfilter) {
+    if (filterOptions.sort == "") { }
+    else if (filterOptions.sort == "acc" || filterOptions.sort == "accuracy") {
+        top = top.sort((a: any, b: any) => { return a.play.accuracy - b.play.accuracy }).reverse();
+    } else if (filterOptions.sort == "combo") {
+        top = top.sort((a: any, b: any) => { return a.play.max_combo - b.play.max_combo }).reverse();
+    } else if (filterOptions.sort == "length") {
+        top = top.sort((a: any, b: any) => {
+
+            let a_length = a.play.beatmap.total_length;
+            let b_length = b.play.beatmap.total_length;
+
+            if (a.play.mods.includes("DT") || a.play.mods.includes("NC")) {
+                a_length = a_length * 1.5;
+            }
+
+            if (b.play.mods.includes("DT") || b.play.mods.includes("NC")) {
+                b_length = b_length * 1.5;
+            }
+
+            return a_length - b_length
+        }).reverse();
+    }
+
+    if (filterOptions.reverse) {
+        top = top.reverse();
+    }
+
+    return top;
 }
 
 function arrayEquals(a: any, b: any) {

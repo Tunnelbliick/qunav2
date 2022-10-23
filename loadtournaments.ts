@@ -97,8 +97,6 @@ export  function ongoingWorldCup() {
 
             current.current_round = current_round;
             current.unlocked_round = unlocked_round;
-
-            console.log(current_round);
             await current.save();
             calculateScores();
             await setTimeout(updatecurrent, 1000 * 60 * 10);
@@ -188,8 +186,6 @@ async function calculateScores() {
 
             registrationMap.set(registration.id, registration);
             prediction_save_list.push(prediction);
-
-            console.log(prediction);
 
         })
 

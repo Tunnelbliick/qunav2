@@ -75,7 +75,11 @@ export function buildFilter(message: any, args: any, default_mode: any) {
             gamemode = arg;
         }
         else if (mode == "search") {
-            search += arg;
+            if(search === "")
+            search += arg.toLowerCase();
+            else 
+            search += " " + arg.toLowerCase();
+            break;
         }
         else if (mode == "mods") {
             mods += arg;

@@ -26,7 +26,7 @@ export function buildFilter(message: any, args: any, default_mode: any) {
             discordid = arg.replace('<@', '').replace('>', '');
             continue;
         } else if (arg == "-g" || arg == "-gamemode" || arg == "g" || arg == "gamemode") {
-            mode == "gamemode";
+            mode = "gamemode";
             continue;
         }
         else if (arg == "-s" || arg == "-search" || arg == "s" || arg == "search") {
@@ -75,7 +75,10 @@ export function buildFilter(message: any, args: any, default_mode: any) {
                 gamemode = arg;
                 break;
             case "search":
-                search += arg;
+                if(search === "")
+                search += arg.toLowerCase();
+                else 
+                search += " " + arg.toLowerCase();
                 break;
             case "mods":
                 mods += arg;
