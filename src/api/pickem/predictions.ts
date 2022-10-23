@@ -8,6 +8,7 @@ import owc from "../../models/owc";
 import owcgame from "../../models/owcgame";
 import pickemPrediction from "../../models/pickemPrediction";
 import pickemRegistration from "../../models/pickemRegistration";
+import pickemstatistic from "../../models/pickemstatistic";
 import User from "../../models/User";
 import { encrypt } from "../../utility/encrypt";
 import { getUserByUsername } from "../osu/user";
@@ -31,7 +32,7 @@ export async function predictions(message: any, interaction: any, args: any) {
 
     const owc_year: any = await owc.findOne({ url: current_tournament })
 
-    if(owc_year === null) {
+    if (owc_year === null) {
         await noPickEm(message, interaction);
         return;
     }
@@ -61,10 +62,10 @@ export async function predictions(message: any, interaction: any, args: any) {
         user = await User.findOne({ discordid: await encrypt(discordid) });
     }
 
-    if(checkIfUserExists(user, message, interaction)) {
+    if (checkIfUserExists(user, message, interaction)) {
         return
     }
-    
+
     registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 
     if (registration == null) {
@@ -175,10 +176,37 @@ export async function predictions(message: any, interaction: any, args: any) {
     })
 }
 
-function buildmatch(match: any, team1_score?: any, team2_score?: any) {
+function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?: any) {
 
     let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
     let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
+
+    let statistic_string = "";
+    let completed_string = "";
+
+    if (statistic !== undefined) {
+
+        const total = statistic.team1 + statistic.team2;
+
+        if (total != 0) {
+            let team1_perc = 100 / total * statistic.team1;
+            let team2_perc = 100 / total * statistic.team2;
+
+            if (team1_perc > team2_perc) {
+                statistic_string = ` | **${team1_perc.toFixed(0)}%** - ${team2_perc.toFixed(0)}%`
+            } else {
+                statistic_string = ` | ${team1_perc.toFixed(0)}% - **${team2_perc.toFixed(0)}%***`
+            }
+        }
+    }
+
+    if (match.state === "complete") {
+        if(match.team1_score > match.team2_score) {
+            completed_string = ` | **${match.team1_score}** - ${match.team2_score}`
+        } else {
+            completed_string = ` | ${match.team1_score} - **${match.team2_score}**` 
+        }
+    }
 
     if (code1 === undefined) {
         code1 = "AQ";
@@ -198,31 +226,37 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any) {
 
     if (team1_score === undefined || team2_score === undefined) {
         team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} **vs**`;
-        team2 = ` ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
-        return `${team1}${team2}`;
+        team2 = ` ${match.team2_name} :flag_${code2.toLocaleLowerCase()}:`;
+        return `${team1}${team2}${statistic_string}${completed_string}\n`;
     }
 
     if (team1_score > team2_score) {
         team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${team1_score}** - `;
-        team2 = `${team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
-        return `${team1}${team2}`;
+        team2 = `${team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}:`;
+        return `${team1}${team2}${statistic_string}${completed_string}\n`;
     } else {
         team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${team1_score} - `;
-        team2 = `**${team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
-        return `${team1}${team2}`;
+        team2 = `**${team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:`;
+        return `${team1}${team2}${statistic_string}${completed_string}\n`;
     }
 }
 
 async function buildEmbed(owc: any, registration: any, rounds: any) {
 
     const predictionMap: Map<any, any> = new Map<any, any>();
+    const statisticMap: Map<any, any> = new Map<any, any>();
     const matches: any = await owcgame.find({ owc: owc.id, round: { $in: rounds } });
     const unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
     const matchids: any[] = unlocked.map((match: any) => match.id);
     const predictions: any = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
+    const statistic: any = await pickemstatistic.find({ match: { $in: matchids } });
 
     predictions.forEach((prediction: any) => {
         predictionMap.set(prediction.match.toString(), prediction);
+    });
+
+    statistic.forEach((statistic: any) => {
+        statisticMap.set(statistic.match.toString(), statistic);
     });
 
     let winners = "";
@@ -252,10 +286,17 @@ async function buildEmbed(owc: any, registration: any, rounds: any) {
             if (prediction != null) {
                 index++;
 
+                let statistic = undefined;
+
+                if (owc.locked_round.includes(match.round)) {
+                    statistic = statisticMap.get(match.id.toString());
+                }
+
+
                 if (winners === "") {
                     winners = "__**Winners Bracket**__\n";
                 }
-                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
+                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, statistic)}`;
 
                 if (index == 2) {
                     winners += "\n";
@@ -273,7 +314,15 @@ async function buildEmbed(owc: any, registration: any, rounds: any) {
                 if (losers === "") {
                     losers = "__**Losers Bracket**__\n";
                 }
-                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
+
+                let statistic = undefined;
+
+                if (owc.locked_round.includes(match.round)) {
+                    statistic = statisticMap.get(match.id.toString());
+                }
+
+
+                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, statistic)}`;
 
                 if (index == 2) {
                     losers += "\n";
