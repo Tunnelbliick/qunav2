@@ -91,13 +91,13 @@ function genereateField(play: any) {
         case "mania":
             scoreField =
                 `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
-                `${rankEmote} ${score.pp.toFixed(2)} → **${play.unchocked.toFixed(2)}**/pp | ${(score.accuracy * 100).toFixed(2)}% → **${acc.toFixed(2)}%**\n` +
+                `${rankEmote} ${score.pp.toFixed(2)} → **${play.unchocked.toFixed(2)}pp** | ${(score.accuracy * 100).toFixed(2)}% → **${acc.toFixed(2)}%**\n` +
                 `[**${score.max_combo}x**] Removed ${score.statistics.count_miss == 1 ? "1 miss" : score.statistics.count_miss + " misses"}\n`
             break;
         default:
             scoreField =
                 `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
-                `${rankEmote} ${score.pp.toFixed(2)} → **${play.unchocked.toFixed(2)}**/pp | ${(score.accuracy * 100).toFixed(2)}% → **${acc.toFixed(2)}%**\n` +
+                `${rankEmote} ${score.pp.toFixed(2)} → **${play.unchocked.toFixed(2)}pp** | ${(score.accuracy * 100).toFixed(2)}% → **${acc.toFixed(2)}%**\n` +
                 `[${score.max_combo}x → **${difficulty.max_combo}x**/${difficulty.max_combo}x] Removed ${score.statistics.count_miss == 1 ? "1 miss" : score.statistics.count_miss + " misses"}\n`
             break;
     }
