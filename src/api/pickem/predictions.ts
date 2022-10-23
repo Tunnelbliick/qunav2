@@ -16,6 +16,7 @@ import { current_tournament } from "./pickem";
 import { buildPredictionArguments } from "./predictionsArguments";
 
 const { overwrite, getCode } = require('country-list');
+const getCountryISO3 = require("country-iso-2-to-3");
 
 country_overwrite();
 
@@ -183,6 +184,7 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
 
     let statistic_string = "";
     let completed_string = "";
+    let points_gained = "";
 
     if (statistic !== undefined) {
 
@@ -193,29 +195,50 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
             let team2_perc = 100 / total * statistic.team2;
 
             if (team1_perc > team2_perc) {
-                statistic_string = ` | **${team1_perc.toFixed(0)}%** - ${team2_perc.toFixed(0)}%`
+                statistic_string = ` | **${team1_perc.toFixed(0)}%** - ${team2_perc.toFixed(0)}%`
             } else {
-                statistic_string = ` | ${team1_perc.toFixed(0)}% - **${team2_perc.toFixed(0)}%***`
+                statistic_string = ` | ${team1_perc.toFixed(0)}% - **${team2_perc.toFixed(0)}%***`
             }
         }
     }
 
     if (match.state === "complete") {
-        if(match.team1_score > match.team2_score) {
-            completed_string = ` | **${match.team1_score}** - ${match.team2_score}`
+        if (match.team1_score > match.team2_score) {
+            completed_string = ` | **${match.team1_score}** - ${match.team2_score}`
         } else {
-            completed_string = ` | ${match.team1_score} - **${match.team2_score}**` 
+            completed_string = ` | ${match.team1_score} - **${match.team2_score}**`
         }
+
+        let points = 0;
+        if (match.team1_score > match.team2_score) {
+            if (team1_score === match.team1_score) {
+                points = points + getPointsForCorrectWinner(match);
+            }
+        } else {
+            if (team2_score === match.team2_score) {
+                points = points + getPointsForCorrectWinner(match);
+            }
+        }
+        if (team1_score === match.team1_score && team2_score === match.team2_score) {
+            points = points + getPointsForCorrectWinner(match);
+        }
+
+        points_gained = ` | +**${points}**`
     }
+
+    let country1 = getCountryISO3(code1);
+    let country2 = getCountryISO3(code2);
 
     if (code1 === undefined) {
         code1 = "AQ";
         match.team1_name = "TBD";
+        country1 = "TBD";
     }
 
     if (code2 === undefined) {
         code2 = "AQ";
         match.team2_name = "TBD";
+        country2 = "TBD";
     }
 
     code1 = code1.toLocaleLowerCase();
@@ -225,19 +248,19 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
     let team2 = "";
 
     if (team1_score === undefined || team2_score === undefined) {
-        team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} **vs**`;
-        team2 = ` ${match.team2_name} :flag_${code2.toLocaleLowerCase()}:`;
-        return `${team1}${team2}${statistic_string}${completed_string}\n`;
+        team1 = `:flag_${code1.toLocaleLowerCase()}: ${country1} **vs**`;
+        team2 = ` ${country2} :flag_${code2.toLocaleLowerCase()}:`;
+        return `${team1}${team2}${statistic_string}${completed_string}${points_gained}\n`;
     }
 
     if (team1_score > team2_score) {
-        team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${team1_score}** - `;
-        team2 = `${team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}:`;
-        return `${team1}${team2}${statistic_string}${completed_string}\n`;
+        team1 = `:flag_${code1.toLocaleLowerCase()}: **${country1} ${team1_score}** - `;
+        team2 = `${team2_score} ${country2} :flag_${code2.toLocaleLowerCase()}:`;
+        return `${team1}${team2}${statistic_string}${completed_string}${points_gained}\n`;
     } else {
-        team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${team1_score} - `;
-        team2 = `**${team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}:`;
-        return `${team1}${team2}${statistic_string}${completed_string}\n`;
+        team1 = `:flag_${code1.toLocaleLowerCase()}: ${country1} ${team1_score} - `;
+        team2 = `**${team2_score} ${country2}** :flag_${code2.toLocaleLowerCase()}:`;
+        return `${team1}${team2}${statistic_string}${completed_string}${points_gained}\n`;
     }
 }
 
@@ -401,4 +424,54 @@ function buildOptions(owc: any, roundname: any) {
     }
 
     return options;
+}
+
+function getPointsForCorrectWinner(match: any) {
+    let points = 0;
+
+    switch (match.round) {
+        case 1:
+        case 2:
+        case "-1":
+            points = 1;
+            break;
+        case 3:
+        case 4:
+        case "-2":
+        case "-3":
+        case "-4":
+        case "-5":
+            points = 2;
+            break
+        default:
+            points = 4;
+            break;
+    }
+
+    return points;
+}
+
+function getPointsForCorrectScore(match: any) {
+    let points = 0;
+
+    switch (match.round) {
+        case 1:
+        case 2:
+        case "-1":
+            points = 3;
+            break;
+        case 3:
+        case 4:
+        case "-2":
+        case "-3":
+        case "-4":
+        case "-5":
+            points = 5;
+            break
+        default:
+            points = 8;
+            break;
+    }
+
+    return points;
 }

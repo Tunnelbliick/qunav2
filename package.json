@@ -16,6 +16,7 @@
     "chartjs-node-canvas": "^4.1.6",
     "chroma-js": "^2.4.2",
     "countries-and-timezones": "^3.3.0",
+    "country-iso-2-to-3": "^1.1.0",
     "country-list": "^2.2.0",
     "dataimageattachment": "^1.1.2",
     "discord.js": "^13.6.0",
