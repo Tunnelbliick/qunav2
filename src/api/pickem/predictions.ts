@@ -220,14 +220,14 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
             }
         }
         if (team1_score === match.team1_score && team2_score === match.team2_score) {
-            points = points + getPointsForCorrectWinner(match);
+            points = points + getPointsForCorrectScore(match);
         }
 
         points_gained = ` | +**${points}**`
     }
 
-    let country1 = getCountryISO3(code1);
-    let country2 = getCountryISO3(code2);
+    let country1 = getCountryISO3(code1).toLocaleLowerCase();
+    let country2 = getCountryISO3(code2).toLocaleLowerCase();
 
     if (code1 === undefined) {
         code1 = "AQ";
