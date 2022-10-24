@@ -19,8 +19,6 @@ export async function generateBeatmapChart(graph: any) {
 
     let time = 0;
     let graph_count = 0;
-    
-    console.log(graph);
 
     for (var key in graph) {
 
