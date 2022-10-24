@@ -1,18 +1,63 @@
 const { Canvas, loadImage } = require('skia-canvas');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
+let color: any = {
+    "aim": "#32a869",
+    "speed": "#a83e32",
+    "flashlight": "#5d32a8",
+    "movement": "#3269a8",
+    "strains": "#32a879",
+    "color": "#a87b32",
+    "rhythm" : "#9332a8",
+    "stamina": "#3244a8",
+}
+
 export async function generateBeatmapChart(graph: any) {
 
-    const labels = [];
-    const dataset = [];
+    const labels: any[] = [];
+    const datasets = [];
 
     let time = 0;
-    for (const strains of graph.strains) {
+    let graph_count = 0;
+    
+    console.log(graph);
 
-        time += graph.section_length;
+    for (var key in graph) {
 
-        labels.push(time);
-        dataset.push(strains.toString());
+        let value: any = graph[key];
+
+        if (isNaN(value)) {
+
+            let data: any[] = []
+
+            value.forEach((v: any) => {
+
+                if (graph_count == 0) {
+                    time += graph.section_length;
+                    labels.push(time);
+                }
+
+                data.push(v.toString());
+            })
+
+            let key_string = key.toString();
+
+            let label = key_string.charAt(0).toUpperCase() + key_string.substring(1);
+
+            let dataset = {
+                backgroundColor: color[key],
+                borderColor: color[key],
+                data: data,
+                pointRadius: 0,
+                showLine: true,
+                label: label
+            }
+
+            datasets.push(dataset)
+
+            graph_count++;
+        }
+
     }
 
     const width = 900; //px
@@ -27,15 +72,7 @@ export async function generateBeatmapChart(graph: any) {
         type: 'line',
         data: {
             labels: labels,
-            datasets: [
-                {
-                    backgroundColor: '#4b67ba',
-                    borderColor: '#4b67ba',
-                    data: dataset,
-                    pointRadius: 0,
-                    showLine: true
-                },
-            ],
+            datasets: datasets,
         },
         options: {
             layout: {
@@ -70,7 +107,8 @@ export async function generateBeatmapChart(graph: any) {
             },
             plugins: {
                 legend: {
-                    display: false,
+                    color: "white",
+                    display: true,
                 },
             },
         },

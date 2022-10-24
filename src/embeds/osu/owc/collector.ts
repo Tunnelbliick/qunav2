@@ -40,7 +40,7 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
     const collector = channel.createMessageComponentCollector({ filter, time: 60000 });
 
-    collector.on("collect", async (i: any) => {
+    collector.on("collect", async (interaction: any) => {
 
         let tournament_type: any = bo32;
 
@@ -52,131 +52,32 @@ export async function launchCollector(message: any, interaction: any, reply: any
             tournament_type = bo8;
         }
 
-        const round_name = tournament_type[+i.values[0]].name;
+        const round_name = tournament_type[+interaction.values[0]].name;
 
-        await i.deferUpdate({ content: `${round_name}` });
+        await interaction.deferUpdate({ content: `${round_name}` });
 
         let description = `[**Challonge**](${year.owc.full_challonge_url})\n[**Bracket**](${year.owc.full_challonge_url}/module)\n\n`;
-
-        let info: row
 
         if (year.owc.tournament_type === "single elimination") {
 
             switch (year.owc.size) {
                 case 32:
-                    switch (+i.values[0]) {
-                        case 1:
-                            info = { bo: bo32, winner: 1 };
-                            description += buildRow(rounds, info, undefined, true);
-                            break;
-                        case 2:
-                            info = { bo: bo32, winner: 2 };
-                            description += buildRow(rounds, info, undefined, true);
-                            break;
-                        case 3:
-                            info = { bo: bo32, winner: 3 };
-                            description += buildRow(rounds, info, undefined, true);
-                            break;
-                        case 4:
-                            info = { bo: bo32, winner: 4 };
-                            description += buildRow(rounds, info, undefined, true);
-                            break;
-                        case 5:
-                            info = { bo: bo32, winner: 5, loser: "0" };
-                            description += buildRow(rounds, info, 1, true);
-                            break;
-                    }
+                    singleEliminationBo32(interaction, rounds, description);
                     break;
                 case 16:
-                    switch (+i.values[0]) {
-                        case 1:
-                            info = { bo: bo16, winner: 1 };
-                            description += buildRow(rounds, info, undefined, true);
-                            break;
-                        case 2:
-                            info = { bo: bo16, winner: 2 };
-                            description += buildRow(rounds, info, undefined, true);
-                            break;
-                        case 3:
-                            info = { bo: bo16, winner: 3 };
-                            description += buildRow(rounds, info, undefined, true);
-                            break;
-                        case 4:
-                            info = { bo: bo16, winner: 4, loser: "0" };
-                            description += buildRow(rounds, info, 1, true);
-                            break;
-                    }
+                    singleEliminationBo16(interaction, rounds, description);
                     break;
                 case 8:
-                    switch (+i.values[0]) {
-                        case 1:
-                            info = { bo: bo8, winner: 1 };
-                            description += buildRow(rounds, info, undefined, true);
-                            break;
-                        case 2:
-                            info = { bo: bo8, winner: 2 };
-                            description += buildRow(rounds, info, undefined, true);
-                            break;
-                        case 3:
-                            info = { bo: bo8, winner: 3, loser: "0" };
-                            description += buildRow(rounds, info, 1, true);
-                            break;
-                    }
+                    singleEliminationBo8(interaction, rounds, description);
                     break;
             }
 
         } else {
 
             if (year.owc.size === 32) {
-                switch (+i.values[0]) {
-                    case 1:
-                        info = { bo: bo32, winner: 1 };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 2:
-                        info = { bo: bo32, winner: 2, loser: "-1" };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 3:
-                        info = { bo: bo32, winner: 3, loser: "-2", loser2: "-3" };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 4:
-                        info = { bo: bo32, winner: 4, loser: "-4", loser2: "-5" };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 5:
-                        info = { bo: bo32, winner: 5, loser: "-6", loser2: "-7" };
-                        description += buildRow(rounds, info, 5);
-                        break;
-                    case 6:
-                        info = { bo: bo32, winner: 6, loser: "-8" };
-                        description += buildRow(rounds, info, 1);
-                        break;
-                }
+                doubleEliminationBo32(interaction, rounds, description);
             } else {
-                switch (+i.values[0]) {
-                    case 1:
-                        info = { bo: bo16, winner: 1 };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 2:
-                        info = { bo: bo16, winner: 2, loser: "-1" };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 3:
-                        info = { bo: bo16, winner: 3, loser: "-2", loser2: "-3" };
-                        description += buildRow(rounds, info);
-                        break;
-                    case 4:
-                        info = { bo: bo16, winner: 4, loser: "-4", loser2: "-5" };
-                        description += buildRow(rounds, info, 5);
-                        break;
-                    case 5:
-                        info = { bo: bo16, winner: 5, loser: "-6" };
-                        description += buildRow(rounds, info, 1);
-                        break;
-                }
+                doubleEliminationBo16(interaction, rounds, description);
             }
         }
 
@@ -430,4 +331,142 @@ export function buildmatch(match: any, podium?: 1 | 3 | 5, single?: boolean) {
     }
 
     return `${team1}${team2}`;
+}
+
+function doubleEliminationBo16(interaction: any, rounds: any, description: any) {
+
+    let info: row;
+
+    switch (+interaction.values[0]) {
+        case 1:
+            info = { bo: bo16, winner: 1 };
+            description += buildRow(rounds, info);
+            break;
+        case 2:
+            info = { bo: bo16, winner: 2, loser: "-1" };
+            description += buildRow(rounds, info);
+            break;
+        case 3:
+            info = { bo: bo16, winner: 3, loser: "-2", loser2: "-3" };
+            description += buildRow(rounds, info);
+            break;
+        case 4:
+            info = { bo: bo16, winner: 4, loser: "-4", loser2: "-5" };
+            description += buildRow(rounds, info, 5);
+            break;
+        case 5:
+            info = { bo: bo16, winner: 5, loser: "-6" };
+            description += buildRow(rounds, info, 1);
+            break;
+    }
+    return description;
+}
+
+function doubleEliminationBo32(interaction: any, rounds: any, description: any) {
+
+    let info: row;
+
+    switch (+interaction.values[0]) {
+        case 1:
+            info = { bo: bo32, winner: 1 };
+            description += buildRow(rounds, info);
+            break;
+        case 2:
+            info = { bo: bo32, winner: 2, loser: "-1" };
+            description += buildRow(rounds, info);
+            break;
+        case 3:
+            info = { bo: bo32, winner: 3, loser: "-2", loser2: "-3" };
+            description += buildRow(rounds, info);
+            break;
+        case 4:
+            info = { bo: bo32, winner: 4, loser: "-4", loser2: "-5" };
+            description += buildRow(rounds, info);
+            break;
+        case 5:
+            info = { bo: bo32, winner: 5, loser: "-6", loser2: "-7" };
+            description += buildRow(rounds, info, 5);
+            break;
+        case 6:
+            info = { bo: bo32, winner: 6, loser: "-8" };
+            description += buildRow(rounds, info, 1);
+            break;
+    }
+
+    return description;
+}
+
+function singleEliminationBo8(interaction: any, rounds: any, description: any) {
+
+    let info: row;
+
+    switch (+interaction.values[0]) {
+        case 1:
+            info = { bo: bo8, winner: 1 };
+            description += buildRow(rounds, info, undefined, true);
+            break;
+        case 2:
+            info = { bo: bo8, winner: 2 };
+            description += buildRow(rounds, info, undefined, true);
+            break;
+        case 3:
+            info = { bo: bo8, winner: 3, loser: "0" };
+            description += buildRow(rounds, info, 1, true);
+            break;
+    }
+    return description;
+}
+
+function singleEliminationBo16(interaction: any, rounds: any, description: any) {
+
+    let info: row;
+
+    switch (+interaction.values[0]) {
+        case 1:
+            info = { bo: bo16, winner: 1 };
+            description += buildRow(rounds, info, undefined, true);
+            break;
+        case 2:
+            info = { bo: bo16, winner: 2 };
+            description += buildRow(rounds, info, undefined, true);
+            break;
+        case 3:
+            info = { bo: bo16, winner: 3 };
+            description += buildRow(rounds, info, undefined, true);
+            break;
+        case 4:
+            info = { bo: bo16, winner: 4, loser: "0" };
+            description += buildRow(rounds, info, 1, true);
+            break;
+    }
+    return description;
+}
+
+function singleEliminationBo32(interaction: any, rounds: any, description: any) {
+
+    let info: row;
+
+    switch (+interaction.values[0]) {
+        case 1:
+            info = { bo: bo32, winner: 1 };
+            description += buildRow(rounds, info, undefined, true);
+            break;
+        case 2:
+            info = { bo: bo32, winner: 2 };
+            description += buildRow(rounds, info, undefined, true);
+            break;
+        case 3:
+            info = { bo: bo32, winner: 3 };
+            description += buildRow(rounds, info, undefined, true);
+            break;
+        case 4:
+            info = { bo: bo32, winner: 4 };
+            description += buildRow(rounds, info, undefined, true);
+            break;
+        case 5:
+            info = { bo: bo32, winner: 5, loser: "0" };
+            description += buildRow(rounds, info, 1, true);
+            break;
+    }
+    return description;
 }
