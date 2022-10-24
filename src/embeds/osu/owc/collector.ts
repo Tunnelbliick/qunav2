@@ -62,22 +62,22 @@ export async function launchCollector(message: any, interaction: any, reply: any
 
             switch (year.owc.size) {
                 case 32:
-                    singleEliminationBo32(interaction, rounds, description);
+                    description += singleEliminationBo32(interaction, rounds, description);
                     break;
                 case 16:
-                    singleEliminationBo16(interaction, rounds, description);
+                    description += singleEliminationBo16(interaction, rounds, description);
                     break;
                 case 8:
-                    singleEliminationBo8(interaction, rounds, description);
+                    description += singleEliminationBo8(interaction, rounds, description);
                     break;
             }
 
         } else {
 
             if (year.owc.size === 32) {
-                doubleEliminationBo32(interaction, rounds, description);
+                description += doubleEliminationBo32(interaction, rounds, description);
             } else {
-                doubleEliminationBo16(interaction, rounds, description);
+                description += doubleEliminationBo16(interaction, rounds, description);
             }
         }
 
