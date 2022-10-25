@@ -366,7 +366,7 @@ async function buildEmbed(owc: any, registration: any, rounds: any) {
     return `${winners}\n${losers}`;
 }
 
-function selectRound(round: any) {
+export function selectRound(round: any) {
 
     let rounds: any[] = [1];
 

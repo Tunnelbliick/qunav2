@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema({
     username: String,
     userid: String,
     linksucess: Boolean,
+    notification: Boolean,
     timezone: String,
 });
 
