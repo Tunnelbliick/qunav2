@@ -4,6 +4,8 @@ import { calcualte } from "../calculate";
 import { difficulty } from "../difficulty";
 import { max } from "../max";
 
+const maxDecimate = 200;
+
 export async function loadMapPP(data: any, modArray: any, mode: any) {
     let generatedpp: any;
     let returnpp: any;
@@ -26,7 +28,7 @@ export async function loadMapPP(data: any, modArray: any, mode: any) {
         ppObject.mode = mode;
         ppObject.pp = generatedpp.pp;
         ppObject.difficulty = generatedpp.difficulty;
-        ppObject.graph = generatedpp.graph;
+        ppObject.graph = decimate(generatedpp.graph);
 
         await ppObject.save();
 
@@ -42,7 +44,7 @@ export async function loadMapPP(data: any, modArray: any, mode: any) {
         ppObject.pp = generatedpp.pp;
         ppObject.mode = mode;
         ppObject.difficulty = generatedpp.difficulty;
-        ppObject.graph = generatedpp.graph;
+        ppObject.graph = decimate(generatedpp.graph);
 
         await ppObject.save();
 
@@ -74,7 +76,7 @@ export async function loadMapPPWithoutDownload(data: any, modArray: any, mode: a
         ppObject.mode = mode;
         ppObject.pp = generatedpp.pp;
         ppObject.difficulty = generatedpp.difficulty;
-        ppObject.graph = generatedpp.graph;
+        ppObject.graph = decimate(generatedpp.graph);
 
         await ppObject.save();
 
@@ -88,7 +90,7 @@ export async function loadMapPPWithoutDownload(data: any, modArray: any, mode: a
         ppObject.pp = generatedpp.pp;
         ppObject.difficulty = generatedpp.difficulty;
         ppObject.mode = mode;
-        ppObject.graph = generatedpp.graph;
+        ppObject.graph = decimate(generatedpp.graph);
 
         await ppObject.save();
 
@@ -98,4 +100,71 @@ export async function loadMapPPWithoutDownload(data: any, modArray: any, mode: a
 
     return returnpp;
 
+}
+
+export async function recalculateBeatMap(ppObject: any) {
+
+    await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${ppObject.mapid}_${ppObject.checksum}.osu`, ppObject.mapid);
+
+    let generatedpp: any;
+    let returnpp: any;
+
+    generatedpp = await calcualte(ppObject.mapid, ppObject.checksum, ppObject.mode, ppObject.mods);
+
+    if (ppObject == undefined) {
+        ppObject = new PerformancePoints();
+        ppObject.mods = [];
+    }
+
+    ppObject.mapid = ppObject.mapid;
+    ppObject.checksum = ppObject.checksum;
+    ppObject.mode = ppObject.mode;
+    ppObject.pp = generatedpp.pp;
+    ppObject.difficulty = generatedpp.difficulty;
+    ppObject.graph = decimate(generatedpp.graph);
+
+    await ppObject.save();
+
+    returnpp = ppObject;
+
+    return returnpp;
+
+}
+
+function decimate(graph: any) {
+
+    for (var key in graph) {
+
+        let value: any = graph[key];
+
+        if (isNaN(value)) {
+
+            let data: any[] = []
+            let time = 0;
+            let step = 0;
+            let avg = 0;
+            let max_step = Math.round(value.length / maxDecimate);
+
+            value.forEach((v: any) => {
+
+                if (max_step <= 1) {
+                    data.push({ y: +v, x: time });
+                    time += graph.section_length;
+                } else {
+                    avg += +v;
+
+                    if (max_step == step) {
+
+                        data.push({ y: parseFloat((avg / max_step).toFixed(3)), x: time });
+                        step = 0;
+                        avg = 0;
+                        time += graph.section_length * max_step;
+                    }
+                    step++;
+                }
+            })
+            graph[key] = data;
+        }
+    }
+    return graph;
 }
