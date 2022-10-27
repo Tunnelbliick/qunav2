@@ -13,7 +13,7 @@ const Procyon = require('procyon')
 
 export default (client: Client) => {
 
-    let procyon: any = new Procyon({
+    const procyon: any = new Procyon({
         className: 'maps'
     });
 

@@ -37,7 +37,7 @@ export default {
 
         const current: any = await owc.findOne({ url: current_tournament });
 
-        let emebd = new MessageEmbed()
+        const emebd = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle("Reminder for the Quna Pick'em Challenge")
             .setDescription(`**You still have open predictions!** for the ${current.name}\n\n**Use the buttons below!**\n- to complete your predictions.\n- to turn messages like these **off/on**`)
@@ -98,7 +98,7 @@ export default {
         const users: any = await User.find({ _id: { $in: registered_users }, $or: [{ notification: true }, { notification: { $exists: 0 } }] })
 
         // Dm users
-        for (let user of users) {
+        for (const user of users) {
             const discordid = await decrypt(user.discordid);
             const discord_user: any = await client.users.fetch(discordid).catch(() => null);
 

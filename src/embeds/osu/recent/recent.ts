@@ -167,7 +167,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     if (interaction) {
         interaction.editReply({ content: `Try #${retries}`, embeds: [fullsize] }).then(() => setTimeout(function () {
-            let currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+            const currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
             const compact = new MessageEmbed()
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
@@ -223,7 +223,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
         }, 60000));
     } else {
         message.reply({ content: `Try #${retries}`, embeds: [fullsize] }).then((msg) => setTimeout(function () {
-            let currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+            const currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
             const compact = new MessageEmbed()
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })

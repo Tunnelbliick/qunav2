@@ -25,7 +25,7 @@ export default {
             return
         }
 
-        let ppObject: any = await PerformancePoints.find();
+        const ppObject: any = await PerformancePoints.find();
 
         const race = asyncBatch(ppObject,
             (pp: any) => new Promise(

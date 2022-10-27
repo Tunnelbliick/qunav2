@@ -1,7 +1,7 @@
 const { Canvas, loadImage } = require('skia-canvas');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
-let color: any = {
+const color: any = {
     "aim": "#32a869",
     "speed": "#a83e32",
     "flashlight": "#5d32a8",
@@ -19,19 +19,19 @@ export async function generateBeatmapChart(graph: any) {
     const datasets = [];
     let stepSize = 0;
 
-    for (var key in graph) {
+    for (const key in graph) {
 
-        let value: any = graph[key];
+        const value: any = graph[key];
 
         if (isNaN(value)) {
             
-            let key_string = key.toString();
+            const key_string = key.toString();
             stepSize = value[value.length - 1].x / 5;
             
 
-            let label = key_string.charAt(0).toUpperCase() + key_string.substring(1);
+            const label = key_string.charAt(0).toUpperCase() + key_string.substring(1);
 
-            let dataset = {
+            const dataset = {
                 backgroundColor: color[key],
                 borderColor: color[key],
                 data: value,

@@ -77,7 +77,7 @@ function genereateField(play: any) {
         return null;
     }
 
-    const mods: Array<String> = score.mods;
+    const mods: Array<string> = score.mods;
     let appliedmods: any = "+";
     mods.forEach(m => { appliedmods += m });
 

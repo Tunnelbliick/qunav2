@@ -97,10 +97,10 @@ export async function nochocke(interaction: any, message: any, args: any, mode: 
 
     const p1 = new Promise((res) => setTimeout(() => res("p1"), 2500));
 
-    let completed = await Promise.race([p1, race]);
+    const completed = await Promise.race([p1, race]);
 
     if (completed === "p1") {
-        let embed: any = new MessageEmbed()
+        const embed: any = new MessageEmbed()
             .setTitle("Error loading Page")
             .setDescription("**Wow! Please wait a moment!**\n\nThe beatmaps are still being processed for the first time!")
 
@@ -330,7 +330,7 @@ async function getUnchockedForTop100(top100: any[]) {
     );
 
     let index = 0;
-    let unchocked_indexed: unchocke[] = [];
+    const unchocked_indexed: unchocke[] = [];
     unchocke.sort((a: unchocke, b: unchocke) => b.pp - a.pp).forEach((unchocke: unchocke) => {
         unchocke.position = index;
         unchocked_indexed.push(unchocke);

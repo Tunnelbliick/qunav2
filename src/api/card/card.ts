@@ -186,7 +186,7 @@ export async function generateCard(user: any, skills: all_skills, title: string)
     //ctx.strokeStyle = "green";
     //ctx.rect(50, 200, 550, 600); // DEBUG
     // ctx.stroke();
-    let gradient = ctx.createLinearGradient(325, 0, 500, 0);
+    const gradient = ctx.createLinearGradient(325, 0, 500, 0);
     const gradient_stops = 1 / (currentTier.colors.length - 1);
     currentTier.colors.forEach((color: any, index: any) => {
         gradient.addColorStop(gradient_stops * index, color);

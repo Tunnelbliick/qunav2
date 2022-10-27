@@ -21,11 +21,11 @@ export async function buildshowSuggestions(params: show_suggestion_embed) {
 
         const stats = calcualteStatsFromSuggestion(content);
 
-        const mods: Array<String> = content.mods;
+        const mods: Array<string> = content.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
 
-        const categories: Array<String> = content.type;
+        const categories: Array<string> = content.type;
         let appliedcategories: any = "";
         categories.forEach((t: any) => { appliedcategories += `\`${t.category}\` ` });
 

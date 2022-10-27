@@ -27,13 +27,13 @@ export function buildFilter(interaction: any, message: any, args: any, default_m
         gamemode = options.getString("mode") === null ? default_mode : options.getString("mode")!;
         search = options.getString("search") === null ? "" : options.getString("search")!;
         mods = options.getString("mods") === null ? "" : options.getString("mods")!;
-        let acc_string = options.getString("accuracy") === null ? "" : options.getString("accuracy")!;
+        const acc_string = options.getString("accuracy") === null ? "" : options.getString("accuracy")!;
         if (acc_string !== "")
             acc.push(...acc_string.split("-"));
-        let combo_string = options.getString("combo") === null ? "" : options.getString("combo")!;
+        const combo_string = options.getString("combo") === null ? "" : options.getString("combo")!;
         if (combo_string !== "")
             combo.push(...combo_string.split("-"));
-        let rank_sring = options.getString("rank") === null ? "" : options.getString("rank")!;
+        const rank_sring = options.getString("rank") === null ? "" : options.getString("rank")!;
         if (rank_sring !== "")
             rank.push(rank_sring);
         sort = options.getString("sort") === null ? "position" : options.getString("sort")!;

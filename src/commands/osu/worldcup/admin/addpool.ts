@@ -67,7 +67,7 @@ export default {
         const keys: any = options.getString("key");
         const maps: any = options.getString("pool")?.split("        ");
 
-        const mappool: Map<String, any[]> = new Map<String, any[]>();
+        const mappool: Map<string, any[]> = new Map<string, any[]>();
         let mod_maps: any[] = [];
         let mod = "NoMod";
 

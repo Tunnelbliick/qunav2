@@ -64,8 +64,8 @@ export async function getTotalSkills(top_100: any) {
     let aimpp: number = 0;
     let accpp: number = 0;
     let speedpp: number = 0;
-    let strainpp: number = 0;
-    let difficultypp: number = 0;
+    const strainpp: number = 0;
+    const difficultypp: number = 0;
 
     const generateSkills = await asyncBatch(top_100,
         (task: any, taskIndex: number, workerIndex: number) => new Promise(
@@ -116,9 +116,9 @@ export async function getTotalSkills(top_100: any) {
                                 const ACC_BUFF: number = 2.1;
                                 const DIFFICULTY_NERF: number = 0.6;
 
-                                let acc_: any = Math.pow(Math.pow((task.value.accuracy / 36.0), 4.5) / 60.0, 1.5);
+                                const acc_: any = Math.pow(Math.pow((task.value.accuracy / 36.0), 4.5) / 60.0, 1.5);
 
-                                let acc_val = Math.pow(value.star, acc_)
+                                const acc_val = Math.pow(value.star, acc_)
                                     * Math.pow(task.value.od / 7.0, 0.25)
                                     * Math.pow(0 / 2000.0, 0.15)
                                     * ACC_BUFF;
@@ -206,7 +206,7 @@ export async function getAllSkills(top_100: any) {
     let speed: any = [];
     let star: any = [];
     let difficulty: any = [];
-    let strain: any = [];
+    const strain: any = [];
 
     const generateSkills = await asyncBatch(top_100,
         (task: any, taskIndex: number, workerIndex: number) => new Promise(
@@ -263,11 +263,11 @@ export async function getAllSkills(top_100: any) {
                                 // Mine: https://www.desmos.com/calculator/6itbeh8lhl?lang=de
 
                                 // Restrict the expodentional value to 100, otherwise it can be 100.192
-                                let y = Math.min(Math.pow(((task.value.accuracy * 100) / 17.0), 2.6), 100.00)
+                                const y = Math.min(Math.pow(((task.value.accuracy * 100) / 17.0), 2.6), 100.00)
 
-                                let acc_: any = Math.pow(y / 60.0, 1.5);
+                                const acc_: any = Math.pow(y / 60.0, 1.5);
 
-                                let acc_val = Math.pow(value.star, acc_)
+                                const acc_val = Math.pow(value.star, acc_)
                                     * Math.pow(task.value.beatmap.accuracy / 7.0, 0.25)
                                     * Math.pow(task.value.max_combo / 2000.0, 0.15)
                                     * ACC_BUFF;

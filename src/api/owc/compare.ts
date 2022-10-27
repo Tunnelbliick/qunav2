@@ -10,7 +10,7 @@ const { getCode } = require('country-list');
 country_overwrite();
 
 interface placement {
-    mode: String,
+    mode: string,
     place: number,
 }
 
