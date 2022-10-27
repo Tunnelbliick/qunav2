@@ -38,7 +38,7 @@ export async function getTopForUser(userid: string, offset?: number, limit?: num
     const returnArray: Array<Object> = [];
 
     if (bestplays == undefined) {
-        return null;
+        return undefined;
     }
 
     bestplays.forEach((play: any, index: any) => {

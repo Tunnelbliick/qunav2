@@ -27,7 +27,7 @@ export async function getLeaderBoard(mapid: any, mode: any) {
     const leaderboardArray: Array<Object> = [];
 
     if (leaderboard == undefined) {
-        return null;
+        return undefined;
     }
 
     leaderboard.scores.forEach((play: any, index: any) => {

@@ -113,7 +113,7 @@ export async function recalculateBeatMap(ppObject: any) {
 
     if (ppObject == undefined) {
         ppObject = new PerformancePoints();
-        ppObject.mods = [];
+        ppObject.mods = []; 
     }
 
     ppObject.mapid = ppObject.mapid;

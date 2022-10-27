@@ -6,6 +6,7 @@ import User from "../../../../models/User";
 import { encrypt } from "../../../../utility/encrypt";
 import { getRecentPlaysForUser, getRecentPlaysForUserName } from "../../../osu/recent";
 import { builFilter, optionsToFilter } from "./filter";
+import { saveScore } from "../../../score_submittion.ts/submit";
 
 export async function recent(message: any, interaction: any, args: any, mode: any) {
 
@@ -31,6 +32,10 @@ export async function recent(message: any, interaction: any, args: any, mode: an
         }
 
         result = await getRecentPlaysForUser(`${userObject.userid}`, filter, filter.mode);
+    }
+
+    if(result.beatmap !== undefined && ["loved","ranked","qualified"].includes(result.beatmap.status) === false) {
+        saveScore(result.recentplay, result.ppOfPlay);
     }
 
     try {

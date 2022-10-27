@@ -8,6 +8,7 @@ import { getUser, getUserByUsername } from "./user";
 import { v2 } from "osu-api-extended"
 import { getTopForUser } from "./top";
 import { getLeaderBoard } from "./leaderboard";
+import { loadUnrankedScore } from "../score_submittion.ts/load";
 
 
 export async function getScore(mode: any, scoreid: any) {
@@ -36,10 +37,14 @@ export async function getBeatmapScore(beatmap: any, userid: any, mode?: any) {
 
 export async function getScoresForUsernameForBeatMap(mapid: string, username: any) {
 
-
+    let scoresPromise: any
     const beatmap: any = await getBeatmap(mapid);
     const user: any = await getUserByUsername(username, beatmap.mode);
-    const scoresPromise: any = getBeatmapScore(mapid, user.id, beatmap.mode);
+    if (["loved", "ranked", "qualified"].includes(beatmap.status)) {
+        scoresPromise = getBeatmapScore(mapid, user.id, beatmap.mode);
+    } else {
+        scoresPromise = loadUnrankedScore(user.id, beatmap.id, beatmap.mode_int);
+    }
     const top100Promise: any = getTopForUser(user.id, undefined, undefined, undefined);
     const leaderboardPromise: any = getLeaderBoard(mapid, undefined);
     let top: any;
@@ -165,6 +170,10 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
         top = result[2].value;
         lb = result[3].value;
 
+        if(beatmap !== undefined && ["loved","ranked","qualified"].includes(beatmap.status) === false) {
+            scores = await loadUnrankedScore(userid, beatmap.id, beatmap.mode_int)
+        }
+
         user = await getUser(userid, beatmap.mode);
     })
 
@@ -181,7 +190,7 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
         const promises: Array<Promise<any>> = []
 
         scores.scores.forEach(async (score: any) => {
-            
+
             const top100 = top.find((t: any) => t.value.id === score.best_id);
 
             const leaderboard = lb.find((t: any) => t.value.id === score.best_id);

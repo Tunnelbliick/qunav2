@@ -133,9 +133,9 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
     }
 
     if (interaction) {
-        interaction.editReply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
+        await interaction.editReply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
     } else {
-        message.reply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
+        await message.reply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
     }
 }
 

@@ -263,7 +263,7 @@ export async function getAllSkills(top_100: any) {
                                 // Mine: https://www.desmos.com/calculator/6itbeh8lhl?lang=de
 
                                 // Restrict the expodentional value to 100, otherwise it can be 100.192
-                                let y = Math.min(Math.pow(((task.value.accuracy * 100) / 17.0), 2.6), 100)
+                                let y = Math.min(Math.pow(((task.value.accuracy * 100) / 17.0), 2.6), 100.00)
 
                                 let acc_: any = Math.pow(y / 60.0, 1.5);
 

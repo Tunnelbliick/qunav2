@@ -1,4 +1,11 @@
+import { Long } from "mongodb";
+
 export function replaceDots(input: any): String {
+
+    if(input instanceof Long) {
+        return input.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
+
     if(input == undefined)
     return input
     return input.toLocaleString().replaceAll(".", ",");
