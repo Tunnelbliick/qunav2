@@ -57,9 +57,9 @@ export default (client: Client) => {
 
 async function sub(interaction: any) {
 
-    let userid = interaction.user.id;
+    const userid = interaction.user.id;
 
-    let user: any = await User.findOne({ discordid: await encrypt(userid) });
+    const user: any = await User.findOne({ discordid: await encrypt(userid) });
 
     checkIfUserExists(user, undefined, interaction);
 
@@ -80,9 +80,9 @@ async function sub(interaction: any) {
 
 async function unsub(interaction: any) {
 
-    let userid = interaction.user.id;
+    const userid = interaction.user.id;
 
-    let user: any = await User.findOne({ discordid: await encrypt(userid) });
+    const user: any = await User.findOne({ discordid: await encrypt(userid) });
 
     checkIfUserExists(user, undefined, interaction);
 

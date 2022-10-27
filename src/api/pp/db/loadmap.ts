@@ -133,17 +133,17 @@ export async function recalculateBeatMap(ppObject: any) {
 
 function decimate(graph: any) {
 
-    for (var key in graph) {
+    for (const key in graph) {
 
-        let value: any = graph[key];
+        const value: any = graph[key];
 
         if (isNaN(value)) {
 
-            let data: any[] = []
+            const data: any[] = []
             let time = 0;
             let step = 0;
             let avg = 0;
-            let max_step = Math.round(value.length / maxDecimate);
+            const max_step = Math.round(value.length / maxDecimate);
 
             value.forEach((v: any) => {
 

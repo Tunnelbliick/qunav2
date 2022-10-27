@@ -32,13 +32,13 @@ export default {
 
         const owc_year: any = await owc.findOne({ url: current_tournament });
         const owcgames: any[] = await owcgame.find({ owc: owc_year.id });
-        let owcgames_ids: string[] = [];
+        const owcgames_ids: string[] = [];
 
         owcgames.forEach((game: any) => {
             owcgames_ids.push(game.id);
         })
 
-        let prediction_map: Map<string, any[]> = new Map<string, any[]>();
+        const prediction_map: Map<string, any[]> = new Map<string, any[]>();
         const all_predictions = await pickemPrediction.find({ match: { $in: owcgames_ids } });
 
         all_predictions.forEach((prediction: any) => {
@@ -51,14 +51,14 @@ export default {
                 predictions.push(prediction);
                 prediction_map.set(prediction.match.toString(), predictions);
             } else {
-                let predictions: any[] = []
+                const predictions: any[] = []
                 predictions?.push(prediction);
                 prediction_map.set(prediction.match.toString(), predictions);
             }
 
         })
 
-        for (let [key, value] of prediction_map) {
+        for (const [key, value] of prediction_map) {
 
             let team1_count = 0;
             let team2_count = 0;

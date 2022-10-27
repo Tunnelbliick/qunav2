@@ -75,8 +75,8 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
     stats = calcualteStatsforMods(stats, modArray);
 
     // extras
-    let successrate = Math.round((data.passcount / data.playcount) * 100)
-    let embedColor = getDifficultyColor(difficulty.star.toFixed(2))
+    const successrate = Math.round((data.passcount / data.playcount) * 100)
+    const embedColor = getDifficultyColor(difficulty.star.toFixed(2))
 
     // @ts-ignore 
     const modeEmote = gamemode_icons[data.mode];
@@ -141,7 +141,7 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
 
 function center(text: string, length: number): string {
     const space = length - text.length;
-    const spac: String = " ";
+    const spac: string = " ";
     const count = Math.round(space / 2);
     if (space % 2) {
         return spac.repeat(count - 1) + text + spac.repeat(count);

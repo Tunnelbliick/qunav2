@@ -21,7 +21,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
     for (const a of skills.star.slice(0, 3)) {
         // @ts-ignore 
         const rank = rank_icons[a.score.rank];
-        const mods: Array<String> = a.score.mods;
+        const mods: Array<string> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
         const map = `\`${a.value.toFixed(2)}★\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
@@ -31,7 +31,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
     for (const a of skills.aim.slice(0, 3)) {
         // @ts-ignore 
         const rank = rank_icons[a.score.rank];
-        const mods: Array<String> = a.score.mods;
+        const mods: Array<string> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
         const map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
@@ -41,7 +41,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
     for (const a of skills.speed.slice(0, 3)) {
         // @ts-ignore 
         const rank = rank_icons[a.score.rank];
-        const mods: Array<String> = a.score.mods;
+        const mods: Array<string> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
         const map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
@@ -51,7 +51,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
     for (const a of skills.acc.slice(0, 3)) {
         // @ts-ignore 
         const rank = rank_icons[a.score.rank];
-        const mods: Array<String> = a.score.mods;
+        const mods: Array<string> = a.score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
         const map = `\`${normalise(a.value).toFixed(2)}p\` ${rank} [${a.score.beatmapset.title} [${a.score.beatmap.version}]](${a.score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`
@@ -130,7 +130,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                 for (const a of skills.star.slice(0, 20)) {
                     // @ts-ignore 
                     const rank = rank_icons[a.score.rank];
-                    const mods: Array<String> = a.score.mods;
+                    const mods: Array<string> = a.score.mods;
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
                     const value = a.value;
@@ -147,7 +147,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                 for (const a of skills.aim.slice(0, 20)) {
                     // @ts-ignore 
                     const rank = rank_icons[a.score.rank];
-                    const mods: Array<String> = a.score.mods;
+                    const mods: Array<string> = a.score.mods;
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
                     const weight = Math.pow(0.95, index);
@@ -166,7 +166,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                 for (const a of skills.speed.slice(0, 20)) {
                     // @ts-ignore 
                     const rank = rank_icons[a.score.rank];
-                    const mods: Array<String> = a.score.mods;
+                    const mods: Array<string> = a.score.mods;
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
                     const weight = Math.pow(0.95, index);
@@ -185,7 +185,7 @@ export async function generateSkillsEmbed(skills: all_skills, user: any, message
                 for (const a of skills.acc.slice(0, 20)) {
                     // @ts-ignore 
                     const rank = rank_icons[a.score.rank];
-                    const mods: Array<String> = a.score.mods;
+                    const mods: Array<string> = a.score.mods;
                     let appliedmods: any = "+";
                     mods.forEach(m => { appliedmods += m });
                     const weight = Math.pow(0.95, index);

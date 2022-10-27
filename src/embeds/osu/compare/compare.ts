@@ -65,9 +65,9 @@ export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>,
 
 function genereateField(counter: any, play: any, acc100: any, difficulty: any, max_combo: any, ppOfPlay?: any) {
 
-    let currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+    const currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
 
-    const mods: Array<String> = play.mods;
+    const mods: Array<string> = play.mods;
     let appliedmods: any = "+";
     mods.forEach(m => { appliedmods += m });
 

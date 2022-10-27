@@ -82,7 +82,7 @@ export async function recentbestEmbed(data: any, user: any, index: number, max: 
             return null;
         }
 
-        const mods: Array<String> = score.mods;
+        const mods: Array<string> = score.mods;
         let appliedmods: any = "+";
         mods.forEach(m => { appliedmods += m });
 
@@ -163,9 +163,9 @@ function genereateField(play: any) {
         return null;
     }
 
-    let currentTimeInSeconds = Math.floor(new Date(score.created_at).getTime() / 1000)
+    const currentTimeInSeconds = Math.floor(new Date(score.created_at).getTime() / 1000)
 
-    const mods: Array<String> = score.mods;
+    const mods: Array<string> = score.mods;
     let appliedmods: any = "+";
     mods.forEach(m => { appliedmods += m });
 

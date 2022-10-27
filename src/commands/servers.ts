@@ -16,7 +16,7 @@ export default {
             isSlash = false;
         }
 
-        let servcer_count = client.guilds.cache.size;
+        const servcer_count = client.guilds.cache.size;
 
         const embed = new MessageEmbed()
             .setTitle("Quna server check")

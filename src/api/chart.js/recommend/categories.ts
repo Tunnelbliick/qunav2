@@ -8,7 +8,7 @@ export async function categoriechart(recommendation: any) {
 
     for (const type of recommendation.type) {
         pielabel.push(type.category);
-        let randomColor = Math.floor(Math.random()*16777215).toString(16);
+        const randomColor = Math.floor(Math.random()*16777215).toString(16);
         pieColors.push(`#${randomColor}`);
         pieValue.push(
             type.upvote.length);
@@ -51,7 +51,7 @@ export async function categorieLabeledchart(categories: any) {
 
     for (const category of categories) {
         pielabel.push(category.category);
-        let randomColor = Math.floor(Math.random()*16777215).toString(16);
+        const randomColor = Math.floor(Math.random()*16777215).toString(16);
         pieColors.push(`#${randomColor}`);
         pieValue.push(
             category.upvote.length);

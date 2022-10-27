@@ -80,7 +80,7 @@ export async function beatmap(message: any, interaction: any, args: any) {
             id = data.beatmaps[data.beatmaps.length - 1].id;
         });
 
-    let data = await getBeatmap(id)
+    const data = await getBeatmap(id)
 
     try {
         buildMapEmbed(data, message, interaction, mods);

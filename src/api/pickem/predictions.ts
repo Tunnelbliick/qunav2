@@ -191,8 +191,8 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
         const total = statistic.team1 + statistic.team2;
 
         if (total != 0) {
-            let team1_perc = 100 / total * statistic.team1;
-            let team2_perc = 100 / total * statistic.team2;
+            const team1_perc = 100 / total * statistic.team1;
+            const team2_perc = 100 / total * statistic.team2;
 
             if (team1_perc > team2_perc) {
                 statistic_string = ` | **${team1_perc.toFixed(0)}%** - ${team2_perc.toFixed(0)}%`

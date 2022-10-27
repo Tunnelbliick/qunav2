@@ -21,7 +21,7 @@ export async function timeoutAuthEmbed() {
     return embed;
 }
 
-export async function successfullAuthEmbed(username: String) {
+export async function successfullAuthEmbed(username: string) {
     const embed = new MessageEmbed()
         .setTitle("Success!")
         .setDescription(`Accounts connected!\nUsername: ${username}`)
