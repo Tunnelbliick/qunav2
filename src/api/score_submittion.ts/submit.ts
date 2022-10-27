@@ -2,8 +2,6 @@ import score from "../../models/score";
 
 export async function saveScore(unranked: any, pp: any) {
 
-    console.log(unranked);
-
     const user_id = unranked.user_id;
     const beatmap = unranked.beatmap;
 
