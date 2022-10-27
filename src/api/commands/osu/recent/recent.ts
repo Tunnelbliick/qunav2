@@ -34,7 +34,7 @@ export async function recent(message: any, interaction: any, args: any, mode: an
         result = await getRecentPlaysForUser(`${userObject.userid}`, filter, filter.mode);
     }
 
-    if(result.beatmap !== undefined && ["loved","ranked","qualified"].includes(result.beatmap.status) === false) {
+    if(result.beatmap !== undefined && ["loved","ranked","qualified"].includes(result.beatmap.status) === false && result.rank !== "F") {
         saveScore(result.recentplay, result.ppOfPlay);
     }
 
