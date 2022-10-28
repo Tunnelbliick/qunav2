@@ -2,7 +2,7 @@
     <img src="https://cdn.discordapp.com/attachments/907830378193092669/1009652130363215992/Untitled-1.png?size=4096" width=40% height=40%>
 </p>
 <p align="center">
-(Im working on it) <a href="https://www.codefactor.io/repository/github/tunnelbliick/qunav2"><img src="https://www.codefactor.io/repository/github/tunnelbliick/qunav2/badge" alt="CodeFactor" /></a>
+<a href="https://www.codefactor.io/repository/github/tunnelbliick/qunav2"><img src="https://www.codefactor.io/repository/github/tunnelbliick/qunav2/badge" alt="CodeFactor" /></a>
 </p>
 <p align="center">
 Yet another multipurpose (but mainly focused on <a href="https://osu.ppy.sh">osu!</a>) Discord bot.
