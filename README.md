@@ -15,6 +15,7 @@ Quna runs on Discord.js v13 and is built on TypeScript. She's owned, developed a
 ## 💠 Features
 Quna is still waiting to receive some extra features, but this is what she has right now:
 - osu!
+    - Unranked score submittion unique to this bot
     - Your usual osu! commands from every other bot you know (!osu, !top, !r, !c)
     - But with some neat features (Charts, Timezone Adaption, Farming Hours/Days)
     - Also combines or improves on features unique to a single bot (now defunct [Tiny Bot](https://github.com/Tienei/TinyBot)'s !card and !osu -ts)
