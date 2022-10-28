@@ -2,6 +2,7 @@
     <img src="https://cdn.discordapp.com/attachments/907830378193092669/1009652130363215992/Untitled-1.png?size=4096" width=40% height=40%>
 </p>
 <p align="center">
+    <img src="https://discordapp.com/api/guilds/940446029436821514/widget.png?style=shield" alt="Discord Shield"/>
 <a href="https://www.codefactor.io/repository/github/tunnelbliick/qunav2"><img src="https://www.codefactor.io/repository/github/tunnelbliick/qunav2/badge" alt="CodeFactor" /></a>
 </p>
 <p align="center">
