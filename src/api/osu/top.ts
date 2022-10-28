@@ -3,10 +3,10 @@ import { v2 } from "osu-api-extended"
 import { getBeatmapFromCache } from "./beatmap";
 import { loadacc100WithoutBeatMapDownload } from "../pp/db/load100";
 import { difficulty } from "../pp/difficulty";
-import { getLeaderBoard } from "./leaderboard";
 import asyncBatch from "async-batch";
+import { loadUnrankedTop } from "../unranked/top";
 
-export async function getTop(userid: any, offset?: any, limit?: any, mode?: any) {
+export async function getTop(userid: any, offset?: any, limit?: any, mode?: any): Promise<object[]> {
     await login();
     const params: any = {};
     params.limit = 100;
@@ -27,15 +27,22 @@ export async function getTop(userid: any, offset?: any, limit?: any, mode?: any)
     });
 }
 
-export async function getTopForUser(userid: string, offset?: number, limit?: number, mode?: any) {
+export async function getTopForUser(userid: string, offset?: number, limit?: number, mode?: any, unranked?: boolean) {
 
-    const bestplays: any = await getTop(userid, offset, limit, mode);
+
+    let bestplays: object[] = [];
+
+    if (unranked === true) {
+        bestplays = await loadUnrankedTop(userid, mode);
+    } else {
+        bestplays = await getTop(userid, offset, limit, mode);
+    }
 
     if (bestplays.hasOwnProperty("error")) {
         return "osuapierr";
     }
 
-    const returnArray: Array<Object> = [];
+    const returnArray: object[] = [];
 
     if (bestplays == undefined) {
         return undefined;
@@ -115,7 +122,7 @@ export async function getMaxForCurrentTopArray(input: any) {
 export async function getMaxForCurrentNoChockeArray(input: any) {
 
     return new Promise(async (resolve, reject) => {
-        
+
 
         const beatmap: any = getBeatmapFromCache(input.play.beatmap.id, input.play.beatmap.checksum);
         const acc100: any = loadacc100WithoutBeatMapDownload(input.play.beatmap.id, input.play.beatmap.checksum, input.play.mods, input.play.beatmap.mode);

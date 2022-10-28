@@ -6,7 +6,7 @@ import User from "../../../../models/User";
 import { encrypt } from "../../../../utility/encrypt";
 import { getRecentPlaysForUser, getRecentPlaysForUserName } from "../../../osu/recent";
 import { builFilter, optionsToFilter } from "./filter";
-import { saveScore } from "../../../score_submittion.ts/submit";
+import { saveScore } from "../../../unranked/scoreSubmittion";
 
 export async function recent(message: any, interaction: any, args: any, mode: any) {
 

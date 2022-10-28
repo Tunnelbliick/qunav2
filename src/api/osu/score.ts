@@ -8,7 +8,7 @@ import { getUser, getUserByUsername } from "./user";
 import { v2 } from "osu-api-extended"
 import { getTopForUser } from "./top";
 import { getLeaderBoard } from "./leaderboard";
-import { loadUnrankedScore } from "../score_submittion.ts/load";
+import { loadUnrankedScore } from "../unranked/scoreLoading";
 
 
 export async function getScore(mode: any, scoreid: any) {

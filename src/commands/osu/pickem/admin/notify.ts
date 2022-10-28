@@ -40,7 +40,7 @@ export default {
         const emebd = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle("Reminder for the Quna Pick'em Challenge")
-            .setDescription(`**You still have open predictions!** for the ${current.name}\n\n**Use the buttons below!**\n- to complete your predictions.\n- to turn messages like these **off/on**`)
+            .setDescription(`**Last chance!!!\n\nYou still have open predictions!** for the ${current.name}\n\n**Use the buttons below!**\n- to complete your predictions.\n- to turn messages like these **off/on**`)
             .setFooter({ text: "Point gain increases every 2 rounds so you still have a chance!" })
             .setImage("attachment://pickem.png");
 

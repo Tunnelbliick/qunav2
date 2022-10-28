@@ -14,7 +14,7 @@ import { buildFilter } from "./filter"
 
 const DataImageAttachment = require("dataimageattachment");
 
-export async function top(message: any, args: any, mode: any) {
+export async function top(message: any, args: any, mode: any, undranked?: boolean) {
 
     let index = 0;
     let max = 20;
@@ -50,7 +50,7 @@ export async function top(message: any, args: any, mode: any) {
 
     }
 
-    top100 = await getTopForUser(userid, index, undefined, filterOptions.gamemode);
+    top100 = await getTopForUser(userid, index, undefined, filterOptions.gamemode, undranked);
 
     if (top100 == null || top100 == "osuapierr") {
         buildAPIErrEmbed(message);
