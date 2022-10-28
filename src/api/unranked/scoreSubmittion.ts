@@ -9,7 +9,7 @@ export async function saveScore(unranked: any, pp: any) {
     const user_id = unranked.user_id;
     const beatmap = unranked.beatmap;
 
-    let saved_score = await score.findOne({ userid: user_id, mapid: beatmap.id, checksum: beatmap.checksum, mods: unranked.mods, mode_int: unranked.mode_int });
+    let saved_score = await score.findOne({ osuid: user_id, mapid: beatmap.id, checksum: beatmap.checksum, mods: unranked.mods, mode_int: unranked.mode_int });
 
     if (saved_score === null) {
 
