@@ -219,7 +219,7 @@ export async function predict(interaction: any, client?: any) {
         channel = interaction.channel;
     }
 
-    if(channel === null) {
+    if(channel === null || channel === undefined) {
         await interaction.editReply("there was an error creating the Embed, please try again or use a Server!");
         return;
     }
