@@ -18,15 +18,15 @@ country_overwrite();
 
 let locked_round: any[] = [];
 
-export async function predict(interaction: any) {
+export async function predict(interaction: any, client?: any) {
 
     let match_index: number = -1;
     let predictionMap: Map<any, any> = new Map<any, any>();
     let registration: any = undefined;
 
     const owc_year: any = await owc.findOne({ url: current_tournament })
-    
-    if(owc_year === null) {
+
+    if (owc_year === null) {
         await noPickEm(undefined, interaction);
         return;
     }
@@ -37,7 +37,7 @@ export async function predict(interaction: any) {
 
     const user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
-    if(checkIfUserExists(user, undefined, interaction)) {
+    if (checkIfUserExists(user, undefined, interaction)) {
         return
     }
 
@@ -165,7 +165,7 @@ export async function predict(interaction: any) {
         index++;
 
     })
-    
+
 
     const description: any = `${winners}\n${losers}`;
 
@@ -211,7 +211,20 @@ export async function predict(interaction: any) {
             i.customId === `score_${interaction.id}`;
     }
 
-    const collector = interaction.channel.createMessageComponentCollector({ filter, time: 60000 });
+    let channel = null;
+
+    if (interaction.channel === null) {
+        channel = await client.channels.cache.get(interaction.message.channel_id);
+    } else {
+        channel = interaction.channel;
+    }
+
+    if(channel === null) {
+        await interaction.editReply("there was an error creating the Embed, please try again or use a Server!");
+        return;
+    }
+
+    const collector = channel.createMessageComponentCollector({ filter, time: 60000 });
 
     collector.on("collect", async (i: any) => {
 

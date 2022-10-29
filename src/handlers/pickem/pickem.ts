@@ -32,7 +32,7 @@ export default (client: Client) => {
                 registerpickem(interaction);
                 break;
             case "predict":
-                predict(interaction);
+                predict(interaction, client);
                 break;
             case "predictions":
                 predictions(undefined, interaction, undefined);
