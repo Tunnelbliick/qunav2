@@ -435,15 +435,15 @@ function getPointsForCorrectWinner(match: any) {
     switch (match.round) {
         case 1:
         case 2:
-        case "-1":
+        case -1:
             points = 1;
             break;
         case 3:
         case 4:
-        case "-2":
-        case "-3":
-        case "-4":
-        case "-5":
+        case -2:
+        case -3:
+        case -4:
+        case -5:
             points = 2;
             break
         default:
@@ -460,15 +460,15 @@ function getPointsForCorrectScore(match: any) {
     switch (match.round) {
         case 1:
         case 2:
-        case "-1":
+        case-1:
             points = 3;
             break;
         case 3:
         case 4:
-        case "-2":
-        case "-3":
-        case "-4":
-        case "-5":
+        case -2:
+        case -3:
+        case -4:
+        case -5:
             points = 5;
             break
         default:
