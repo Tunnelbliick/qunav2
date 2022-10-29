@@ -197,7 +197,7 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
             if (team1_perc > team2_perc) {
                 statistic_string = ` | **${team1_perc.toFixed(0)}%** - ${team2_perc.toFixed(0)}%`
             } else {
-                statistic_string = ` | ${team1_perc.toFixed(0)}% - **${team2_perc.toFixed(0)}%***`
+                statistic_string = ` | ${team1_perc.toFixed(0)}% - **${team2_perc.toFixed(0)}%**`
             }
         }
     }
