@@ -76,7 +76,11 @@ export async function predict(interaction: any, client?: any) {
     }
 
     const matches: any = await owcgame.find({ owc: owc_year.id, round: { $in: select } });
+    const match_map: Map<number, any> = new Map<number, any>();
     const unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
+    matches.forEach((match: any) => {
+        match_map.set(match.matchid, match);
+    })
     const matchids: any[] = unlocked.map((match: any) => match.id);
     const predictions: any = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
 
@@ -124,9 +128,9 @@ export async function predict(interaction: any, client?: any) {
             const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
-                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
+                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
             } else {
-                winners += `${buildmatch(match)}`;
+                winners += `${buildmatch(match, undefined, undefined, match_map)}`;
             }
 
             if (split_index == 2) {
@@ -150,9 +154,9 @@ export async function predict(interaction: any, client?: any) {
             const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
-                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
+                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
             } else {
-                losers += `${buildmatch(match)}`;
+                losers += `${buildmatch(match, undefined, undefined, match_map)}`;
             }
 
             if (split_index == 2) {
@@ -219,7 +223,7 @@ export async function predict(interaction: any, client?: any) {
         channel = interaction.channel;
     }
 
-    if(channel === null || channel === undefined) {
+    if (channel === null || channel === undefined) {
         await interaction.editReply("there was an error creating the Embed, please try again or use a Server!");
         return;
     }
@@ -279,9 +283,9 @@ export async function predict(interaction: any, client?: any) {
                 const prediction = predictionMap.get(match.id);
 
                 if (prediction != null) {
-                    winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
+                    winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
                 } else {
-                    winners += `${buildmatch(match)}`;
+                    winners += `${buildmatch(match, undefined, undefined, match_map)}`;
                 }
 
                 if (index == 2) {
@@ -298,9 +302,9 @@ export async function predict(interaction: any, client?: any) {
                 const prediction = predictionMap.get(match.id);
 
                 if (prediction != null) {
-                    losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
+                    losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
                 } else {
-                    losers += `${buildmatch(match)}`;
+                    losers += `${buildmatch(match, undefined, undefined, match_map)}`;
                 }
 
                 if (index == 2) {
@@ -330,19 +334,14 @@ export async function predict(interaction: any, client?: any) {
 
 }
 
-function buildmatch(match: any, team1_score?: any, team2_score?: any) {
+function buildmatch(match: any, team1_score?: any, team2_score?: any, match_map?: Map<number, any>) {
 
     let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
     let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
 
-    if (code1 === undefined) {
-        code1 = "AQ";
-        match.team1_name = "TBD";
-    }
-
-    if (code2 === undefined) {
-        code2 = "AQ";
-        match.team2_name = "TBD";
+    if(match.team1_name === undefined || match.team2_name === undefined) {
+        if(match_map !== undefined)
+        return buildWinnerOf(match, match_map);
     }
 
     code1 = code1.toLocaleLowerCase();
@@ -366,6 +365,48 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any) {
         team2 = `**${team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
         return `${team1}${team2}`;
     }
+}
+
+function buildWinnerOf(match: any, match_map: Map<number, any>) {
+
+    let prio_match_1 = match.team1_name;
+    let prio_match_2 = match.team2_name;
+
+    if (prio_match_1 === undefined) {
+        prio_match_1 = buildWinnerOfFlag(match_map.get(match.data.player1_prereq_match_id));
+    } else {
+        const code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
+        prio_match_1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name}**`;
+    }
+
+    if (prio_match_2 === undefined) {
+        prio_match_2 = buildWinnerOfFlag(match_map.get(match.data.player2_prereq_match_id));
+    } else {
+        const code1: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
+        prio_match_1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team2_name}**`;
+    }
+
+    return `${prio_match_1} **vs** ${prio_match_2} \n`;
+
+}
+
+function buildWinnerOfFlag(match: any) {
+
+    let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
+    let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
+
+    if (code1 === undefined) {
+        code1 = "AQ";
+        match.team1_name = "TBD";
+    }
+
+    if (code2 === undefined) {
+        code2 = "AQ";
+        match.team2_name = "TBD";
+    }
+
+    return `:flag_${code1.toLocaleLowerCase()}: **or** :flag_${code2.toLocaleLowerCase()}:`
+
 }
 
 function getFirstTo(round: any) {
