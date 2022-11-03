@@ -344,6 +344,16 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, match_map?
         return buildWinnerOf(match, match_map);
     }
 
+    if (code1 === undefined) {
+        code1 = "AQ";
+        match.team1_name = "TBD";
+    }
+
+    if (code2 === undefined) {
+        code2 = "AQ";
+        match.team2_name = "TBD";
+    }
+
     code1 = code1.toLocaleLowerCase();
     code2 = code2.toLocaleLowerCase();
 
@@ -524,7 +534,7 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predict
     let description = ""
 
     if (current_prediction == null) {
-        description = buildmatch(current_match);
+        description = buildmatch(current_match, undefined, undefined);
     } else {
         description = buildmatch(current_match, current_prediction.team1_score, current_prediction.team2_score);
     }
