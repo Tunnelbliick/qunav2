@@ -245,19 +245,19 @@ export async function predict(interaction: any, client?: any) {
 
         switch (method) {
             case "next":
-                match_index = await nextPage(interaction, unlocked, predictionMap, match_index, button_row, select_row);
+                match_index = await nextPage(interaction, unlocked, predictionMap, match_index, button_row, select_row, match_map);
                 break;
             case "prior":
-                match_index = await priorPage(interaction, unlocked, predictionMap, match_index, button_row, select_row);
+                match_index = await priorPage(interaction, unlocked, predictionMap, match_index, button_row, select_row, match_map);
                 break;
             case "overview":
-                match_index = await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row);
+                match_index = await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row, match_map);
                 break;
             case "score":
-                predictionMap = await predictMatch(interaction, registration, unlocked, predictionMap, match_index, button_row, i.values[0]);
+                predictionMap = await predictMatch(interaction, registration, unlocked, predictionMap, match_index, button_row, i.values[0], match_map);
                 break;
             case "select":
-                match_index = await selectPage(interaction, unlocked, predictionMap, match_index, button_row, i.values[0]);
+                match_index = await selectPage(interaction, unlocked, predictionMap, match_index, button_row, i.values[0], match_map);
                 break;
         }
 
@@ -339,9 +339,9 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, match_map?
     let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
     let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
 
-    if(match.team1_name === undefined || match.team2_name === undefined) {
-        if(match_map !== undefined)
-        return buildWinnerOf(match, match_map);
+    if (match.team1_name === undefined || match.team2_name === undefined) {
+        if (match_map !== undefined)
+            return buildWinnerOf(match, match_map);
     }
 
     if (code1 === undefined) {
@@ -397,6 +397,25 @@ function buildWinnerOf(match: any, match_map: Map<number, any>) {
     }
 
     return `${prio_match_1} **vs** ${prio_match_2} \n`;
+
+}
+
+function buildWinnerOfName(match: any) {
+
+    let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
+    let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
+
+    if (code1 === undefined) {
+        code1 = "AQ";
+        match.team1_name = "TBD";
+    }
+
+    if (code2 === undefined) {
+        code2 = "AQ";
+        match.team2_name = "TBD";
+    }
+
+    return `${code1.toLocaleLowerCase()}**or**${code2.toLocaleLowerCase()}`
 
 }
 
@@ -484,7 +503,7 @@ function buildSelect(firstTo: number, prediction?: any) {
 
 }
 
-async function predictMatch(interaction: any, registration: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, value: any) {
+async function predictMatch(interaction: any, registration: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, value: any, match_map: any) {
 
     if (value == null || value == undefined) {
         return predictionMap;
@@ -522,21 +541,21 @@ async function predictMatch(interaction: any, registration: any, unlocked: any, 
 
     predictionMap.set(current_match.id, prediction);
 
-    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row);
+    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row, match_map);
     return predictionMap;
 
 }
 
-async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any) {
+async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, match_map: any) {
     const current_match = unlocked[match_index];
     const current_prediction = predictionMap.get(current_match.id);
 
     let description = ""
 
     if (current_prediction == null) {
-        description = buildmatch(current_match, undefined, undefined);
+        description = buildmatch(current_match, undefined, undefined, match_map);
     } else {
-        description = buildmatch(current_match, current_prediction.team1_score, current_prediction.team2_score);
+        description = buildmatch(current_match, current_prediction.team1_score, current_prediction.team2_score, match_map);
     }
 
     const firstTo: any = getFirstTo(current_match.round);
@@ -552,13 +571,11 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predict
     let code2: string = getCode(current_match.team2_name == undefined ? "" : current_match.team2_name)
 
     if (code1 === undefined) {
-        code1 = "AQ";
-        current_match.team1_name = "TBD";
+        code1 = buildWinnerOfName(match_map.get(current_match.data.player1_prereq_match_id));
     }
 
     if (code2 === undefined) {
-        code2 = "AQ";
-        current_match.team2_name = "TBD";
+        code2 = buildWinnerOfName(match_map.get(current_match.data.player2_prereq_match_id));
     }
 
     code1 = code1.toLocaleLowerCase();
@@ -585,16 +602,16 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predict
     await interaction.editReply({ embeds: [embed], components: components });
 }
 
-async function selectPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, value: any) {
+async function selectPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, value: any, match_map: any) {
 
     match_index = value;
 
-    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row);
+    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row, match_map);
 
     return match_index;
 }
 
-async function nextPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, select_row: any) {
+async function nextPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, select_row: any, match_map: any) {
 
     if (match_index === -1) {
         match_index = 0;
@@ -605,16 +622,16 @@ async function nextPage(interaction: any, unlocked: any, predictionMap: any, mat
     }
 
     if (match_index === -1) {
-        await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row);
+        await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row, match_map);
         return match_index;
     }
 
-    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row);
+    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row, match_map);
 
     return match_index;
 }
 
-async function priorPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, select_row: any) {
+async function priorPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, select_row: any, match_map: any) {
     if (match_index === -1) {
         match_index = unlocked.length - 1;
     } else if (match_index > 0) {
@@ -624,16 +641,16 @@ async function priorPage(interaction: any, unlocked: any, predictionMap: any, ma
     }
 
     if (match_index === -1) {
-        await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row);
+        await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row, match_map);
         return match_index;
     }
 
-    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row);
+    await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row, match_map);
 
     return match_index;
 }
 
-async function overview(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row?: any, select_row?: any) {
+async function overview(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row?: any, select_row?: any, match_map?: any) {
 
     match_index = -1;
 
@@ -653,9 +670,9 @@ async function overview(interaction: any, unlocked: any, predictionMap: any, mat
             const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
-                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
+                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
             } else {
-                winners += `${buildmatch(match)}`;
+                winners += `${buildmatch(match, undefined, undefined, match_map)}`;
             }
 
             if (index == 2) {
@@ -672,9 +689,9 @@ async function overview(interaction: any, unlocked: any, predictionMap: any, mat
             const prediction = predictionMap.get(match.id);
 
             if (prediction != null) {
-                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score)}`;
+                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
             } else {
-                losers += `${buildmatch(match)}`;
+                losers += `${buildmatch(match, undefined, undefined, match_map)}`;
             }
 
             if (index == 2) {
