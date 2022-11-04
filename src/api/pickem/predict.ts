@@ -17,6 +17,7 @@ const { overwrite, getCode } = require('country-list');
 country_overwrite();
 
 let locked_round: any[] = [];
+let locked_matches: any[] = [];
 
 export async function predict(interaction: any, client?: any) {
 
@@ -33,6 +34,10 @@ export async function predict(interaction: any, client?: any) {
 
     if (owc_year.locked_round !== undefined) {
         locked_round = owc_year.locked_round;
+    }
+
+    if (owc_year.locked_matches !== undefined) {
+        locked_matches = owc_year.locked_matches;
     }
 
     const user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
@@ -591,7 +596,7 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predict
         .setDescription(description)
         .setFooter({ text: `Match ${match_index + 1} of ${unlocked.length}` });
 
-    if (locked_round.includes(current_match.round)) {
+    if (locked_round.includes(current_match.round) || locked_matches.includes(current_match.matchid)) {
         embed.setAuthor({ name: "Predictions closed" })
         components = [button_row];
     } else {

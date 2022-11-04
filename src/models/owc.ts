@@ -14,6 +14,7 @@ const OwcSchema = new mongoose.Schema({
     state: String,
     current_round: Number,
     locked_round: Array,
+    locked_matches: Array,
 });
 
 export default mongoose.model("owc", OwcSchema);

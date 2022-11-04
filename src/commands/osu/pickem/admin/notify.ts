@@ -1,5 +1,5 @@
 import { ICommand } from "wokcommands";
-import { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
+import DiscordJS, { MessageActionRow, MessageButton, MessageEmbed } from 'discord.js';
 import { current_tournament } from "../../../../api/pickem/pickem";
 import owc from "../../../../models/owc";
 import pickemRegistration from "../../../../models/pickemRegistration";
@@ -19,6 +19,13 @@ export default {
     slash: true,
     description: "Get Owc results for a specific year",
     hidden: true,
+    options: [{
+        name: 'text',
+        description: 'text',
+        required: false,
+        type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+        autocomplete: true,
+    }],
 
     callback: async ({ interaction, client }) => {
 
@@ -37,10 +44,14 @@ export default {
 
         const current: any = await owc.findOne({ url: current_tournament });
 
+        const text = interaction.options.getString("text");
+
+        const description = text + "\n\n**Use the buttons below!**\n- to complete your predictions.\n- to turn messages like these **off/on**";
+
         const emebd = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle("Reminder for the Quna Pick'em Challenge")
-            .setDescription(`**Last chance!!!\n\nYou still have open predictions!** for the ${current.name}\n\n**Use the buttons below!**\n- to complete your predictions.\n- to turn messages like these **off/on**`)
+            .setDescription(description)
             .setFooter({ text: "Point gain increases every 2 rounds so you still have a chance!" })
             .setImage("attachment://pickem.png");
 
