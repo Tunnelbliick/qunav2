@@ -429,7 +429,7 @@ function buildOptions(owc: any, roundname: any) {
     return options;
 }
 
-function getPointsForCorrectWinner(match: any) {
+export function getPointsForCorrectWinner(match: any) {
     let points = 0;
 
     switch (match.round) {
@@ -454,7 +454,7 @@ function getPointsForCorrectWinner(match: any) {
     return points;
 }
 
-function getPointsForCorrectScore(match: any) {
+export function getPointsForCorrectScore(match: any) {
     let points = 0;
 
     switch (match.round) {

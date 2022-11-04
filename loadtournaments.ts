@@ -1,5 +1,6 @@
 import { getTournament } from "./src/api/owc/owc"
 import { current_tournament } from "./src/api/pickem/pickem";
+import { getPointsForCorrectScore, getPointsForCorrectWinner } from "./src/api/pickem/predictions";
 import owc from "./src/models/owc";
 import owcgame from "./src/models/owcgame";
 import pickemPrediction from "./src/models/pickemPrediction";
@@ -175,11 +176,11 @@ async function calculateScores() {
             }
 
             if (prediction.winner_index === match.winner_index) {
-                registration.total_score += 1;
+                registration.total_score += getPointsForCorrectWinner(match.round);
             }
 
             if (prediction.score === match.score) {
-                registration.total_score += 3;
+                registration.total_score += getPointsForCorrectScore(match.round);
             }
 
             prediction.calculated = true;
