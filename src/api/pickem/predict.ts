@@ -346,7 +346,7 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, match_map?
 
     if (match.team1_name === undefined || match.team2_name === undefined) {
         if (match_map !== undefined)
-            return buildWinnerOf(match, match_map);
+            return buildWinnerOf(match, match_map, team1_score, team2_score);
     }
 
     if (code1 === undefined) {
@@ -382,7 +382,7 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, match_map?
     }
 }
 
-function buildWinnerOf(match: any, match_map: Map<number, any>) {
+function buildWinnerOf(match: any, match_map: Map<number, any>, score1: number, score2: number) {
 
     let prio_match_1 = match.team1_name;
     let prio_match_2 = match.team2_name;
@@ -401,7 +401,15 @@ function buildWinnerOf(match: any, match_map: Map<number, any>) {
         prio_match_1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team2_name}**`;
     }
 
-    return `${prio_match_1} **vs** ${prio_match_2} \n`;
+    if (score1 === undefined || score2 === undefined) {
+        return `${prio_match_1} **vs** ${prio_match_2} \n`;
+    } else {
+        if (score1 > score2) {
+            return `${prio_match_1} **${score1}** - ${score2} ${prio_match_2} \n`;
+        } else {
+            return `${prio_match_1} ${score1} - **${score2}** ${prio_match_2} \n`;
+        }
+    }
 
 }
 
