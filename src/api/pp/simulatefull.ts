@@ -17,5 +17,9 @@ export async function simulateFull(args: simulateArgs) {
             break;
     }
 
+    if(map_pp === Infinity) {
+        map_pp = 0;
+    }
+
     return map_pp
 }

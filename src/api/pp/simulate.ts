@@ -41,6 +41,10 @@ export async function simulateRecentPlay(recentplay: any) {
             break;
     }
 
+    if(map_pp === Infinity) {
+        map_pp = 0;
+    }
+
     return map_pp
 }
 
