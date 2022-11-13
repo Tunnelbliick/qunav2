@@ -7,7 +7,7 @@ import { interaction_thinking, message_thinking } from "../../../embeds/utility/
 export default {
 
     category: "osu!",
-    aliases: ["nc"],
+    aliases: ["nc", "nochoke"],
     slash: "both",
     description: "Quna loads your topplay",
     options: [

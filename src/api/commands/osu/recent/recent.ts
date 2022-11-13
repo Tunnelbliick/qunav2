@@ -35,7 +35,10 @@ export async function recent(message: any, interaction: any, args: any, mode: an
     }
 
     if(result.beatmap !== undefined && ["loved","ranked","qualified"].includes(result.beatmap.status) === false && result.rank !== "F") {
-        saveScore(result.recentplay, result.ppOfPlay);
+
+        let max_pp = result.acc100.pp[100];
+
+        saveScore(result.recentplay, result.ppOfPlay, max_pp);
     }
 
     try {

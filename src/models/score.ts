@@ -13,6 +13,7 @@ const ScoreSchema = new mongoose.Schema({
     pp: Number,
     accuracy: Number,
     max_combo: Number,
+    max_pp: Number,
     statistics: Object,
     created_at: Date,
     mode: String,
@@ -21,7 +22,9 @@ const ScoreSchema = new mongoose.Schema({
 
 ScoreSchema.index({ score: 1 });
 ScoreSchema.index({ pp: 1 });
+ScoreSchema.index({ pp: 1, max_pp: 1 });
 ScoreSchema.index({ osuid: 1, pp: 1 });
+ScoreSchema.index({ osuid: 1, pp: 1, max_pp: 1 });
 ScoreSchema.index({ mapid: 1, pp: 1 });
 ScoreSchema.index({ mapid: 1, score: 1 });
 ScoreSchema.index({ mapid: 1, score: 1, mods: 1 });

@@ -1,6 +1,6 @@
 import score from "../../models/score";
 
-export async function saveScore(unranked: any, pp: any) {
+export async function saveScore(unranked: any, pp: any, max_pp: any) {
 
     if(unranked.rank === "F") {
         return;
@@ -28,6 +28,7 @@ export async function saveScore(unranked: any, pp: any) {
         saved_score.created_at = unranked.created_at;
         saved_score.mode = unranked.mode;
         saved_score.mode_int = unranked.mode_int;
+        saved_score.max_pp = max_pp;
 
         return saved_score.save();
 

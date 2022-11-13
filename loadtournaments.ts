@@ -76,28 +76,21 @@ export  function ongoingWorldCup() {
             const matches: any = await owcgame.find({ owc: current.id });
 
             let current_round = 1;
-            let unlocked_round = [1];
             const grouped = groupBy(matches, (match: any) => match.round);
 
             if (checkIfRoundComplete([1], grouped)) {
                 current_round = 2;
-                unlocked_round = [2, -1];
             } if (checkIfRoundComplete([2, -1], grouped)) {
-                unlocked_round = [3, -2];
                 current_round = 3;
             } if (checkIfRoundComplete([3, -2, -3], grouped)) {
-                unlocked_round = [4, -4];
                 current_round = 4;
             } if (checkIfRoundComplete([4, -4, -5], grouped)) {
-                unlocked_round = [5, -5];
                 current_round = 5;
             } if (checkIfRoundComplete([5, -6, -7], grouped)) {
-                unlocked_round = [6, -6];
                 current_round = 6;
             }
 
             current.current_round = current_round;
-            current.unlocked_round = unlocked_round;
             await current.save();
             calculateScores();
             await setTimeout(updatecurrent, 1000 * 60 * 10);
