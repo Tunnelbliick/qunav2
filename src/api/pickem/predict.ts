@@ -398,7 +398,7 @@ function buildWinnerOf(match: any, match_map: Map<number, any>, score1: number, 
         prio_match_2 = buildWinnerOfFlag(match_map.get(match.data.player2_prereq_match_id));
     } else {
         const code1: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
-        prio_match_2 = `:flag_${code1.toLocaleLowerCase()}: ${match.team2_name}`;
+        prio_match_2 = `${match.team2_name} :flag_${code1.toLocaleLowerCase()}:`;
     }
 
     if (score1 === undefined || score2 === undefined) {
