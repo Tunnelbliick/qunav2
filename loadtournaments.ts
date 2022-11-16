@@ -108,6 +108,10 @@ function checkIfRoundComplete(rounds: any[], grouped: Map<any, any>) {
 
         round.forEach((match: any) => {
 
+            if(match.id === 292728123) {
+                match.state == "complete";
+            }
+
             if (match.state != "complete") {
                 iscomplete = false;
             }

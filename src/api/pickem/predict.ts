@@ -81,9 +81,10 @@ export async function predict(interaction: any, client?: any) {
     }
 
     const matches: any = await owcgame.find({ owc: owc_year.id, round: { $in: select } });
+    const all_matches: any = await owcgame.find({ owc: owc_year.id});
     const match_map: Map<number, any> = new Map<number, any>();
     const unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
-    matches.forEach((match: any) => {
+    all_matches.forEach((match: any) => {
         match_map.set(match.matchid, match);
     })
     const matchids: any[] = unlocked.map((match: any) => match.id);
@@ -434,8 +435,8 @@ function buildWinnerOfName(match: any) {
 
 function buildWinnerOfFlag(match: any) {
 
-    let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
-    let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
+    let code1: string = getCode(match == undefined || match.team1_name == undefined ? "" : match.team1_name)
+    let code2: string = getCode(match == undefined || match.team2_name == undefined ? "" : match.team2_name)
 
     if (code1 === undefined) {
         code1 = "AQ";
