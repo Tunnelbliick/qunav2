@@ -164,6 +164,10 @@ async function calculateScores() {
             return;
         }
 
+        if([292728120,292728123].includes(match.matchid)) {
+            return;
+        }
+
         predictions.forEach((prediction: any) => {
 
             const registration = registrationMap.get(prediction.registration.toString());

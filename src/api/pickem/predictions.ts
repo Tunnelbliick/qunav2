@@ -432,6 +432,10 @@ function buildOptions(owc: any, roundname: any) {
 export function getPointsForCorrectWinner(match: any) {
     let points = 0;
 
+    if([292728120,292728123].includes(match.matchid)) {
+        return 0;
+    }
+
     switch (match.round) {
         case 1:
         case 2:
@@ -456,6 +460,10 @@ export function getPointsForCorrectWinner(match: any) {
 
 export function getPointsForCorrectScore(match: any) {
     let points = 0;
+
+    if([292728120,292728123].includes(match.matchid)) {
+        return 0;
+    }
 
     switch (match.round) {
         case 1:
