@@ -69,7 +69,7 @@ export async function loadTournaments() {
 
 export  function ongoingWorldCup() {
 
-    if (current_tournament !== undefined) {
+    if (current_tournament !== undefined && current_tournament !== null) {
         const updatecurrent = async () => {
             await getTournament(current_tournament!);
             const current: any = await owc.findOne({ url: current_tournament });

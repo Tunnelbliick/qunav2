@@ -9,7 +9,8 @@ import { encrypt } from "../../utility/encrypt";
 const imageToBase64 = require('image-to-base64');
 const DataImageAttachment = require("dataimageattachment");
 
-export const current_tournament = "OWC22";
+export const current_tournament = null;
+export const last_tournament = "OWC22";
 
 export async function pickem(message: any, interaction: any, args: any) {
 
