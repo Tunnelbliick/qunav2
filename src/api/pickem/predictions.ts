@@ -432,7 +432,7 @@ function buildOptions(owc: any, roundname: any) {
 export function getPointsForCorrectWinner(match: any) {
     let points = 0;
 
-    if([292728120,292728123].includes(match.matchid)) {
+    if ([292728120, 292728123].includes(match.matchid)) {
         return 0;
     }
 
@@ -448,6 +448,7 @@ export function getPointsForCorrectWinner(match: any) {
         case -3:
         case -4:
         case -5:
+        case -6:
             points = 2;
             break
         default:
@@ -461,7 +462,7 @@ export function getPointsForCorrectWinner(match: any) {
 export function getPointsForCorrectScore(match: any) {
     let points = 0;
 
-    if([292728120,292728123].includes(match.matchid)) {
+    if ([292728120, 292728123].includes(match.matchid)) {
         return 0;
     }
 

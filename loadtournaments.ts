@@ -91,6 +91,7 @@ export  function ongoingWorldCup() {
             }
 
             current.current_round = current_round;
+            console.log(current.current_round);
             await current.save();
             calculateScores();
             await setTimeout(updatecurrent, 1000 * 60 * 10);
@@ -107,10 +108,6 @@ function checkIfRoundComplete(rounds: any[], grouped: Map<any, any>) {
         const round = grouped.get(round_number);
 
         round.forEach((match: any) => {
-
-            if(match.id === 292728123) {
-                match.state == "complete";
-            }
 
             if (match.state != "complete") {
                 iscomplete = false;
@@ -164,24 +161,18 @@ async function calculateScores() {
             return;
         }
 
-        if([292728120,292728123].includes(match.matchid)) {
-            return;
-        }
-
         predictions.forEach((prediction: any) => {
 
             const registration = registrationMap.get(prediction.registration.toString());
 
-            if (registration === undefined) {
-                return;
-            }
-
             if (prediction.winner_index === match.winner_index) {
-                registration.total_score += getPointsForCorrectWinner(match.round);
+                let points = getPointsForCorrectWinner(match);
+                registration.total_score += points
             }
 
             if (prediction.score === match.score) {
-                registration.total_score += getPointsForCorrectScore(match.round);
+                let points = getPointsForCorrectScore(match);
+                registration.total_score += points
             }
 
             prediction.calculated = true;
