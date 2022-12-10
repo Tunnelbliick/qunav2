@@ -7,6 +7,9 @@ export async function beatmap(message: any, interaction: any, args: any) {
 
     let url = "";
     let mods = "";
+    let id = undefined;
+    let setid = "";
+    let isSet = false;
 
     if (message && message.reference != null) {
         const reference_id: any = message.reference?.messageId;
@@ -15,7 +18,16 @@ export async function beatmap(message: any, interaction: any, args: any) {
         url = embed.url;
     }
 
-    if (args.length === 0) {
+    for (let arg of args) {
+        if (arg.includes("//osu.ppy.sh/beatmapsets/") || arg.includes("//osu.ppy.sh/beatmaps/") || isNaN(arg) === false) {
+            url = arg;
+            id = arg;
+        } else {
+            mods = arg;
+        }
+    }
+
+    if (url === "" || id === undefined) {
         let channel = undefined;
 
         if (interaction) {
@@ -41,17 +53,7 @@ export async function beatmap(message: any, interaction: any, args: any) {
                 }
             });
         })
-        if (args[0]) {
-            mods = args[0];
-        }
-    } else {
-        url = args[0];
-        mods = args[1];
     }
-
-    let id = args[0];
-    let setid = "";
-    let isSet = false;
 
     if (url.includes("//osu.ppy.sh/beatmapsets/")) {
         const split = url.split("beatmapsets/")[1];
