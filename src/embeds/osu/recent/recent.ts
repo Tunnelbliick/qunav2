@@ -24,7 +24,7 @@ export interface RecentEmbedParameters {
     max_combo: any,
 }
 
-export function generateRecentEmbed(result: any, interaction: any, message: Message) {
+export function generateRecentEmbed(result: any, interaction: any, message: Message, stored?: boolean) {
 
     if (result == null) {
         if (interaction) {
@@ -133,7 +133,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
         .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}]`)
         .setURL(`${map.url}`)
         .setImage(`${map.beatmapset.covers.cover}`) // the @2x version does not work sadge
-        .setFooter({ text: `Mapset by ${map.beatmapset.creator} | Unranked scores will be saved!`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+        .setFooter({ text: `Mapset by ${map.beatmapset.creator} | ${stored === false ? "" : "Uranked score saved"}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
     let description: string = "";
 
@@ -174,7 +174,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 .setColor(color)
                 .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
                 .setURL(`${map.url}`)
-                .setFooter({ text: `Mapset by ${map.beatmapset.creator} | Unranked scores will be saved!`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+                .setFooter({ text: `Mapset by ${map.beatmapset.creator} | ${stored === false ? "" : "Uranked score saved"}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
             if (description !== undefined) {
                 compact.setDescription(description);
@@ -230,12 +230,12 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 .setColor(color)
                 .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
                 .setURL(`${map.url}`)
-                .setFooter({ text: `Mapset by ${map.beatmapset.creator} | Unranked scores will be saved!`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
-    
+                .setFooter({ text: `Mapset by ${map.beatmapset.creator} | ${stored === false ? "" : "Uranked score saved"}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+
             if (description !== undefined) {
                 compact.setDescription(description);
             }
-    
+
             switch (play.mode) {
                 case "osu":
                     compact.addFields([
@@ -274,7 +274,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                     ])
                     break;
             }
-    
+
             msg.edit({ embeds: [compact] });
         }, 60000));
     }
