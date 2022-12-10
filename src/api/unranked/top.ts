@@ -1,4 +1,5 @@
 import score from "../../models/score";
+import { getBeatmapFromCache } from "../osu/beatmap";
 
 export async function loadUnrankedTop(user_id: any, mode: any) {
 
@@ -15,9 +16,11 @@ export async function loadUnrankedTop(user_id: any, mode: any) {
         max_pp: { $lte: 3000 }
     }).sort({ pp: -1 }).limit(100).exec();
 
-    top100.forEach((top: any) => {
+    top100.forEach(async (top: any) => {
 
+        const beatmap: any = await getBeatmapFromCache(top.mapid, top.checksum);
         top.beatmap = { id: top.mapid, checksum: top.checksum }
+        top.beatmapset = beatmap;
 
         returnArray.push(top);
 

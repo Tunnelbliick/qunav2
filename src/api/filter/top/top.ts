@@ -11,8 +11,8 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
         top = top.filter((top: any) => {
 
             let artist = top.value.beatmapset.artist === undefined ? "" : top.value.beatmapset.artist.toLowerCase();
-            let title = top.value.beatmapset.title=== undefined ? "" : top.value.beatmapset.title.toLowerCase();
-            let version = top.value.beatmapset.version=== undefined ? "" : top.value.beatmapset.version.toLowerCase();
+            let title = top.value.beatmapset.title === undefined ? "" : top.value.beatmapset.title.toLowerCase();
+            let version = top.value.beatmapset.version === undefined ? "" : top.value.beatmapset.version.toLowerCase();
             let creator = top.value.beatmapset.creator === undefined ? "" : top.value.beatmapset.creator.toLowerCase();
 
             return artist.includes(filterOptions.search) || title.includes(filterOptions.search) || version.includes(filterOptions.search) || creator.includes(filterOptions.search)
