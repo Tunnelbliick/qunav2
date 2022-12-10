@@ -5,13 +5,11 @@ export default (client: Client) => {
     const statusOptions = [
 
         `${client.guilds.cache.size} servers | !help`,
-        `!owc | Preparing for a pick'em!`,
-        `!pickem | join the pickem!`,
 
     ]
     const updateStatus = () => {
         Math
-        client.user?.setActivity(statusOptions[2])
+        client.user?.setActivity(statusOptions[getRandomInt(statusOptions.length)], {type: 2})
         setTimeout(updateStatus, 1000 * 60 * 10)
     }
     updateStatus()
