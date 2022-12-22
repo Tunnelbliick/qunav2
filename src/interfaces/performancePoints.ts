@@ -3,10 +3,10 @@ import { pp } from "./pp";
 
 export interface PerformancePoints {
     id: ObjectId,
-    mapid: String,
-    checksum: String,
-    mode: String,
-    mods: Array<String>,
+    mapid: string,
+    checksum: string,
+    mode: string,
+    mods: Array<string>,
     pp: pp,
     difficulty: Object,
     graph: Object

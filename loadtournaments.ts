@@ -110,11 +110,11 @@ export function ongoingWorldCup() {
     }
 }
 
-function checkIfRoundComplete(rounds: Number[], grouped: Map<Number, OwcGame[]>) {
+function checkIfRoundComplete(rounds: number[], grouped: Map<number, OwcGame[]>) {
 
     let iscomplete = true;
 
-    rounds.forEach((round_number: Number) => {
+    rounds.forEach((round_number: number) => {
         const round = grouped.get(round_number);
 
         if (round) {

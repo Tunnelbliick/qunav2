@@ -61,11 +61,11 @@ export default {
 
         const options = interaction.options;
 
-        const year: String | null = options.getString("year");
-        const mode: String | null = options.getString("mode");
-        let round: String | null = options.getString("round");
-        const keys: String | null = options.getString("key");
-        const maps: String[] | undefined = options.getString("pool")?.split("        ");
+        const year: string | null = options.getString("year");
+        const mode: string | null = options.getString("mode");
+        let round: string | null = options.getString("round");
+        const keys: string | null = options.getString("key");
+        const maps: string[] | undefined = options.getString("pool")?.split("        ");
 
         const mappool: Map<string, string[]> = new Map<string, string[]>();
         let mod_maps: any[] = [];

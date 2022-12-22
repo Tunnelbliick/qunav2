@@ -2,14 +2,14 @@ import { ObjectId } from "mongoose";
 
 export interface User {
     id: ObjectId,
-    status: String,
+    status: string,
     requesttime: Date,
-    validStatus: Boolean,
+    validStatus: boolean,
     creationDate: Date,
-    discordid: String,
-    username: String,
-    userid: String,
-    linksucess: Boolean,
-    notification: Boolean,
-    timezone: String,
+    discordid: string,
+    username: string,
+    userid: string,
+    linksucess: boolean,
+    notification: boolean,
+    timezone: string,
 }
