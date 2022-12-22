@@ -17,17 +17,17 @@ export async function loadUnrankedTop(user_id: any, mode: any) {
         max_pp: { $lte: 3000 }
     }).sort({ pp: -1 }).limit(100).exec();
 
-    let promise_list: any[] = [];
+    const promise_list: any[] = [];
 
-    let mapidlist: any[] = [];
-    let checksumlist: any[] = [];
+    const mapidlist: any[] = [];
+    const checksumlist: any[] = [];
 
     top100.forEach((top: any) => {
         mapidlist.push(top.mapid);
     });
 
-    let beatmaps = await Beatmap.find({ mapid: { $in: mapidlist }});
-    let beatmapMap = new Map<any, any>();
+    const beatmaps = await Beatmap.find({ mapid: { $in: mapidlist }});
+    const beatmapMap = new Map<any, any>();
 
     beatmaps.forEach((beatmap: any) => {
 
@@ -37,7 +37,7 @@ export async function loadUnrankedTop(user_id: any, mode: any) {
 
     top100.forEach((top: any) => {
 
-        let beatmap: any = beatmapMap.get(top.mapid);
+        const beatmap: any = beatmapMap.get(top.mapid);
         top.beatmap = beatmap
         top.beatmapset = beatmap.beatmapset;
 
