@@ -1,6 +1,7 @@
 import { login } from "./login";
 
 import { v2 } from "osu-api-extended";
+import { OsuUser } from "../../interfaces/OsuUser";
 
 export async function getUser(userid: any, mode?: any) {
     await login();
@@ -22,7 +23,7 @@ export async function getUser(userid: any, mode?: any) {
     });
 }
 
-export async function getUserByUsername(username: string, mode?: any) {
+export async function getUserByUsername(username: string, mode?: any): Promise<OsuUser> {
     await login();
     if (mode == undefined) {
         mode = "osu"

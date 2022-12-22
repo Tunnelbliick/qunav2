@@ -6,9 +6,9 @@ import pickemRegistration from "../../../../models/pickemRegistration";
 import User from "../../../../models/User";
 import { decrypt } from "../../../../utility/encrypt";
 import pickemPrediction from "../../../../models/pickemPrediction";
-import { selectRound } from "../../../../api/pickem/predictions";
 import owcgame from "../../../../models/owcgame";
 import { interaction_thinking } from "../../../../embeds/utility/thinking";
+import { selectRoundByIndex } from "../../../../api/pickem/utility";
 
 const imageToBase64 = require('image-to-base64');
 const DataImageAttachment = require("dataimageattachment");
@@ -73,8 +73,8 @@ export default {
         const row = new MessageActionRow()
             .setComponents([pickem, sub, unsub]);
 
-        let rounds: any[] = [1];
-        rounds = selectRound(current.current_round);
+        let rounds: string[] = ["1"];
+        rounds = selectRoundByIndex(current.current_round);
 
         const matches: any = await owcgame.find({ owc: current.id, round: { $in: rounds } });
         const unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);

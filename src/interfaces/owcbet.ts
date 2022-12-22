@@ -1,5 +1,5 @@
 import { ObjectId } from "mongoose"
-import { Quna_User } from "./QunaUser"
+import { QunaUser } from "./QunaUser"
 
 export interface OwcBet {
     id: ObjectId,
@@ -9,5 +9,5 @@ export interface OwcBet {
     firstto: number,
     lastchanged: Date,
     winner: ObjectId
-    user: Quna_User
+    user: QunaUser
 }

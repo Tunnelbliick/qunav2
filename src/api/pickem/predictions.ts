@@ -1,9 +1,17 @@
-import { MessageActionRow, MessageEmbed, MessageSelectMenu } from "discord.js";
+import { MessageActionRow, MessageEmbed, MessageSelectMenu, SelectMenuInteraction } from "discord.js";
+import { ObjectId } from "mongoose";
 import { country_overwrite } from "../../embeds/osu/owc/country_overwrites";
-import { bo32 } from "../../embeds/osu/owc/owc";
+import { bo32, tournament_type } from "../../embeds/osu/owc/owc";
 import { noPickEm } from "../../embeds/osu/pickem/nopickem";
 import { checkIfUserExists } from "../../embeds/utility/nouserfound";
 import { message_thinking } from "../../embeds/utility/thinking";
+import { OsuUser } from "../../interfaces/OsuUser";
+import { Owc } from "../../interfaces/owc";
+import { OwcGame } from "../../interfaces/owcgame";
+import { PickemPrediction } from "../../interfaces/pickemPredictions";
+import { PickemRegistration } from "../../interfaces/pickemRegistration";
+import { PickemStatistics } from "../../interfaces/pickemStatistics";
+import { QunaUser } from "../../interfaces/QunaUser";
 import owc from "../../models/owc";
 import owcgame from "../../models/owcgame";
 import pickemPrediction from "../../models/pickemPrediction";
@@ -14,8 +22,9 @@ import { encrypt } from "../../utility/encrypt";
 import { getUserByUsername } from "../osu/user";
 import { current_tournament } from "./pickem";
 import { buildPredictionArguments } from "./predictionsArguments";
+import { option, selectRound, selectRoundByIndex } from "./utility";
 
-const { overwrite, getCode } = require('country-list');
+const { getCode } = require('country-list');
 const getCountryISO3 = require("country-iso-2-to-3");
 
 country_overwrite();
@@ -25,13 +34,12 @@ export async function predictions(message: any, interaction: any, args: any) {
     const predictionsArgs = await buildPredictionArguments(interaction, args);
 
     let channel = undefined;
-    let osu: any = undefined;
+    let osu: OsuUser | undefined = undefined;
     let discordid = undefined;
-    let registration: any = undefined;
-    let user: any = undefined;
+    let user: QunaUser | null = null;
     let id: any = undefined;
 
-    const owc_year: any = await owc.findOne({ url: current_tournament })
+    const owc_year: Owc | null = await owc.findOne({ url: current_tournament })
 
     if (owc_year === null) {
         await noPickEm(message, interaction);
@@ -63,11 +71,11 @@ export async function predictions(message: any, interaction: any, args: any) {
         user = await User.findOne({ discordid: await encrypt(discordid) });
     }
 
-    if (checkIfUserExists(user, message, interaction)) {
+    if (checkIfUserExists(user, message, interaction) || !user) {
         return
     }
 
-    registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
+    const registration: PickemRegistration | null = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 
     if (registration == null) {
         const embed = new MessageEmbed()
@@ -83,9 +91,9 @@ export async function predictions(message: any, interaction: any, args: any) {
     }
 
     let rounds: any[] = [1];
-    rounds = selectRound(owc_year.current_round);
+    rounds = selectRound(owc_year);
 
-    const bo_32: any = bo32;
+    const bo_32: tournament_type = bo32;
     let round_name = bo_32[owc_year.current_round].name;
     let options: any[] = buildOptions(owc_year, round_name);
 
@@ -113,7 +121,7 @@ export async function predictions(message: any, interaction: any, args: any) {
 
     const collector = channel.createMessageComponentCollector({ filter, time: 60000 });
 
-    collector.on("collect", async (i: any) => {
+    collector.on("collect", async (i: SelectMenuInteraction) => {
 
         i.deferUpdate();
 
@@ -127,7 +135,11 @@ export async function predictions(message: any, interaction: any, args: any) {
 
             case "select":
 
-                rounds = selectRound(+i.values[0]);
+                if (checkIfUserExists(user, message, interaction) || !user) {
+                    return
+                }
+
+                rounds = selectRoundByIndex(+i.values[0]);
                 round_name = bo_32[i.values[0]].name;
 
                 options = buildOptions(owc_year, round_name);
@@ -160,6 +172,10 @@ export async function predictions(message: any, interaction: any, args: any) {
 
     collector.on("end", async () => {
 
+        if (checkIfUserExists(user, message, interaction) || !user) {
+            return
+        }
+
         round_name = bo_32[owc_year.current_round].name;
 
         const description = await buildEmbed(owc_year, registration, rounds);
@@ -177,7 +193,106 @@ export async function predictions(message: any, interaction: any, args: any) {
     })
 }
 
-function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?: any) {
+async function buildEmbed(owc: Owc, registration: PickemRegistration, rounds: string[]) {
+
+    const predictionMap: Map<ObjectId, PickemPrediction> = new Map<ObjectId, PickemPrediction>();
+    const statisticMap: Map<ObjectId, PickemStatistics> = new Map<ObjectId, PickemStatistics>();
+    const matches: OwcGame[] = await owcgame.find({ owc: owc.id, round: { $in: rounds } });
+    const unlocked: OwcGame[] = matches.sort((a: OwcGame, b: OwcGame) => b.round - a.round);
+    const matchids: ObjectId[] = unlocked.map((match: OwcGame) => match.id);
+    const predictions: PickemPrediction[] = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
+    const statistic: PickemStatistics[] = await pickemstatistic.find({ match: { $in: matchids } });
+
+    predictions.forEach((prediction: PickemPrediction) => {
+        predictionMap.set(prediction.match, prediction);
+    });
+
+    statistic.forEach((statistic: PickemStatistics) => {
+        statisticMap.set(statistic.match, statistic);
+    });
+
+    let winners = "";
+    let losers = "";
+    let index = 0;
+
+    unlocked.forEach((match: OwcGame) => {
+
+        let code1: string = getCode(match.team1_name === undefined ? "" : match.team1_name)
+        let code2: string = getCode(match.team2_name === undefined ? "" : match.team2_name)
+
+        if (code1 === undefined) {
+            code1 = "TBD";
+        }
+
+        if (code2 === undefined) {
+            code2 = "TBD";
+        }
+
+        code1 = code1.toLocaleLowerCase();
+        code2 = code2.toLocaleLowerCase();
+
+        if (+match.round > 0) {
+
+            const prediction = predictionMap.get(match.id);
+
+            if (prediction != null) {
+                index++;
+
+                let statistic = undefined;
+
+                if (owc.locked_round.includes(match.round)) {
+                    statistic = statisticMap.get(match.id);
+                }
+
+
+                if (winners === "") {
+                    winners = "__**Winners Bracket**__\n";
+                }
+                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, statistic)}`;
+
+                if (index == 2) {
+                    winners += "\n";
+                    index = 0;
+                }
+            }
+
+        } else {
+
+            const prediction = predictionMap.get(match.id);
+
+            if (prediction != null) {
+                index++;
+
+                if (losers === "") {
+                    losers = "__**Losers Bracket**__\n";
+                }
+
+                let statistic = undefined;
+
+                if (owc.locked_round.includes(match.round)) {
+                    statistic = statisticMap.get(match.id);
+                }
+
+
+                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, statistic)}`;
+
+                if (index == 2) {
+                    losers += "\n";
+                    index = 0;
+                }
+            }
+        }
+
+    })
+
+    if (winners === "") {
+        winners = "No predictions.";
+    }
+
+    return `${winners}\n${losers}`;
+}
+
+function buildmatch(match: OwcGame, team1_score?: number, team2_score?: number, statistic?: PickemStatistics) {
 
     let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
     let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
@@ -188,42 +303,12 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
 
     if (statistic !== undefined) {
 
-        const total = statistic.team1 + statistic.team2;
-
-        if (total != 0) {
-            const team1_perc = 100 / total * statistic.team1;
-            const team2_perc = 100 / total * statistic.team2;
-
-            if (team1_perc > team2_perc) {
-                statistic_string = ` | **${team1_perc.toFixed(0)}%** - ${team2_perc.toFixed(0)}%`
-            } else {
-                statistic_string = ` | ${team1_perc.toFixed(0)}% - **${team2_perc.toFixed(0)}%**`
-            }
-        }
+        statistic_string = buildMatchWithPredictions(statistic, statistic_string);
     }
 
     if (match.state === "complete") {
-        if (match.team1_score > match.team2_score) {
-            completed_string = ` | **${match.team1_score}** - ${match.team2_score}`
-        } else {
-            completed_string = ` | ${match.team1_score} - **${match.team2_score}**`
-        }
 
-        let points = 0;
-        if (match.team1_score > match.team2_score) {
-            if (team1_score === match.team1_score) {
-                points = points + getPointsForCorrectWinner(match);
-            }
-        } else {
-            if (team2_score === match.team2_score) {
-                points = points + getPointsForCorrectWinner(match);
-            }
-        }
-        if (team1_score === match.team1_score && team2_score === match.team2_score) {
-            points = points + getPointsForCorrectScore(match);
-        }
-
-        points_gained = ` | +**${points}**`
+        ({ completed_string, points_gained } = buildCompletedMatch(match, completed_string, team1_score, team2_score, points_gained));
     }
 
     let country1 = getCountryISO3(code1)
@@ -267,136 +352,50 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, statistic?
     }
 }
 
-async function buildEmbed(owc: any, registration: any, rounds: any) {
+function buildCompletedMatch(match: OwcGame, completed_string: string, team1_score: number | undefined, team2_score: number | undefined, points_gained: string) {
+    if (match.team1_score > match.team2_score) {
+        completed_string = ` | **${match.team1_score}** - ${match.team2_score}`;
+    } else {
+        completed_string = ` | ${match.team1_score} - **${match.team2_score}**`;
+    }
 
-    const predictionMap: Map<any, any> = new Map<any, any>();
-    const statisticMap: Map<any, any> = new Map<any, any>();
-    const matches: any = await owcgame.find({ owc: owc.id, round: { $in: rounds } });
-    const unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
-    const matchids: any[] = unlocked.map((match: any) => match.id);
-    const predictions: any = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
-    const statistic: any = await pickemstatistic.find({ match: { $in: matchids } });
-
-    predictions.forEach((prediction: any) => {
-        predictionMap.set(prediction.match.toString(), prediction);
-    });
-
-    statistic.forEach((statistic: any) => {
-        statisticMap.set(statistic.match.toString(), statistic);
-    });
-
-    let winners = "";
-    let losers = "";
-    let index = 0;
-
-    unlocked.forEach((match: any) => {
-
-        let code1: string = getCode(match.team1_name === undefined ? "" : match.team1_name)
-        let code2: string = getCode(match.team2_name === undefined ? "" : match.team2_name)
-
-        if (code1 === undefined) {
-            code1 = "TBD";
+    let points = 0;
+    if (match.team1_score > match.team2_score) {
+        if (team1_score === match.team1_score) {
+            points = points + getPointsForCorrectWinner(match);
         }
-
-        if (code2 === undefined) {
-            code2 = "TBD";
+    } else {
+        if (team2_score === match.team2_score) {
+            points = points + getPointsForCorrectWinner(match);
         }
+    }
+    if (team1_score === match.team1_score && team2_score === match.team2_score) {
+        points = points + getPointsForCorrectScore(match);
+    }
 
-        code1 = code1.toLocaleLowerCase();
-        code2 = code2.toLocaleLowerCase();
+    points_gained = ` | +**${points}**`;
+    return { completed_string, points_gained };
+}
 
-        if (+match.round > 0) {
+function buildMatchWithPredictions(statistic: PickemStatistics, statistic_string: string) {
+    const total = statistic.team1 + statistic.team2;
 
-            const prediction = predictionMap.get(match.id);
+    if (total != 0) {
+        const team1_perc = 100 / total * statistic.team1;
+        const team2_perc = 100 / total * statistic.team2;
 
-            if (prediction != null) {
-                index++;
-
-                let statistic = undefined;
-
-                if (owc.locked_round.includes(match.round)) {
-                    statistic = statisticMap.get(match.id.toString());
-                }
-
-
-                if (winners === "") {
-                    winners = "__**Winners Bracket**__\n";
-                }
-                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, statistic)}`;
-
-                if (index == 2) {
-                    winners += "\n";
-                    index = 0;
-                }
-            }
-
+        if (team1_perc > team2_perc) {
+            statistic_string = ` | **${team1_perc.toFixed(0)}%** - ${team2_perc.toFixed(0)}%`;
         } else {
-
-            const prediction = predictionMap.get(match.id);
-
-            if (prediction != null) {
-                index++;
-
-                if (losers === "") {
-                    losers = "__**Losers Bracket**__\n";
-                }
-
-                let statistic = undefined;
-
-                if (owc.locked_round.includes(match.round)) {
-                    statistic = statisticMap.get(match.id.toString());
-                }
-
-
-                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, statistic)}`;
-
-                if (index == 2) {
-                    losers += "\n";
-                    index = 0;
-                }
-            }
+            statistic_string = ` | ${team1_perc.toFixed(0)}% - **${team2_perc.toFixed(0)}%**`;
         }
-
-    })
-
-    if (winners === "") {
-        winners = "No predictions.";
     }
-
-    return `${winners}\n${losers}`;
+    return statistic_string;
 }
 
-export function selectRound(round: any) {
+function buildOptions(owc: Owc, roundname: string) {
 
-    let rounds: any[] = [1];
-
-    switch (round) {
-        case 1:
-            rounds = [1];
-            break;
-        case 2:
-            rounds = [2, "-1"];
-            break;
-        case 3:
-            rounds = [3, "-2", "-3"];
-            break;
-        case 4:
-            rounds = [4, "-4", "-5"];
-            break;
-        case 5:
-            rounds = [5, "-6", "-7"];
-            break;
-        case 6:
-            rounds = [6, "-8"];
-    }
-
-    return rounds;
-
-}
-
-function buildOptions(owc: any, roundname: any) {
-
-    const options: any[] = [];
+    const options: option[] = [];
 
     for (const [key, value] of Object.entries(bo32)) {
 
@@ -429,7 +428,7 @@ function buildOptions(owc: any, roundname: any) {
     return options;
 }
 
-export function getPointsForCorrectWinner(match: any): number {
+export function getPointsForCorrectWinner(match: OwcGame): number {
     let points = 0;
 
     if ([292728120, 292728123].includes(match.matchid)) {
@@ -459,7 +458,7 @@ export function getPointsForCorrectWinner(match: any): number {
     return points;
 }
 
-export function getPointsForCorrectScore(match: any): number {
+export function getPointsForCorrectScore(match: OwcGame): number {
     let points = 0;
 
     if ([292728120, 292728123].includes(match.matchid)) {

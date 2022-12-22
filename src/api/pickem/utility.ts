@@ -20,9 +20,14 @@ export interface embed_parameters {
 }
 
 export function selectRound(owc_year: Owc): string[] {
+
+    return selectRoundByIndex(owc_year.current_round);
+}
+
+export function selectRoundByIndex(index: number): string[] {
     let select: string[] = ["1"];
 
-    switch (owc_year.current_round) {
+    switch (index) {
         case 1:
             select = ["1"];
             break;

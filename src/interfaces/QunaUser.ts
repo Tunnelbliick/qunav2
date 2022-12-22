@@ -1,6 +1,6 @@
 import { ObjectId } from "mongoose";
 
-export interface Quna_User {
+export interface QunaUser {
     id: ObjectId,
     status: string,
     requesttime: Date,

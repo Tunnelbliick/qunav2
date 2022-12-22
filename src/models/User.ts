@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Quna_User } from "../interfaces/QunaUser";
+import { QunaUser } from "../interfaces/QunaUser";
 
 const UserSchema = new mongoose.Schema({
     status: String,
@@ -14,4 +14,4 @@ const UserSchema = new mongoose.Schema({
     timezone: String,
 });
 
-export default mongoose.model<Quna_User>("user", UserSchema);
+export default mongoose.model<QunaUser>("user", UserSchema);

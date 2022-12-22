@@ -8,7 +8,7 @@ import { Owc } from "../../interfaces/owc";
 import { OwcGame } from "../../interfaces/owcgame";
 import { PickemPrediction } from "../../interfaces/pickemPredictions";
 import { PickemRegistration } from "../../interfaces/pickemRegistration";
-import { Quna_User } from "../../interfaces/QunaUser";
+import { QunaUser } from "../../interfaces/QunaUser";
 import owc from "../../models/owc";
 import owcgame from "../../models/owcgame";
 import pickemPrediction from "../../models/pickemPrediction";
@@ -44,7 +44,7 @@ export async function predict(interaction: any, client?: any) {
         locked_matches = owc_year.locked_matches;
     }
 
-    const user: Quna_User | null = await User.findOne({ discordid: await encrypt(interaction.user.id) });
+    const user: QunaUser | null = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
     if (checkIfUserExists(user, undefined, interaction) || !user) {
         return
