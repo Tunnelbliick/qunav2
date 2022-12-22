@@ -10,10 +10,10 @@ export function topFilterAndSort(top: any, filterOptions: TopPlaysfilter) {
     if (filterOptions.search != "")
         top = top.filter((top: any) => {
 
-            let artist = top.value.beatmapset.artist === undefined ? "" : top.value.beatmapset.artist.toLowerCase();
-            let title = top.value.beatmapset.title === undefined ? "" : top.value.beatmapset.title.toLowerCase();
-            let version = top.value.beatmap.version === undefined ? "" : top.value.beatmap.version.toLowerCase();
-            let creator = top.value.beatmapset.creator === undefined ? "" : top.value.beatmapset.creator.toLowerCase();
+            const artist = top.value.beatmapset.artist === undefined ? "" : top.value.beatmapset.artist.toLowerCase();
+            const title = top.value.beatmapset.title === undefined ? "" : top.value.beatmapset.title.toLowerCase();
+            const version = top.value.beatmap.version === undefined ? "" : top.value.beatmap.version.toLowerCase();
+            const creator = top.value.beatmapset.creator === undefined ? "" : top.value.beatmapset.creator.toLowerCase();
 
             return artist.includes(filterOptions.search) || title.includes(filterOptions.search) || version.includes(filterOptions.search) || creator.includes(filterOptions.search)
         });

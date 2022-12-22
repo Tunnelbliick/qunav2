@@ -18,7 +18,7 @@ export async function beatmap(message: any, interaction: any, args: any) {
         url = embed.url;
     }
 
-    for (let arg of args) {
+    for (const arg of args) {
         if (arg.includes("//osu.ppy.sh/beatmapsets/") || arg.includes("//osu.ppy.sh/beatmaps/") || isNaN(arg) === false) {
             url = arg;
             id = arg;
