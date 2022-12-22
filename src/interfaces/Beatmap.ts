@@ -2,7 +2,7 @@ import { ObjectId } from "mongoose";
 
 export interface Beatmap {
     id: ObjectId
-    mapid: String;
-    checksum: String;
+    mapid: string;
+    checksum: string;
     beatmap: Object;
 }

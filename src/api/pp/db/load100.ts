@@ -2,7 +2,7 @@ import PerformancePoints from "../../../models/PerformancePoints";
 import { downloadBeatmap } from "../../beatmaps/downloadbeatmap";
 import { max } from "../max";
 
-export async function loadacc100(mapid: string, checksum: string, mode: string, modArray: String[]) {
+export async function loadacc100(mapid: string, checksum: string, mode: string, modArray: string[]) {
     return new Promise(async (resolve, reject) => {
 
         let returnpp: any;
@@ -41,7 +41,7 @@ export async function loadacc100(mapid: string, checksum: string, mode: string, 
     })
 }
 
-export async function loadacc100WithoutBeatMapDownload(mapid: string, checksum: string, modArray: String[], mode: string) {
+export async function loadacc100WithoutBeatMapDownload(mapid: string, checksum: string, modArray: string[], mode: string) {
     return new Promise(async (resolve, reject) => {
 
         const generatedpp: any = [];
