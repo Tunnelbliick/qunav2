@@ -7,14 +7,23 @@ const { overwrite, getCode } = require('country-list');
 const DataImageAttachment = require("dataimageattachment");
 const imageToBase64 = require('image-to-base64');
 
-export const bo8 = {
+export interface tournament_type {
+    [index: number | string]: round_info
+}
+
+export interface round_info {
+    name: string,
+    value: number
+}
+
+export const bo8: tournament_type = {
     1: { name: "Quarterfinals", value: 1 },
     2: { name: "Semifinals", value: 2 },
     3: { name: "Finals", value: 3 },
     "0": { name: "3rd place match", value: 3 },
 }
 
-export const bo16 = {
+export const bo16: tournament_type = {
     1: { name: "Round of 16", value: 1 },
     2: { name: "Quarterfinals", value: 2 },
     3: { name: "Semifinals", value: 3 },
@@ -29,7 +38,7 @@ export const bo16 = {
     "-6": { name: "3rd place match", value: 6 },
 }
 
-export const bo32 = {
+export const bo32: tournament_type = {
     1: { name: "Round of 32", value: 1 },
     2: { name: "Round of 16", value: 2 },
     3: { name: "Quarterfinals", value: 3 },

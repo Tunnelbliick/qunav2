@@ -1,4 +1,5 @@
 import { ObjectId } from "mongoose";
+import { challongeGame } from "./challongeGame";
 
 export interface OwcGame {
     id: ObjectId,
@@ -22,5 +23,5 @@ export interface OwcGame {
     looser: ObjectId,
     looser_name: string,
     winner_index: number,
-    data: Object,
+    data: challongeGame,
 }

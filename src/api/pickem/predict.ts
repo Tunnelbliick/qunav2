@@ -1,10 +1,16 @@
-import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from "discord.js";
+import { Interaction, InteractionCollector, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from "discord.js";
+import { models, ObjectId } from "mongoose";
 import { launchCollector } from "../../embeds/osu/owc/collector";
 import { country_overwrite } from "../../embeds/osu/owc/country_overwrites";
-import { bo32 } from "../../embeds/osu/owc/owc";
+import { bo32, tournament_type } from "../../embeds/osu/owc/owc";
 import { noPickEm } from "../../embeds/osu/pickem/nopickem";
 import { checkIfUserExists } from "../../embeds/utility/nouserfound";
 import { interaction_silent_thinking } from "../../embeds/utility/thinking";
+import { Owc } from "../../interfaces/owc";
+import { OwcGame } from "../../interfaces/owcgame";
+import { PickemPrediction } from "../../interfaces/pickemPredictions";
+import { PickemRegistration } from "../../interfaces/pickemRegistration";
+import { Quna_User } from "../../interfaces/QunaUser";
 import owc from "../../models/owc";
 import owcgame from "../../models/owcgame";
 import pickemPrediction from "../../models/pickemPrediction";
@@ -16,18 +22,29 @@ const { overwrite, getCode } = require('country-list');
 
 country_overwrite();
 
-let locked_round: any[] = [];
-let locked_matches: any[] = [];
+let locked_round: number[] = [];
+let locked_matches: number[] = [];
+
+interface option {
+    label: string,
+    value: string,
+    default?: boolean,
+}
+
+interface embed_parameters {
+    description: string,
+    options: option[]
+}
 
 export async function predict(interaction: any, client?: any) {
 
     let match_index: number = -1;
-    let predictionMap: Map<any, any> = new Map<any, any>();
-    let registration: any = undefined;
+    let predictionMap: Map<ObjectId, PickemPrediction> = new Map<ObjectId, PickemPrediction>();
+    let registration: PickemRegistration | null;
 
-    const owc_year: any = await owc.findOne({ url: current_tournament })
+    const owc_year: Owc | null = await owc.findOne({ url: current_tournament })
 
-    if (owc_year === null) {
+    if (!owc_year) {
         await noPickEm(undefined, interaction);
         return;
     }
@@ -40,9 +57,9 @@ export async function predict(interaction: any, client?: any) {
         locked_matches = owc_year.locked_matches;
     }
 
-    const user: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
+    const user: Quna_User | null = await User.findOne({ discordid: await encrypt(interaction.user.id) });
 
-    if (checkIfUserExists(user, undefined, interaction)) {
+    if (checkIfUserExists(user, undefined, interaction) || !user) {
         return
     }
 
@@ -58,126 +75,23 @@ export async function predict(interaction: any, client?: any) {
         return;
     }
 
-    let select: any[] = [1];
+    let select: string[] = selectRound(owc_year);
 
-    switch (owc_year.current_round) {
-        case 1:
-            select = [1];
-            break;
-        case 2:
-            select = [2, "-1"];
-            break;
-        case 3:
-            select = [3, "-2", "-3"];
-            break;
-        case 4:
-            select = [4, "-4", "-5"];
-            break;
-        case 5:
-            select = [5, "-6", "-7"];
-            break;
-        case 6:
-            select = [6, "-8"];
-    }
-
-    const matches: any = await owcgame.find({ owc: owc_year.id, round: { $in: select } });
-    const all_matches: any = await owcgame.find({ owc: owc_year.id});
-    const match_map: Map<number, any> = new Map<number, any>();
-    const unlocked: any = matches.sort((a: any, b: any) => b.round - a.round);
+    const matches: OwcGame[] = await owcgame.find({ owc: owc_year.id, round: { $in: select } });
+    const all_matches: OwcGame[] = await owcgame.find({ owc: owc_year.id });
+    const match_map: Map<number, OwcGame> = new Map<number, OwcGame>();
+    const unlocked: OwcGame[] = matches.sort((a: any, b: any) => b.round - a.round);
     all_matches.forEach((match: any) => {
         match_map.set(match.matchid, match);
     })
-    const matchids: any[] = unlocked.map((match: any) => match.id);
-    const predictions: any = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
+    const matchids: number[] = unlocked.map((match: any) => match.id);
+    const predictions: PickemPrediction[] = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
 
-    predictions.forEach((prediction: any) => {
-        predictionMap.set(prediction.match.toString(), prediction);
+    predictions.forEach((prediction: PickemPrediction) => {
+        predictionMap.set(prediction.match, prediction);
     });
 
-    let winners = "";
-    let losers = "";
-
-    const options: any[] = [];
-
-    let split_index = 0;
-    let index = 0;
-    unlocked.forEach((match: any) => {
-        split_index++;
-
-        let code1: string = getCode(match.team1_name === undefined ? "" : match.team1_name)
-        let code2: string = getCode(match.team2_name === undefined ? "" : match.team2_name)
-
-        if (code1 === undefined) {
-            code1 = "TBD";
-        }
-
-        if (code2 === undefined) {
-            code2 = "TBD";
-        }
-
-        code1 = code1.toLocaleLowerCase();
-        code2 = code2.toLocaleLowerCase();
-
-        if (+match.round > 0) {
-
-            if (winners === "") {
-                winners = "__**Winners Bracket**__\n";
-            }
-
-            const option = {
-                label: `${code1} vs ${code2}`,
-                value: `${index}`
-            }
-
-            options.push(option);
-
-            const prediction = predictionMap.get(match.id);
-
-            if (prediction != null) {
-                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
-            } else {
-                winners += `${buildmatch(match, undefined, undefined, match_map)}`;
-            }
-
-            if (split_index == 2) {
-                winners += "\n";
-                split_index = 0;
-            }
-
-        } else {
-
-            if (losers === "") {
-                losers = "__**Losers Bracket**__\n";
-            }
-
-            const option = {
-                label: `${code1} vs ${code2} (LS)`,
-                value: `${index}`
-            }
-
-            options.push(option);
-
-            const prediction = predictionMap.get(match.id);
-
-            if (prediction != null) {
-                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
-            } else {
-                losers += `${buildmatch(match, undefined, undefined, match_map)}`;
-            }
-
-            if (split_index == 2) {
-                losers += "\n";
-                split_index = 0;
-            }
-
-        }
-
-        index++;
-
-    })
-
-
-    const description: any = `${winners}\n${losers}`;
+    const embed_parameters: embed_parameters = buildInitialPredictions(unlocked, predictionMap, match_map);
 
     const bo_32: any = bo32;
 
@@ -201,7 +115,7 @@ export async function predict(interaction: any, client?: any) {
     const select_match = new MessageSelectMenu()
         .setCustomId(`select_${interaction.id}`)
         .setPlaceholder("Select a specific match")
-        .setOptions(options);
+        .setOptions(embed_parameters.options);
 
     const button_row = new MessageActionRow().setComponents([prior_button, overview_button, next_button]);
     const select_row = new MessageActionRow().setComponents(select_match);
@@ -209,7 +123,7 @@ export async function predict(interaction: any, client?: any) {
     const embed = new MessageEmbed()
         .setColor("#4b67ba")
         .setTitle(`Open Predictions ${round_name}`)
-        .setDescription(description);
+        .setDescription(embed_parameters.description);
 
     await interaction.editReply({ embeds: [embed], components: [button_row, select_row] });
 
@@ -277,7 +191,7 @@ export async function predict(interaction: any, client?: any) {
         let losers = "";
 
         let index = 0;
-        unlocked.forEach((match: any) => {
+        unlocked.forEach((match: OwcGame) => {
             index++;
 
             if (+match.round > 0) {
@@ -322,9 +236,9 @@ export async function predict(interaction: any, client?: any) {
 
         })
 
-        const description: any = `${winners}\n${losers}`;
+        const description: string = `${winners}\n${losers}`;
 
-        const bo_32: any = bo32;
+        const bo_32: tournament_type = bo32;
 
         const round_name = bo_32[unlocked[0].round].name;
 
@@ -337,10 +251,129 @@ export async function predict(interaction: any, client?: any) {
         await interaction.editReply({ embeds: [embed], components: [] });
 
     });
-
 }
 
-function buildmatch(match: any, team1_score?: any, team2_score?: any, match_map?: Map<number, any>) {
+function buildInitialPredictions(unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_map: Map<number, OwcGame>): embed_parameters {
+
+    let winners = "";
+    let losers = "";
+
+    const options: option[] = [];
+
+    let split_index = 0;
+    let index = 0;
+
+    unlocked.forEach((match: OwcGame) => {
+        split_index++;
+
+        let code1: string = getCode(match.team1_name === undefined ? "" : match.team1_name);
+        let code2: string = getCode(match.team2_name === undefined ? "" : match.team2_name);
+
+        if (code1 === undefined) {
+            code1 = "TBD";
+        }
+
+        if (code2 === undefined) {
+            code2 = "TBD";
+        }
+
+        code1 = code1.toLocaleLowerCase();
+        code2 = code2.toLocaleLowerCase();
+
+        if (+match.round > 0) {
+
+            if (winners === "") {
+                winners = "__**Winners Bracket**__\n";
+            }
+
+            const option: option = {
+                label: `${code1} vs ${code2}`,
+                value: `${index}`
+            };
+
+            options.push(option);
+
+            const prediction = predictionMap.get(match.id);
+
+            if (prediction != null) {
+                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
+            } else {
+                winners += `${buildmatch(match, undefined, undefined, match_map)}`;
+            }
+
+            if (split_index == 2) {
+                winners += "\n";
+                split_index = 0;
+            }
+
+        } else {
+
+            if (losers === "") {
+                losers = "__**Losers Bracket**__\n";
+            }
+
+            const option = {
+                label: `${code1} vs ${code2} (LS)`,
+                value: `${index}`
+            };
+
+            options.push(option);
+
+            const prediction = predictionMap.get(match.id);
+
+            if (prediction != null) {
+                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
+            } else {
+                losers += `${buildmatch(match, undefined, undefined, match_map)}`;
+            }
+
+            if (split_index == 2) {
+                losers += "\n";
+                split_index = 0;
+            }
+
+        }
+
+        index++;
+
+    });
+
+    const description: string = `${winners}\n${losers}`;
+
+    const embed_parameters: embed_parameters = {
+        description: description,
+        options: options
+    }
+
+    return embed_parameters;
+}
+
+function selectRound(owc_year: Owc) {
+    let select: string[] = ["1"];
+
+    switch (owc_year.current_round) {
+        case 1:
+            select = ["1"];
+            break;
+        case 2:
+            select = ["2", "-1"];
+            break;
+        case 3:
+            select = ["3", "-2", "-3"];
+            break;
+        case 4:
+            select = ["4", "-4", "-5"];
+            break;
+        case 5:
+            select = ["5", "-6", "-7"];
+            break;
+        case 6:
+            select = ["6", "-8"];
+    }
+    return select;
+}
+
+function buildmatch(match: OwcGame, team1_score?: number, team2_score?: number, match_map?: Map<number, OwcGame>) {
 
     let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
     let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
@@ -383,20 +416,20 @@ function buildmatch(match: any, team1_score?: any, team2_score?: any, match_map?
     }
 }
 
-function buildWinnerOf(match: any, match_map: Map<number, any>, score1: number, score2: number) {
+function buildWinnerOf(match: OwcGame, match_map: Map<number, OwcGame>, score1?: number, score2?: number) {
 
     let prio_match_1 = match.team1_name;
     let prio_match_2 = match.team2_name;
 
     if (prio_match_1 === undefined) {
-        prio_match_1 = buildWinnerOfFlag(match_map.get(match.data.player1_prereq_match_id));
+        prio_match_1 = buildWinnerOfFlag(match_map.get(match.data.player1_prereq_match_id)!);
     } else {
         const code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
         prio_match_1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name}`;
     }
 
     if (prio_match_2 === undefined) {
-        prio_match_2 = buildWinnerOfFlag(match_map.get(match.data.player2_prereq_match_id));
+        prio_match_2 = buildWinnerOfFlag(match_map.get(match.data.player2_prereq_match_id)!);
     } else {
         const code1: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
         prio_match_2 = `${match.team2_name} :flag_${code1.toLocaleLowerCase()}:`;
@@ -414,7 +447,7 @@ function buildWinnerOf(match: any, match_map: Map<number, any>, score1: number, 
 
 }
 
-function buildWinnerOfName(match: any) {
+function buildWinnerOfName(match: OwcGame) {
 
     let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
     let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
@@ -433,7 +466,7 @@ function buildWinnerOfName(match: any) {
 
 }
 
-function buildWinnerOfFlag(match: any) {
+function buildWinnerOfFlag(match: OwcGame) {
 
     let code1: string = getCode(match == undefined || match.team1_name == undefined ? "" : match.team1_name)
     let code2: string = getCode(match == undefined || match.team2_name == undefined ? "" : match.team2_name)
@@ -452,7 +485,7 @@ function buildWinnerOfFlag(match: any) {
 
 }
 
-function getFirstTo(round: any) {
+function getFirstTo(round: number): number {
     switch (round) {
         case 1:
         case 2:
@@ -471,12 +504,14 @@ function getFirstTo(round: any) {
         case -7:
         case -8:
             return 7;
+        default:
+            return 0;
     }
 }
 
-function buildSelect(firstTo: number, prediction?: any) {
+function buildSelect(firstTo: number, prediction?: PickemPrediction) {
 
-    const options: any[] = [];
+    const options: option[] = [];
     let predicted_score = undefined;
 
     if (prediction != null) {
@@ -485,7 +520,7 @@ function buildSelect(firstTo: number, prediction?: any) {
 
     for (let score2 = firstTo - 1; score2 >= 0; score2--) {
 
-        const option: any = {
+        const option: option = {
             label: `${firstTo} - ${score2}`,
             value: `${firstTo}-${score2}`,
         }
@@ -500,7 +535,7 @@ function buildSelect(firstTo: number, prediction?: any) {
 
     for (let score1 = 0; score1 < firstTo; score1++) {
 
-        const option: any = {
+        const option: option = {
             label: `${score1} - ${firstTo}`,
             value: `${score1}-${firstTo}`
         }
@@ -517,9 +552,9 @@ function buildSelect(firstTo: number, prediction?: any) {
 
 }
 
-async function predictMatch(interaction: any, registration: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, value: any, match_map: any) {
+async function predictMatch(interaction: any, registration: PickemRegistration | null, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: string, match_map: Map<number, OwcGame>) {
 
-    if (value == null || value == undefined) {
+    if (value == null || value == undefined || registration == null) {
         return predictionMap;
     }
 
@@ -540,18 +575,22 @@ async function predictMatch(interaction: any, registration: any, unlocked: any, 
         prediction.registration = registration.id;
         prediction.match = current_match.id;
         prediction.score = value;
-        prediction.team1_score = score[0];
-        prediction.team2_score = score[1];
+        prediction.team1_score = parseInt(score[0]);
+        prediction.team2_score = parseInt(score[1]);
         prediction.winner_index = winner_index;
         prediction.calculated = false;
     } else {
         prediction.score = value;
-        prediction.team1_score = score[0];
-        prediction.team2_score = score[1];
+        prediction.team1_score = parseInt(score[0]);
+        prediction.team2_score = parseInt(score[1]);
         prediction.winner_index = winner_index;
     }
 
-    await prediction.save();
+    const model = new pickemPrediction();
+
+    model.set(prediction);
+
+    await model.save();
 
     predictionMap.set(current_match.id, prediction);
 
@@ -560,7 +599,7 @@ async function predictMatch(interaction: any, registration: any, unlocked: any, 
 
 }
 
-async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, match_map: any) {
+async function buildMatchPreditionEmbed(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, match_map: Map<number, OwcGame>) {
     const current_match = unlocked[match_index];
     const current_prediction = predictionMap.get(current_match.id);
 
@@ -572,8 +611,8 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predict
         description = buildmatch(current_match, current_prediction.team1_score, current_prediction.team2_score, match_map);
     }
 
-    const firstTo: any = getFirstTo(current_match.round);
-    const select_options: any = buildSelect(firstTo, current_prediction);
+    const firstTo: number = getFirstTo(current_match.round);
+    const select_options: option[] = buildSelect(firstTo, current_prediction);
 
     const score_select = new MessageSelectMenu()
         .setCustomId(`score_${interaction.id}`)
@@ -585,11 +624,11 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predict
     let code2: string = getCode(current_match.team2_name == undefined ? "" : current_match.team2_name)
 
     if (code1 === undefined) {
-        code1 = buildWinnerOfName(match_map.get(current_match.data.player1_prereq_match_id));
+        code1 = buildWinnerOfName(match_map.get(current_match.data.player1_prereq_match_id)!);
     }
 
     if (code2 === undefined) {
-        code2 = buildWinnerOfName(match_map.get(current_match.data.player2_prereq_match_id));
+        code2 = buildWinnerOfName(match_map.get(current_match.data.player2_prereq_match_id)!);
     }
 
     code1 = code1.toLocaleLowerCase();
@@ -616,7 +655,7 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: any, predict
     await interaction.editReply({ embeds: [embed], components: components });
 }
 
-async function selectPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, value: any, match_map: any) {
+async function selectPage(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: number, match_map: Map<number, OwcGame>) {
 
     match_index = value;
 
@@ -625,7 +664,7 @@ async function selectPage(interaction: any, unlocked: any, predictionMap: any, m
     return match_index;
 }
 
-async function nextPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, select_row: any, match_map: any) {
+async function nextPage(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
 
     if (match_index === -1) {
         match_index = 0;
@@ -645,7 +684,7 @@ async function nextPage(interaction: any, unlocked: any, predictionMap: any, mat
     return match_index;
 }
 
-async function priorPage(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row: any, select_row: any, match_map: any) {
+async function priorPage(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
     if (match_index === -1) {
         match_index = unlocked.length - 1;
     } else if (match_index > 0) {
@@ -664,7 +703,7 @@ async function priorPage(interaction: any, unlocked: any, predictionMap: any, ma
     return match_index;
 }
 
-async function overview(interaction: any, unlocked: any, predictionMap: any, match_index: any, button_row?: any, select_row?: any, match_map?: any) {
+async function overview(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
 
     match_index = -1;
 
@@ -672,7 +711,8 @@ async function overview(interaction: any, unlocked: any, predictionMap: any, mat
     let losers = "";
 
     let index = 0;
-    unlocked.forEach((match: any) => {
+
+    unlocked.forEach((match: OwcGame) => {
         index++;
 
         if (+match.round > 0) {
@@ -727,9 +767,9 @@ async function overview(interaction: any, unlocked: any, predictionMap: any, mat
         components.push(select_row);
     }
 
-    const description: any = `${winners}\n${losers}`;
+    const description: string = `${winners}\n${losers}`;
 
-    const bo_32: any = bo32;
+    const bo_32: tournament_type = bo32;
 
     const round_name = bo_32[unlocked[0].round].name;
 

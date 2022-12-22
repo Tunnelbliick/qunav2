@@ -14,6 +14,6 @@ export interface Owc {
     tournament_type: string,
     state: string,
     current_round: number,
-    locked_round: Array<string>,
-    locked_matches: Array<string>,
+    locked_round: Array<number>,
+    locked_matches: Array<number>,
 }
