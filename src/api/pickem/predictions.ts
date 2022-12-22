@@ -90,20 +90,20 @@ export async function predictions(message: any, interaction: any, args: any) {
         return;
     }
 
-    let rounds: any[] = [1];
+    let rounds: string[] = ["1"];
     rounds = selectRound(owc_year);
 
     const bo_32: tournament_type = bo32;
     let round_name = bo_32[owc_year.current_round].name;
-    let options: any[] = buildOptions(owc_year, round_name);
+    let options: option[] = buildOptions(owc_year, round_name);
 
-    const select: any = new MessageSelectMenu().setCustomId(`select_${id}`)
+    const select = new MessageSelectMenu().setCustomId(`select_${id}`)
         .setPlaceholder('Select Round')
         .addOptions(options);
 
     const row = new MessageActionRow().addComponents(select);
 
-    const filter = (i: any) => {
+    const filter = (i: SelectMenuInteraction) => {
         return i.customId === select.customId
     }
 
