@@ -75,7 +75,7 @@ export async function predict(interaction: any, client?: any) {
         return;
     }
 
-    let select: string[] = selectRound(owc_year);
+    const select: string[] = selectRound(owc_year);
 
     const matches: OwcGame[] = await owcgame.find({ owc: owc_year.id, round: { $in: select } });
     const all_matches: OwcGame[] = await owcgame.find({ owc: owc_year.id });
