@@ -1,7 +1,12 @@
 import { ObjectId } from "mongoose";
+import { country_overwrite } from "../../embeds/osu/owc/country_overwrites";
 import { Owc } from "../../interfaces/owc";
 import { OwcGame } from "../../interfaces/owcgame";
 import { PickemPrediction } from "../../interfaces/pickemPredictions";
+
+const { getCode } = require('country-list');
+
+country_overwrite();
 
 export interface option {
     label: string,
@@ -279,8 +284,5 @@ export function getFirstTo(round: number): number {
         default:
             return 0;
     }
-}
-function getCode(arg0: string): string {
-    throw new Error("Function not implemented.");
 }
 
