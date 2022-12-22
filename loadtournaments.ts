@@ -180,12 +180,12 @@ async function calculateScores() {
             if (registration) {
 
                 if (prediction.winner_index === match.winner_index) {
-                    let points = getPointsForCorrectWinner(match);
+                    const points = getPointsForCorrectWinner(match);
                     registration.total_score += points
                 }
 
                 if (prediction.score === match.score) {
-                    let points = getPointsForCorrectScore(match);
+                    const points = getPointsForCorrectScore(match);
                     registration.total_score += points
                 }
 

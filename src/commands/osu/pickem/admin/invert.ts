@@ -44,8 +44,8 @@ export default {
 
         const match: any = await owcgame.findOne({ matchid: interaction.options.getNumber("match") });
 
-        let predictions: any = await pickemPrediction.find({ match: match.id });
-        let prediction_save_list: any[] = [];
+        const predictions: any = await pickemPrediction.find({ match: match.id });
+        const prediction_save_list: any[] = [];
 
         predictions.forEach((prediction: any) => {
             const team1_score = prediction.team1_score;
