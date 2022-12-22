@@ -133,7 +133,7 @@ export async function predictions(message: any, interaction: any, args: any) {
 
         switch (split[0]) {
 
-            case "select":
+            case "select": {
 
                 if (checkIfUserExists(user, message, interaction) || !user) {
                     return
@@ -163,6 +163,7 @@ export async function predictions(message: any, interaction: any, args: any) {
                     message.edit({ embeds: [embed], components: [row] });
 
                 break;
+            }
 
         }
 
