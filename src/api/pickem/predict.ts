@@ -16,23 +16,13 @@ import pickemRegistration from "../../models/pickemRegistration";
 import User from "../../models/User";
 import { encrypt } from "../../utility/encrypt";
 import { current_tournament } from "./pickem";
+import { buildInitialPredictions, option, embed_parameters, selectRound, buildmatch, getFirstTo, buildWinnerOfName } from "./utility";
 const { getCode } = require('country-list');
 
 country_overwrite();
 
 let locked_round: number[] = [];
 let locked_matches: number[] = [];
-
-interface option {
-    label: string,
-    value: string,
-    default?: boolean,
-}
-
-interface embed_parameters {
-    description: string,
-    options: option[]
-}
 
 export async function predict(interaction: any, client?: any) {
 
@@ -124,7 +114,7 @@ export async function predict(interaction: any, client?: any) {
 
     await interaction.editReply({ embeds: [embed], components: [button_row, select_row] });
 
-    const filter = (i: any) => {
+    const filter = (i: ButtonInteraction | SelectMenuInteraction) => {
         return i.customId === prior_button.customId ||
             i.customId === overview_button.customId ||
             i.customId === next_button.customId ||
@@ -186,56 +176,7 @@ export async function predict(interaction: any, client?: any) {
 
     collector.on("end", async () => {
 
-        let winners = "";
-        let losers = "";
-
-        let index = 0;
-        unlocked.forEach((match: OwcGame) => {
-            index++;
-
-            if (+match.round > 0) {
-
-                if (winners === "") {
-                    winners = "__**Winners Bracket**__\n";
-                }
-
-                const prediction = predictionMap.get(match.id);
-
-                if (prediction != null) {
-                    winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
-                } else {
-                    winners += `${buildmatch(match, undefined, undefined, match_map)}`;
-                }
-
-                if (index == 2) {
-                    winners += "\n";
-                    index = 0;
-                }
-
-            } else {
-
-                if (losers === "") {
-                    losers = "__**Losers Bracket**__\n";
-                }
-
-                const prediction = predictionMap.get(match.id);
-
-                if (prediction != null) {
-                    losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
-                } else {
-                    losers += `${buildmatch(match, undefined, undefined, match_map)}`;
-                }
-
-                if (index == 2) {
-                    losers += "\n";
-                    index = 0;
-                }
-
-            }
-
-        })
-
-        const description: string = `${winners}\n${losers}`;
+        const embed_parameters: embed_parameters = buildInitialPredictions(unlocked, predictionMap, match_map);
 
         const bo_32: tournament_type = bo32;
 
@@ -244,268 +185,12 @@ export async function predict(interaction: any, client?: any) {
         const embed = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle(`Open Predictions ${round_name}`)
-            .setDescription(description)
+            .setDescription(embed_parameters.description)
             .setAuthor({ name: "Time ran out please open again" });
 
         await interaction.editReply({ embeds: [embed], components: [] });
 
     });
-}
-
-function buildInitialPredictions(unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_map: Map<number, OwcGame>): embed_parameters {
-
-    let winners = "";
-    let losers = "";
-
-    const options: option[] = [];
-
-    let split_index = 0;
-    let index = 0;
-
-    unlocked.forEach((match: OwcGame) => {
-        split_index++;
-
-        let code1: string = getCode(match.team1_name === undefined ? "" : match.team1_name);
-        let code2: string = getCode(match.team2_name === undefined ? "" : match.team2_name);
-
-        if (code1 === undefined) {
-            code1 = "TBD";
-        }
-
-        if (code2 === undefined) {
-            code2 = "TBD";
-        }
-
-        code1 = code1.toLocaleLowerCase();
-        code2 = code2.toLocaleLowerCase();
-
-        if (+match.round > 0) {
-
-            if (winners === "") {
-                winners = "__**Winners Bracket**__\n";
-            }
-
-            const option: option = {
-                label: `${code1} vs ${code2}`,
-                value: `${index}`
-            };
-
-            options.push(option);
-
-            const prediction = predictionMap.get(match.id);
-
-            if (prediction != null) {
-                winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
-            } else {
-                winners += `${buildmatch(match, undefined, undefined, match_map)}`;
-            }
-
-            if (split_index == 2) {
-                winners += "\n";
-                split_index = 0;
-            }
-
-        } else {
-
-            if (losers === "") {
-                losers = "__**Losers Bracket**__\n";
-            }
-
-            const option = {
-                label: `${code1} vs ${code2} (LS)`,
-                value: `${index}`
-            };
-
-            options.push(option);
-
-            const prediction = predictionMap.get(match.id);
-
-            if (prediction != null) {
-                losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
-            } else {
-                losers += `${buildmatch(match, undefined, undefined, match_map)}`;
-            }
-
-            if (split_index == 2) {
-                losers += "\n";
-                split_index = 0;
-            }
-
-        }
-
-        index++;
-
-    });
-
-    const description: string = `${winners}\n${losers}`;
-
-    const embed_parameters: embed_parameters = {
-        description: description,
-        options: options
-    }
-
-    return embed_parameters;
-}
-
-function selectRound(owc_year: Owc) {
-    let select: string[] = ["1"];
-
-    switch (owc_year.current_round) {
-        case 1:
-            select = ["1"];
-            break;
-        case 2:
-            select = ["2", "-1"];
-            break;
-        case 3:
-            select = ["3", "-2", "-3"];
-            break;
-        case 4:
-            select = ["4", "-4", "-5"];
-            break;
-        case 5:
-            select = ["5", "-6", "-7"];
-            break;
-        case 6:
-            select = ["6", "-8"];
-    }
-    return select;
-}
-
-function buildmatch(match: OwcGame, team1_score?: number, team2_score?: number, match_map?: Map<number, OwcGame>) {
-
-    let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
-    let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
-
-    if (match.team1_name === undefined || match.team2_name === undefined) {
-        if (match_map !== undefined)
-            return buildWinnerOf(match, match_map, team1_score, team2_score);
-    }
-
-    if (code1 === undefined) {
-        code1 = "AQ";
-        match.team1_name = "TBD";
-    }
-
-    if (code2 === undefined) {
-        code2 = "AQ";
-        match.team2_name = "TBD";
-    }
-
-    code1 = code1.toLocaleLowerCase();
-    code2 = code2.toLocaleLowerCase();
-
-    let team1 = "";
-    let team2 = "";
-
-    if (team1_score === undefined || team2_score === undefined) {
-        team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} **vs**`;
-        team2 = ` ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
-        return `${team1}${team2}`;
-    }
-
-    if (team1_score > team2_score) {
-        team1 = `:flag_${code1.toLocaleLowerCase()}: **${match.team1_name} ${team1_score}** - `;
-        team2 = `${team2_score} ${match.team2_name} :flag_${code2.toLocaleLowerCase()}: \n`;
-        return `${team1}${team2}`;
-    } else {
-        team1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name} ${team1_score} - `;
-        team2 = `**${team2_score} ${match.team2_name}** :flag_${code2.toLocaleLowerCase()}: \n`;
-        return `${team1}${team2}`;
-    }
-}
-
-function buildWinnerOf(match: OwcGame, match_map: Map<number, OwcGame>, score1?: number, score2?: number) {
-
-    let prio_match_1 = match.team1_name;
-    let prio_match_2 = match.team2_name;
-
-    if (prio_match_1 === undefined) {
-        prio_match_1 = buildWinnerOfFlag(match_map.get(match.data.player1_prereq_match_id)!);
-    } else {
-        const code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
-        prio_match_1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name}`;
-    }
-
-    if (prio_match_2 === undefined) {
-        prio_match_2 = buildWinnerOfFlag(match_map.get(match.data.player2_prereq_match_id)!);
-    } else {
-        const code1: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
-        prio_match_2 = `${match.team2_name} :flag_${code1.toLocaleLowerCase()}:`;
-    }
-
-    if (score1 === undefined || score2 === undefined) {
-        return `${prio_match_1} **vs** ${prio_match_2} \n`;
-    } else {
-        if (score1 > score2) {
-            return `${prio_match_1} **${score1}** - ${score2} ${prio_match_2} \n`;
-        } else {
-            return `${prio_match_1} ${score1} - **${score2}** ${prio_match_2} \n`;
-        }
-    }
-
-}
-
-function buildWinnerOfName(match: OwcGame) {
-
-    let code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
-    let code2: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
-
-    if (code1 === undefined) {
-        code1 = "AQ";
-        match.team1_name = "TBD";
-    }
-
-    if (code2 === undefined) {
-        code2 = "AQ";
-        match.team2_name = "TBD";
-    }
-
-    return `${code1.toLocaleLowerCase()}**or**${code2.toLocaleLowerCase()}`
-
-}
-
-function buildWinnerOfFlag(match: OwcGame) {
-
-    let code1: string = getCode(match == undefined || match.team1_name == undefined ? "" : match.team1_name)
-    let code2: string = getCode(match == undefined || match.team2_name == undefined ? "" : match.team2_name)
-
-    if (code1 === undefined) {
-        code1 = "AQ";
-        match.team1_name = "TBD";
-    }
-
-    if (code2 === undefined) {
-        code2 = "AQ";
-        match.team2_name = "TBD";
-    }
-
-    return `:flag_${code1.toLocaleLowerCase()}: **or** :flag_${code2.toLocaleLowerCase()}:`
-
-}
-
-function getFirstTo(round: number): number {
-    switch (round) {
-        case 1:
-        case 2:
-        case -1:
-            return 5;
-        case 3:
-        case 4:
-        case -2:
-        case -3:
-        case -4:
-        case -5:
-            return 6;
-        case 5:
-        case 6:
-        case -6:
-        case -7:
-        case -8:
-            return 7;
-        default:
-            return 0;
-    }
 }
 
 function buildSelect(firstTo: number, prediction?: PickemPrediction) {
