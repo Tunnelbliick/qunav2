@@ -1,11 +1,9 @@
-import { Interaction, InteractionCollector, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from "discord.js";
-import { models, ObjectId } from "mongoose";
-import { launchCollector } from "../../embeds/osu/owc/collector";
+import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from "discord.js";
+import { ObjectId } from "mongoose";
 import { country_overwrite } from "../../embeds/osu/owc/country_overwrites";
 import { bo32, tournament_type } from "../../embeds/osu/owc/owc";
 import { noPickEm } from "../../embeds/osu/pickem/nopickem";
 import { checkIfUserExists } from "../../embeds/utility/nouserfound";
-import { interaction_silent_thinking } from "../../embeds/utility/thinking";
 import { Owc } from "../../interfaces/owc";
 import { OwcGame } from "../../interfaces/owcgame";
 import { PickemPrediction } from "../../interfaces/pickemPredictions";
@@ -18,7 +16,7 @@ import pickemRegistration from "../../models/pickemRegistration";
 import User from "../../models/User";
 import { encrypt } from "../../utility/encrypt";
 import { current_tournament } from "./pickem";
-const { overwrite, getCode } = require('country-list');
+const { getCode } = require('country-list');
 
 country_overwrite();
 
@@ -80,11 +78,11 @@ export async function predict(interaction: any, client?: any) {
     const matches: OwcGame[] = await owcgame.find({ owc: owc_year.id, round: { $in: select } });
     const all_matches: OwcGame[] = await owcgame.find({ owc: owc_year.id });
     const match_map: Map<number, OwcGame> = new Map<number, OwcGame>();
-    const unlocked: OwcGame[] = matches.sort((a: any, b: any) => b.round - a.round);
-    all_matches.forEach((match: any) => {
+    const unlocked: OwcGame[] = matches.sort((a: OwcGame, b: OwcGame) => b.round - a.round);
+    all_matches.forEach((match: OwcGame) => {
         match_map.set(match.matchid, match);
     })
-    const matchids: number[] = unlocked.map((match: any) => match.id);
+    const matchids: ObjectId[] = unlocked.map((match: OwcGame) => match.id);
     const predictions: PickemPrediction[] = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
 
     predictions.forEach((prediction: PickemPrediction) => {
@@ -93,7 +91,7 @@ export async function predict(interaction: any, client?: any) {
 
     const embed_parameters: embed_parameters = buildInitialPredictions(unlocked, predictionMap, match_map);
 
-    const bo_32: any = bo32;
+    const bo_32: tournament_type = bo32;
 
     const round_name = bo_32[unlocked[0].round].name;
 
