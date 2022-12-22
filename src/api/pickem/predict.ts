@@ -1,4 +1,4 @@
-import { MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu } from "discord.js";
+import { ButtonInteraction, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu, SelectMenuInteraction } from "discord.js";
 import { ObjectId } from "mongoose";
 import { country_overwrite } from "../../embeds/osu/owc/country_overwrites";
 import { bo32, tournament_type } from "../../embeds/osu/owc/owc";
@@ -147,7 +147,7 @@ export async function predict(interaction: any, client?: any) {
 
     const collector = channel.createMessageComponentCollector({ filter, time: 60000 });
 
-    collector.on("collect", async (i: any) => {
+    collector.on("collect", async (i: ButtonInteraction | SelectMenuInteraction) => {
 
         const split = i.customId.split("_");
         const interaction_id = split[1];
@@ -171,10 +171,12 @@ export async function predict(interaction: any, client?: any) {
                 match_index = await overview(interaction, unlocked, predictionMap, match_index, button_row, select_row, match_map);
                 break;
             case "score":
-                predictionMap = await predictMatch(interaction, registration, unlocked, predictionMap, match_index, button_row, i.values[0], match_map);
+                if (i instanceof SelectMenuInteraction)
+                    predictionMap = await predictMatch(interaction, registration, unlocked, predictionMap, match_index, button_row, i.values[0], match_map);
                 break;
             case "select":
-                match_index = await selectPage(interaction, unlocked, predictionMap, match_index, button_row, i.values[0], match_map);
+                if (i instanceof SelectMenuInteraction)
+                    match_index = await selectPage(interaction, unlocked, predictionMap, match_index, button_row, i.values[0], match_map);
                 break;
         }
 
@@ -549,7 +551,7 @@ function buildSelect(firstTo: number, prediction?: PickemPrediction) {
 
 }
 
-async function predictMatch(interaction: any, registration: PickemRegistration | null, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: string, match_map: Map<number, OwcGame>) {
+async function predictMatch(interaction: ButtonInteraction | SelectMenuInteraction, registration: PickemRegistration | null, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: string, match_map: Map<number, OwcGame>) {
 
     if (value == null || value == undefined || registration == null) {
         return predictionMap;
@@ -596,7 +598,7 @@ async function predictMatch(interaction: any, registration: PickemRegistration |
 
 }
 
-async function buildMatchPreditionEmbed(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, match_map: Map<number, OwcGame>) {
+async function buildMatchPreditionEmbed(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, match_map: Map<number, OwcGame>) {
     const current_match = unlocked[match_index];
     const current_prediction = predictionMap.get(current_match.id);
 
@@ -652,16 +654,16 @@ async function buildMatchPreditionEmbed(interaction: any, unlocked: OwcGame[], p
     await interaction.editReply({ embeds: [embed], components: components });
 }
 
-async function selectPage(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: number, match_map: Map<number, OwcGame>) {
+async function selectPage(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: string, match_map: Map<number, OwcGame>) {
 
-    match_index = value;
+    match_index = parseInt(value);
 
     await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row, match_map);
 
     return match_index;
 }
 
-async function nextPage(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
+async function nextPage(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
 
     if (match_index === -1) {
         match_index = 0;
@@ -681,7 +683,7 @@ async function nextPage(interaction: any, unlocked: OwcGame[], predictionMap: Ma
     return match_index;
 }
 
-async function priorPage(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
+async function priorPage(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
     if (match_index === -1) {
         match_index = unlocked.length - 1;
     } else if (match_index > 0) {
@@ -700,7 +702,7 @@ async function priorPage(interaction: any, unlocked: OwcGame[], predictionMap: M
     return match_index;
 }
 
-async function overview(interaction: any, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
+async function overview(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
 
     match_index = -1;
 
