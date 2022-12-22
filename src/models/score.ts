@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import mongooseLong from 'mongoose-long';
+import { Score } from "../interfaces/Score";
 
 mongooseLong(mongoose);
 
@@ -32,4 +33,4 @@ ScoreSchema.index({ mapid: 1, score: 1, mods: 1 });
 ScoreSchema.index({ mapid: 1, score: 1, pp: 1 });
 ScoreSchema.index({ osuid: 1, mapid: 1, checksum: 1, mods: 1, mode_int: 1 });
 
-export default mongoose.model("score", ScoreSchema);
+export default mongoose.model<Score>("score", ScoreSchema);

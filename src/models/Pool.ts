@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Pool } from "../interfaces/Pool";
 
 const PoolSchema = new mongoose.Schema({
     round: String,
@@ -8,4 +9,4 @@ const PoolSchema = new mongoose.Schema({
     pool: Object,
 });
 
-export default mongoose.model("pool", PoolSchema);
+export default mongoose.model<Pool>("pool", PoolSchema);

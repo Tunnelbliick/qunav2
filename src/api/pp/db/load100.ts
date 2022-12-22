@@ -2,7 +2,7 @@ import PerformancePoints from "../../../models/PerformancePoints";
 import { downloadBeatmap } from "../../beatmaps/downloadbeatmap";
 import { max } from "../max";
 
-export async function loadacc100(mapid: any, checksum: any, mode: any, modArray: any) {
+export async function loadacc100(mapid: string, checksum: string, mode: string, modArray: String[]) {
     return new Promise(async (resolve, reject) => {
 
         let returnpp: any;
@@ -13,7 +13,7 @@ export async function loadacc100(mapid: any, checksum: any, mode: any, modArray:
 
             await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, mapid);
 
-            const maxpp: any = await max(mapid, checksum, mode, modArray).catch(() => {
+            const maxpp = await max(mapid, checksum, mode, modArray).catch(() => {
                 return reject(null);
             })
 
@@ -27,6 +27,8 @@ export async function loadacc100(mapid: any, checksum: any, mode: any, modArray:
             if (ppObject.pp == undefined) {
                 ppObject.pp = {};
             }
+
+            if(maxpp)
             ppObject.pp[100] = maxpp;
 
             await ppObject.save();
@@ -39,7 +41,7 @@ export async function loadacc100(mapid: any, checksum: any, mode: any, modArray:
     })
 }
 
-export async function loadacc100WithoutBeatMapDownload(mapid: any, checksum: any, modArray: any, mode: any) {
+export async function loadacc100WithoutBeatMapDownload(mapid: string, checksum: string, modArray: String[], mode: string) {
     return new Promise(async (resolve, reject) => {
 
         const generatedpp: any = [];
@@ -49,7 +51,7 @@ export async function loadacc100WithoutBeatMapDownload(mapid: any, checksum: any
 
         if (ppObject == undefined || ppObject.pp == null || ppObject.pp[0] == null || ppObject.checksum != checksum) {
 
-            const maxpp: any = await max(mapid, checksum, mode, modArray).catch(() => {
+            const maxpp = await max(mapid, checksum, mode, modArray).catch(() => {
                 return reject(null);
             })
 
@@ -61,6 +63,7 @@ export async function loadacc100WithoutBeatMapDownload(mapid: any, checksum: any
             ppObject.checksum = checksum;
             ppObject.mods = modArray;
 
+            if(maxpp)
             ppObject.pp = { 100: maxpp };
 
             await ppObject.save();

@@ -1,5 +1,6 @@
 import { Int32 } from "mongodb";
 import mongoose from "mongoose";
+import { OwcGame } from "../interfaces/owcgame";
 
 const owcgameSchema = new mongoose.Schema({
     matchid: Number,
@@ -25,4 +26,4 @@ const owcgameSchema = new mongoose.Schema({
     data: Object,
 });
 
-export default mongoose.model("owcgame", owcgameSchema);
+export default mongoose.model<OwcGame>("owcgame", owcgameSchema);

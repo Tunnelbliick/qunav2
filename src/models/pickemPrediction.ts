@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { PickemPrediction } from "../interfaces/pickemPredictions";
 
 const pickemPredictionSchema = new mongoose.Schema({
     registration: { type: mongoose.Schema.Types.ObjectId, ref: 'pickemRegistration' },
@@ -10,4 +11,4 @@ const pickemPredictionSchema = new mongoose.Schema({
     calculated: Boolean,
 });
 
-export default mongoose.model("pickemPrediction", pickemPredictionSchema);
+export default mongoose.model<PickemPrediction>("pickemPrediction", pickemPredictionSchema);

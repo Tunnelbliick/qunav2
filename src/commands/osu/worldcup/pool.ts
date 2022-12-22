@@ -46,11 +46,15 @@ export default {
         await interaction_thinking(interaction);
         message_thinking(message);
 
-        const pool: any = await Pool.findOne({}).sort({ _id : -1}).exec();
+        const pool = await Pool.findOne({}).sort({ _id: -1 }).exec();
 
         let description = "";
 
         let round = "Grand Finals";
+
+        if (!pool) {
+            return;
+        }
 
         switch (pool.round) {
             case "grand_finals":
@@ -80,7 +84,7 @@ export default {
 
             let prefix = "NM";
 
-            const value = pool.pool[key];
+            const value = pool.pool.get(key);
 
             switch (key) {
                 case "NoMod":
@@ -104,10 +108,12 @@ export default {
             }
 
             let index = 1;
-            value.forEach((v: any) => {
-                description += `**${prefix}${prefix !== "TB" ? index : ""}** ${v}\n`;
-                index++;
-            })
+            if (value) {
+                value.forEach((v: any) => {
+                    description += `**${prefix}${prefix !== "TB" ? index : ""}** ${v}\n`;
+                    index++;
+                })
+            }
 
             description += "\n";
         }

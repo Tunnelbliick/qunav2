@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import { Owc } from "../interfaces/owc";
+import { ObjectId } from "mongoose";
 
-const OwcSchema = new mongoose.Schema({
+export interface Owc {
+    id: ObjectId,
     name: String,
     mode: String,
     keys: String,
@@ -14,8 +14,6 @@ const OwcSchema = new mongoose.Schema({
     tournament_type: String,
     state: String,
     current_round: Number,
-    locked_round: Array,
-    locked_matches: Array,
-});
-
-export default mongoose.model<Owc>("owc", OwcSchema);
+    locked_round: Array<string>,
+    locked_matches: Array<string>,
+}

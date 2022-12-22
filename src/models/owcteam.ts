@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { OwcTeam } from "../interfaces/owcteam";
 
 const owcteamSchema = new mongoose.Schema({
     owc: {type: mongoose.Schema.Types.ObjectId, ref: 'owc'},
@@ -10,4 +11,4 @@ const owcteamSchema = new mongoose.Schema({
     mode: String
 });
 
-export default mongoose.model("owcteam", owcteamSchema);
+export default mongoose.model<OwcTeam>("owcteam", owcteamSchema);

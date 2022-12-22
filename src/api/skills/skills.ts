@@ -279,6 +279,9 @@ export async function getAllSkills(top_100: any) {
                                 break;
 
                             }
+                            case "fruits":
+
+                            
 
                         }
 

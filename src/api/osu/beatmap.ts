@@ -36,7 +36,7 @@ export async function getBeatmapSet(setid: number) {
 
 export async function getBeatmapFromCache(mapid: any, checksum?: any) {
 
-    let beatmapObject: any = await Beatmap.findOne({ mapid: mapid });
+    let beatmapObject = await Beatmap.findOne({ mapid: mapid });
 
     if (beatmapObject == undefined || beatmapObject.checksum != checksum || beatmapObject.beatmap == undefined) {
         await login();

@@ -51,25 +51,36 @@ export default {
 
         await interaction_thinking(interaction);
 
-        if(interaction.user.id !== "203932549746130944") {
+        if (interaction.user.id !== "203932549746130944") {
             const embed = new MessageEmbed()
-            .setTitle("Nice try!")
-            .setDescription("This command is secured for only the bot owner")
+                .setTitle("Nice try!")
+                .setDescription("This command is secured for only the bot owner")
 
-            await interaction.editReply({embeds: [embed]});
+            await interaction.editReply({ embeds: [embed] });
         }
 
         const options = interaction.options;
 
-        const year: any = options.getString("year");
-        const mode: any = options.getString("mode");
-        let round: any = options.getString("round");
-        const keys: any = options.getString("key");
-        const maps: any = options.getString("pool")?.split("        ");
+        const year: String | null = options.getString("year");
+        const mode: String | null = options.getString("mode");
+        let round: String | null = options.getString("round");
+        const keys: String | null = options.getString("key");
+        const maps: String[] | undefined = options.getString("pool")?.split("        ");
 
-        const mappool: Map<string, any[]> = new Map<string, any[]>();
+        const mappool: Map<string, string[]> = new Map<string, string[]>();
         let mod_maps: any[] = [];
         let mod = "NoMod";
+
+        if (!maps) {
+
+            const embed = new MessageEmbed()
+                .setTitle("Error!")
+                .setDescription("Coudnt create mappool")
+
+            await interaction.editReply({ embeds: [embed] });
+
+            return;
+        }
 
         for (const map of maps) {
             const split = map.trim().replace("*   ", "").split("  ");
@@ -87,6 +98,17 @@ export default {
         }
 
         mappool.set(mod, mod_maps);
+
+        if (!round || !year || !mode || !keys || !mappool) {
+
+            const embed = new MessageEmbed()
+                .setTitle("Error!")
+                .setDescription("Coudnt create mappool")
+
+            await interaction.editReply({ embeds: [embed] });
+
+            return;
+        }
 
         const pool = new Pool();
         pool.round = round;
@@ -129,7 +151,7 @@ export default {
 
             let prefix = "NM";
 
-            const value = pool.pool[key];
+            const value = pool.pool.get(key);
 
             switch (key) {
                 case "NoMod":
@@ -153,10 +175,13 @@ export default {
             }
 
             let index = 1;
-            value.forEach((v: any) => {
-                description += `**${prefix}${prefix !== "TB" ? index : ""}** ${v}\n`;
-                index++;
-            })
+
+            if (value) {
+                value.forEach((v: any) => {
+                    description += `**${prefix}${prefix !== "TB" ? index : ""}** ${v}\n`;
+                    index++;
+                })
+            }
 
             description += "\n";
         }

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { PerformancePoints } from "../interfaces/performancePoints";
 
 const PerformancePointsSchema = new mongoose.Schema({
     mapid: String,
@@ -10,4 +11,4 @@ const PerformancePointsSchema = new mongoose.Schema({
     graph: Object
 });
 
-export default mongoose.model("performancepoints", PerformancePointsSchema);
+export default mongoose.model<PerformancePoints>("performancepoints", PerformancePointsSchema);

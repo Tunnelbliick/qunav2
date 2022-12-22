@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { Beatmap } from "../interfaces/Beatmap";
 
 const BeatmapSchema = new mongoose.Schema({
     mapid: String,
@@ -6,4 +7,4 @@ const BeatmapSchema = new mongoose.Schema({
     beatmap: Object
 });
 
-export default mongoose.model("beatmap", BeatmapSchema);
+export default mongoose.model<Beatmap>("beatmap", BeatmapSchema);

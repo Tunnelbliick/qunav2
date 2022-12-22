@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { PickemRegistration } from "../interfaces/pickemRegistration";
 
 const pcikemRegistrationSchema = new mongoose.Schema({
     owc: { type: mongoose.Schema.Types.ObjectId, ref: 'owc' },
@@ -6,4 +7,4 @@ const pcikemRegistrationSchema = new mongoose.Schema({
     total_score: { type: Number, index: true }
 });
 
-export default mongoose.model("pickemRegistration", pcikemRegistrationSchema);
+export default mongoose.model<PickemRegistration>("pickemRegistration", pcikemRegistrationSchema);

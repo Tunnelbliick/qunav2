@@ -13,7 +13,7 @@ export default (client: Client) => {
             const url = message.content;
 
             let id = message.content;
-            let setid: any = "";
+            let setid: string = "";
 
             let isSet = false;
 
@@ -45,7 +45,7 @@ export default (client: Client) => {
 
 
             if (isSet == true)
-                await getBeatmapSet(setid).then((data: any) => {
+                await getBeatmapSet(parseInt(setid)).then((data: any) => {
                     id = data.beatmaps[data.beatmaps.length - 1].id;
                 });
 

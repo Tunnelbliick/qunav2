@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { OwcBet } from "../interfaces/owcbet";
 import owc from "./owc";
 import User from "./User";
 
@@ -12,4 +13,4 @@ const owcgameSchema = new mongoose.Schema({
     user: User
 });
 
-export default mongoose.model("owcgame", owcgameSchema);
+export default mongoose.model<OwcBet>("owcgame", owcgameSchema);

@@ -2,11 +2,11 @@ import { arraytoBinary } from "../osu/utility/parsemods";
 
 const ppcalc = require('quna-pp');
 
-export async function max(mapid: any, checksum: any, mode: any, mods?: Array<any>) {
+export async function max(mapid: any, checksum: any, mode: any, mods?: Array<any>): Promise<number> {
 
     const modbinary = arraytoBinary(mods);
 
-    let max_pp = null;
+    let max_pp = undefined;
 
     switch (mode) {
         case "mania":

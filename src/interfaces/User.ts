@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import { User } from "../interfaces/User";
+import { ObjectId } from "mongoose";
 
-const UserSchema = new mongoose.Schema({
+export interface User {
+    id: ObjectId,
     status: String,
     requesttime: Date,
     validStatus: Boolean,
@@ -12,6 +12,4 @@ const UserSchema = new mongoose.Schema({
     linksucess: Boolean,
     notification: Boolean,
     timezone: String,
-});
-
-export default mongoose.model<User>("user", UserSchema);
+}

@@ -1,6 +1,10 @@
+import { ObjectId } from "mongoose";
 import { getTournament } from "./src/api/owc/owc"
 import { current_tournament } from "./src/api/pickem/pickem";
 import { getPointsForCorrectScore, getPointsForCorrectWinner } from "./src/api/pickem/predictions";
+import { OwcGame } from "./src/interfaces/owcgame";
+import { PickemPrediction } from "./src/interfaces/pickemPredictions";
+import { PickemRegistration } from "./src/interfaces/pickemRegistration";
 import owc from "./src/models/owc";
 import owcgame from "./src/models/owcgame";
 import pickemPrediction from "./src/models/pickemPrediction";
@@ -62,21 +66,27 @@ export async function loadTournaments() {
         "MWC7K_2022",
     ]
 
-    tournaments.forEach(async (t: any) => {
+    tournaments.forEach(async (t: string) => {
         await getTournament(t);
     })
 }
 
-export  function ongoingWorldCup() {
+export function ongoingWorldCup() {
 
     if (current_tournament !== undefined && current_tournament !== null) {
         const updatecurrent = async () => {
             await getTournament(current_tournament!);
-            const current: any = await owc.findOne({ url: current_tournament });
-            const matches: any = await owcgame.find({ owc: current.id });
+            const current = await owc.findOne({ url: current_tournament });
+
+            if (current === null) {
+                await setTimeout(updatecurrent, 1000 * 60 * 10);
+                return;
+            }
+
+            const matches = await owcgame.find({ owc: current.id });
 
             let current_round = 1;
-            const grouped = groupBy(matches, (match: any) => match.round);
+            const grouped = groupBy(matches, (match: OwcGame) => match.round);
 
             if (checkIfRoundComplete([1], grouped)) {
                 current_round = 2;
@@ -100,20 +110,22 @@ export  function ongoingWorldCup() {
     }
 }
 
-function checkIfRoundComplete(rounds: any[], grouped: Map<any, any>) {
+function checkIfRoundComplete(rounds: Number[], grouped: Map<Number, OwcGame[]>) {
 
     let iscomplete = true;
 
-    rounds.forEach((round_number: any) => {
+    rounds.forEach((round_number: Number) => {
         const round = grouped.get(round_number);
 
-        round.forEach((match: any) => {
+        if (round) {
+            round.forEach((match: OwcGame) => {
 
-            if (match.state != "complete") {
-                iscomplete = false;
-            }
+                if (match.state != "complete") {
+                    iscomplete = false;
+                }
 
-        })
+            })
+        }
 
     });
 
@@ -122,27 +134,27 @@ function checkIfRoundComplete(rounds: any[], grouped: Map<any, any>) {
 }
 
 async function calculateScores() {
-    const current: any = await owc.findOne({ url: current_tournament });
+    const current = await owc.findOne({ url: current_tournament });
 
-    if(current === undefined) {
+    if (!current) {
         return;
     }
 
-    const matches: any = await owcgame.find({ owc: current.id, state: "complete" });
-    const predictionList: any = await pickemPrediction.find({ owc: current.id, calculated: false });
+    const matches = await owcgame.find({ owc: current.id, state: "complete" });
+    const predictionList = await pickemPrediction.find({ owc: current.id, calculated: false });
     const prediction_save_list: any[] = [];
-    const registrationList: any = await pickemRegistration.find({ owc: current.id });
+    const registrationList = await pickemRegistration.find({ owc: current.id });
 
-    const registrationMap: Map<any, any> = new Map<any, any>();
-    const predictionMap: Map<any, any[]> = new Map<any, any[]>();
+    const registrationMap: Map<ObjectId, PickemRegistration> = new Map<ObjectId, PickemRegistration>();
+    const predictionMap: Map<ObjectId, PickemPrediction[]> = new Map<ObjectId, PickemPrediction[]>();
 
-    registrationList.forEach((registration: any) => {
+    registrationList.forEach((registration: PickemRegistration) => {
         registrationMap.set(registration.id, registration);
     })
 
-    predictionList.forEach((prediction: any) => {
+    predictionList.forEach((prediction: PickemPrediction) => {
 
-        let predctions = predictionMap.get(prediction.match.toString());
+        let predctions = predictionMap.get(prediction.match);
 
         if (predctions == null) {
             predctions = [];
@@ -150,10 +162,10 @@ async function calculateScores() {
 
         predctions.push(prediction);
 
-        predictionMap.set(prediction.match.toString(), predctions);
+        predictionMap.set(prediction.match, predctions);
     })
 
-    matches.forEach((match: any) => {
+    matches.forEach((match: OwcGame) => {
 
         const predictions = predictionMap.get(match.id);
 
@@ -161,35 +173,44 @@ async function calculateScores() {
             return;
         }
 
-        predictions.forEach((prediction: any) => {
+        predictions.forEach((prediction: PickemPrediction) => {
 
-            const registration = registrationMap.get(prediction.registration.toString());
+            const registration = registrationMap.get(prediction.registration);
 
-            if (prediction.winner_index === match.winner_index) {
-                let points = getPointsForCorrectWinner(match);
-                registration.total_score += points
+            if (registration) {
+
+                if (prediction.winner_index === match.winner_index) {
+                    let points = getPointsForCorrectWinner(match);
+                    registration.total_score += points
+                }
+
+                if (prediction.score === match.score) {
+                    let points = getPointsForCorrectScore(match);
+                    registration.total_score += points
+                }
+
+                prediction.calculated = true;
+
+                registrationMap.set(registration.id, registration);
+                prediction_save_list.push(prediction);
             }
-
-            if (prediction.score === match.score) {
-                let points = getPointsForCorrectScore(match);
-                registration.total_score += points
-            }
-
-            prediction.calculated = true;
-
-            registrationMap.set(registration.id, registration);
-            prediction_save_list.push(prediction);
 
         })
 
     });
 
-    await pickemRegistration.bulkSave(Array.from(registrationMap.values()));
+    const registstration_map: any[] = []
+
+    registrationMap.forEach((value: PickemRegistration, key: ObjectId) => {
+        registstration_map.push(value);
+    })
+
+    await pickemRegistration.bulkSave(registstration_map);
     await pickemPrediction.bulkSave(prediction_save_list);
 
 }
 
-function groupBy(list: any, keyGetter: any) {
+function groupBy(list: OwcGame[], keyGetter: any) {
     const map = new Map();
     list.forEach((item: any) => {
         const key = keyGetter(item);

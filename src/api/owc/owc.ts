@@ -212,20 +212,20 @@ async function createOrUpdateParticipants(owcid: any, participants: any, mode: a
     }
 }
 
-async function createOrUpdateTournaments(tournament_string: any) {
+async function createOrUpdateTournaments(tournament_string: string) {
 
     const res: any = await viewTournament(tournament_string, "json");
 
     const tournament = res.tournament;
     let mode = "osu";
 
-    let gen_owc: any = await owc.findOne({ tournamentid: tournament.id });
+    let gen_owc = await owc.findOne({ tournamentid: tournament.id });
 
     if (gen_owc === null) {
         gen_owc = new owc();
     }
 
-    let keys;
+    let keys = null;
 
     if (tournament.name.includes("osu! ")) {
         mode = "osu";
@@ -248,6 +248,7 @@ async function createOrUpdateTournaments(tournament_string: any) {
     gen_owc.name = tournament.name;
     gen_owc.size = tournament.participants_count;
     gen_owc.mode = mode;
+    if(keys !== null)
     gen_owc.keys = keys;
     gen_owc.tournamentid = tournament.id;
     gen_owc.url = tournament.url;
