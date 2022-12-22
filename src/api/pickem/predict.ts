@@ -38,7 +38,6 @@ export async function predict(interaction: any, client?: any) {
 
     let match_index: number = -1;
     let predictionMap: Map<ObjectId, PickemPrediction> = new Map<ObjectId, PickemPrediction>();
-    let registration: PickemRegistration | null;
 
     const owc_year: Owc | null = await owc.findOne({ url: current_tournament })
 
@@ -61,7 +60,7 @@ export async function predict(interaction: any, client?: any) {
         return
     }
 
-    registration = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
+    const registration: PickemRegistration | null = await pickemRegistration.findOne({ owc: owc_year.id, user: user.id });
 
     if (registration == null) {
         const embed = new MessageEmbed()
