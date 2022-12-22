@@ -144,7 +144,7 @@ export async function predictions(message: any, interaction: any, args: any) {
 
                 options = buildOptions(owc_year, round_name);
 
-                const select: any = new MessageSelectMenu().setCustomId(`select_${id}`)
+                const select = new MessageSelectMenu().setCustomId(`select_${id}`)
                     .setPlaceholder('Select Round')
                     .addOptions(options);
 
