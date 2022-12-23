@@ -57,11 +57,11 @@ export async function getAllSkills(top_100: any) {
         return undefined;
     }
 
-    let aim: skill_score[] = [];
-    let acc: skill_score[] = [];
-    let speed: skill_score[] = [];
-    let star: skill_score[] = [];
-    let difficulty: skill_score[] = [];
+    const aim: skill_score[] = [];
+    const acc: skill_score[] = [];
+    const speed: skill_score[] = [];
+    const star: skill_score[] = [];
+    const difficulty: skill_score[] = [];
 
     await asyncBatch(top_100,
         (task: any) => new Promise(
@@ -174,7 +174,7 @@ export async function getAllSkills(top_100: any) {
         10,
     );
 
-    let skills: skill_type[] = [];
+    const skills: skill_type[] = [];
 
     skills.push(addSkill("Star", star));
     skills.push(addSkill("Aim", aim));
