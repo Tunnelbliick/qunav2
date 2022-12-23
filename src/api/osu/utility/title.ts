@@ -1,4 +1,4 @@
-import { all_skills } from "../../skills/skills";
+import { skill_type } from "../../skills/skills";
 import { arraytoBinary, arraytoBinaryFix } from "./parsemods";
 
 
@@ -53,7 +53,7 @@ enum Type {
     Acc
 }
 
-export function getTitle(skills: all_skills) {
+export function getTitle(skills: skill_type[]) {
 
     /*acc_title.forEach((title: any) => {
         console.log(`${(arraytoBinary(parseModString(title.mod)))}: { mod:"${title.mod}", title: "${title.title}"},`);
@@ -61,28 +61,28 @@ export function getTitle(skills: all_skills) {
 
     let type: Type;
     let plays = [];
-    const aim = skills.aim_avg;
-    const speed = skills.speed_avg;
-    const acc = skills.acc_avg;
+    const aim = skills.find((skill: skill_type) => skill.label === "Aim")!.average
+    const speed = skills.find((skill: skill_type) => skill.label === "Speed")!.average
+    const acc = skills.find((skill: skill_type) => skill.label === "Accuracy")!.average
 
     const max = Math.max(aim, speed, acc);
 
     switch (max) {
         case aim:
             type = Type.Aim;
-            plays = skills.aim.slice(0, 20);
+            plays = skills.find((skill: skill_type) => skill.label === "Aim")!.scores.slice(0, 20);
             break;
         case speed:
             type = Type.Speed;
-            plays = skills.speed.slice(0, 20);
+            plays = skills.find((skill: skill_type) => skill.label === "Speed")!.scores.slice(0, 20);
             break;
         case acc:
             type = Type.Acc;
-            plays = skills.acc.slice(0, 20);
+            plays =skills.find((skill: skill_type) => skill.label === "Accuracy")!.scores.slice(0, 20);
             break;
         default:
             type = Type.Aim;
-            plays = skills.aim.slice(0, 20);
+            plays = skills.find((skill: skill_type) => skill.label === "Aim")!.scores.slice(0, 20);
             break;
     }
 

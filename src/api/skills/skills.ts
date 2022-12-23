@@ -1,4 +1,6 @@
 import asyncBatch from "async-batch";
+import { OsuScore } from "../../interfaces/OsuScore";
+import score from "../../models/score";
 import { downloadAndOverrideBeatmap } from "../beatmaps/downloadbeatmap";
 import { simulateArgs } from "../pp/simulate";
 import { simulateFull } from "../pp/simulatefull";
@@ -9,15 +11,15 @@ export interface skills {
     speed: number;
 }
 
-export interface all_skills {
-    aim: Array<any>;
-    acc: Array<any>;
-    speed: Array<any>;
-    star: Array<any>;
-    aim_avg: number;
-    acc_avg: number;
-    speed_avg: number;
-    star_avg: number;
+export interface skill_score {
+    value: number,
+    score: OsuScore,
+}
+
+export interface skill_type {
+    scores: skill_score[],
+    label: string,
+    average: number,
 }
 
 // based on bath values just slightly tweaked.
@@ -201,12 +203,11 @@ export async function getAllSkills(top_100: any) {
         return undefined;
     }
 
-    let aim: any = [];
-    let acc: any = [];
-    let speed: any = [];
-    let star: any = [];
-    let difficulty: any = [];
-    const strain: any = [];
+    let aim: skill_score[] = [];
+    let acc: skill_score[] = [];
+    let speed: skill_score[] = [];
+    let star: skill_score[] = [];
+    let difficulty: skill_score[] = [];
 
     const generateSkills = await asyncBatch(top_100,
         (task: any, taskIndex: number, workerIndex: number) => new Promise(
@@ -281,7 +282,27 @@ export async function getAllSkills(top_100: any) {
                             }
                             case "fruits":
 
-                            
+                                const ACC_BUFF: number = 1.95;
+                                const DIFFICULTY_NERF: number = 0.75;
+
+                                // This is based of bathbot but changed to have a less expodentional growth
+                                // Bath: https://www.desmos.com/calculator/b30p1awwft?lang=de also dont get why you dont add it to atleast rech 100...
+                                // Mine: https://www.desmos.com/calculator/6itbeh8lhl?lang=de
+
+                                // Restrict the expodentional value to 100, otherwise it can be 100.192
+                                const y = Math.min(Math.pow(((task.value.accuracy * 100) / 17.0), 2.6), 100.00)
+
+                                const acc_: any = Math.pow(y / 60.0, 1.5);
+
+                                const acc_val = Math.pow(value.star, acc_)
+                                    * Math.pow(task.value.beatmap.accuracy / 7.0, 0.25)
+                                    * Math.pow(task.value.max_combo / 2000.0, 0.15)
+                                    * ACC_BUFF;
+
+                                // Restrict output to not reach above 100!
+                                acc.push({ value: acc_val, score: task.value });
+                                difficulty.push({ value: value.pp_strain / DIFFICULTY_NERF, score: task.value });
+                                star.push({ value: value.star, score: task.value });
 
                         }
 
@@ -298,53 +319,14 @@ export async function getAllSkills(top_100: any) {
         10,
     );
 
-    let aim_avg = 0;
-    let acc_avg = 0;
-    let speed_avg = 0;
-    let star_avg = 0;
-    let difficulty_avg = 0;
+    let skills: skill_type[] = [];
 
-    aim = aim.sort((a: any, b: any) => { return b.value - a.value; })
-    acc = acc.sort((a: any, b: any) => { return b.value - a.value; })
-    speed = speed.sort((a: any, b: any) => { return b.value - a.value; })
-    difficulty = difficulty.sort((a: any, b: any) => { return b.value - a.value; })
-    star = star.sort((a: any, b: any) => { return b.value - a.value; })
+    skills.push(addSkill("Star", star));
+    skills.push(addSkill("Aim", aim));
+    skills.push(addSkill("Accuracy", acc));
+    skills.push(addSkill("Speed", speed));
+    skills.push(addSkill("Strain", difficulty));
 
-    let weight_sum = 0;
-
-    for (let i = 0; i < 100; i++) {
-        const weight = Math.pow(0.95, i);
-        if (aim[i] !== undefined)
-            aim_avg += aim[i].value * weight;
-        if (acc[i] !== undefined)
-            acc_avg += acc[i].value * weight;
-        if (speed[i] !== undefined)
-            speed_avg += speed[i].value * weight;
-        if (difficulty[i] !== undefined)
-            difficulty_avg += difficulty[i].value * weight;
-        weight_sum += weight;
-    }
-
-    aim_avg = normalise(aim_avg / weight_sum);
-    acc_avg = normalise(acc_avg / weight_sum);
-    speed_avg = normalise(speed_avg / weight_sum);
-    difficulty_avg = normalise(difficulty_avg / weight_sum);
-
-    console.log(difficulty_avg);
-
-    star.forEach((a: any) => star_avg += a.value);
-    star_avg = star_avg / star.length;
-
-    const skills: all_skills = {
-        aim: aim,
-        acc: acc,
-        speed: speed,
-        star: star,
-        aim_avg: aim_avg,
-        acc_avg: acc_avg,
-        speed_avg: speed_avg,
-        star_avg: star_avg
-    }
 
     return skills;
 
@@ -360,4 +342,28 @@ export function normalise(value: number): number {
     const res = -101.0 * factor + 101.0;
 
     return res;
+}
+
+function addSkill(label: string, scores: skill_score[]): skill_type {
+
+    let avg = 0;
+    let weight_sum = 0;
+
+    scores = scores.sort((a: any, b: any) => { return b.value - a.value; })
+
+    if (label !== "Star") {
+        for (let i = 0; i < 100; i++) {
+            const weight = Math.pow(0.95, i);
+            if (scores[i] !== undefined)
+                avg += scores[i].value * weight;
+            weight_sum += weight;
+        }
+        avg = normalise(avg / weight_sum);
+    } else {
+        scores.forEach((score: skill_score) => avg += score.value);
+        avg = avg / scores.length;
+    }
+
+    return { label: label, scores: scores, average: avg };
+
 }

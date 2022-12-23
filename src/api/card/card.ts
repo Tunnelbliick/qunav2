@@ -2,8 +2,7 @@ import Prando from 'prando'
 import { roundedImage } from './roundimage';
 import { builddoughnut } from '../chart.js/card/doughnut';
 import { buildProgressbar } from '../chart.js/card/progress';
-import { all_skills, skills } from '../skills/skills';
-import { TopologyType } from 'mongodb';
+import { skill_type } from '../skills/skills';
 const { createCanvas, loadImage, registerFont } = require('canvas')
 
 const tiers = [
@@ -20,13 +19,13 @@ const tiers = [
     { id: 10, value: 300, name: "Master", background: "pattern.jpg", colors: ["#FFFFFF", "#000000"] },
     { id: 11, value: Infinity, name: "Inhuman", background: "pattern.jpg", colors: ["#00000"] }];
 
-export async function generateCard(user: any, skills: all_skills, title: string) {
+export async function generateCard(user: any, skills: skill_type[], title: string) {
 
     registerFont('assets/fonts/IKEASans-Regular.ttf', { family: 'Sans' });
 
-    const aim = skills.aim_avg;
-    const speed = skills.speed_avg;
-    const acc = skills.acc_avg;
+    const aim = skills.find((skill: skill_type) => skill.label === "Aim")!.average
+    const speed = skills.find((skill: skill_type) => skill.label === "Speed")!.average
+    const acc = skills.find((skill: skill_type) => skill.label === "Accuracy")!.average
 
     const max = Math.max(aim, speed, acc);
 
