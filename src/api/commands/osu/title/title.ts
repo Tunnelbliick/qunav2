@@ -3,10 +3,9 @@ import { checkIfUserExists, checkIfUserIsLInked } from "../../../../embeds/utili
 import User from "../../../../models/User";
 import { buildUsernameOfArgs } from "../../../../utility/buildusernames";
 import { encrypt } from "../../../../utility/encrypt";
-import { generateCard } from "../../../card/card";
 import { getTopForUser } from "../../../osu/top";
 import { getUser, getUserByUsername } from "../../../osu/user";
-import { getAllSkills, getTotalSkills } from "../../../skills/skills";
+import { getAllSkills } from "../../../skills/skills";
 import { getTitle } from "../../../osu/utility/title";
 import { MessageEmbed } from "discord.js";
 import { replaceFirstDots } from "../../../../utility/comma";

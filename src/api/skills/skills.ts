@@ -29,152 +29,6 @@ const SPEED_NERF: number = 2.4;
 const MOVEMENT_NERF: number = 0;
 const DIFFICULTY_NERF: number = 0;
 
-export async function getTotalSkills(top_100: any) {
-
-    if (top_100 == null) {
-        return;
-    }
-
-    const dopwnload_beatmaps = asyncBatch(top_100,
-        (task: any, taskIndex: number, workerIndex: number) => new Promise(
-            async (resolve) => {
-                if (task.value != null && task.value.beatmap != null) {
-                    const dest = `${process.env.FOLDER_TEMP}${task.value.beatmap.id}_${task.value.beatmap.checksum}.osu`;
-                    downloadAndOverrideBeatmap('https://osu.ppy.sh/osu/', dest, task.value.beatmap.id).then(() => { return resolve(true) });
-                } else {
-                    return resolve(null);
-                }
-            }
-        ),
-        2,
-    );
-
-    const skip = new Promise((res) => setTimeout(() => res("skip"), 5000));
-
-    const check_which_won = await Promise.race([skip, dopwnload_beatmaps]);
-
-    if (check_which_won === "skip") {
-        return undefined;
-    }
-
-    let aim: Array<number> = [];
-    let acc: Array<number> = [];
-    let speed: Array<number> = [];
-    let strain: Array<number> = [];
-    let difficulty: Array<number> = [];
-
-    let aimpp: number = 0;
-    let accpp: number = 0;
-    let speedpp: number = 0;
-    const strainpp: number = 0;
-    const difficultypp: number = 0;
-
-    const generateSkills = await asyncBatch(top_100,
-        (task: any, taskIndex: number, workerIndex: number) => new Promise(
-            async (resolve) => {
-                if (task.value != null && task.value.beatmap != null) {
-
-                    const sim: simulateArgs = {
-                        mode: task.value.mode,
-                        checksum: task.value.beatmap.checksum,
-                        mapid: task.value.beatmap.id,
-                        mods: task.value.mods,
-                        combo: task.value.max_combo,
-                        great: task.value.statistics.count_300,
-                        goods: task.value.statistics.count_100,
-                        mehs: task.value.statistics.count_50,
-                        misses: task.value.statistics.count_miss,
-                        score: task.value.score
-
-                    };
-
-                    simulateFull(sim).then((value: any) => {
-
-                        switch (task.value.mode) {
-
-                            case "osu": {
-
-                                const ACC_NERF: number = 1.4;
-                                const AIM_NERF: number = 2.6;
-                                const SPEED_NERF: number = 2.4;
-
-                                aim.push(value.pp_aim / AIM_NERF);
-                                acc.push(value.pp_acc / ACC_NERF);
-                                speed.push(value.pp_speed / SPEED_NERF);
-                                break;
-                            }
-                            case "taiko": {
-
-                                const ACC_NERF: number = 1.15;
-                                const DIFFICULTY_NERF: number = 2.8;
-
-                                acc.push(value.pp_acc / ACC_NERF);
-                                difficulty.push(value.pp_strain / DIFFICULTY_NERF);
-                                break;
-
-                            }
-                            case "mania": {
-
-                                const ACC_BUFF: number = 2.1;
-                                const DIFFICULTY_NERF: number = 0.6;
-
-                                const acc_: any = Math.pow(Math.pow((task.value.accuracy / 36.0), 4.5) / 60.0, 1.5);
-
-                                const acc_val = Math.pow(value.star, acc_)
-                                    * Math.pow(task.value.od / 7.0, 0.25)
-                                    * Math.pow(0 / 2000.0, 0.15)
-                                    * ACC_BUFF;
-
-                                acc.push(acc_val);
-                                difficulty.push(value.pp_strain / DIFFICULTY_NERF);
-                                break;
-
-                            }
-
-                        }
-
-                        return resolve(value);
-
-                    })
-
-                } else {
-                    return resolve(null);
-                }
-            }
-        ),
-        10,
-    );
-
-    let weight_sum = 0;
-
-    aim = aim.sort((a: any, b: any) => { return b - a; })
-    acc = acc.sort((a: any, b: any) => { return b - a; })
-    speed = speed.sort((a: any, b: any) => { return b - a; })
-    difficulty = difficulty.sort((a: any, b: any) => { return b - a; })
-    strain = strain.sort((a: any, b: any) => { return b - a; })
-
-    for (let i = 0; i < 100; i++) {
-        const weight = Math.pow(0.95, i);
-        aimpp += aim[i] * weight;
-        accpp += acc[i] * weight;
-        speedpp += speed[i] * weight;
-        weight_sum += weight;
-    }
-
-    aimpp = normalise(aimpp / weight_sum);
-    accpp = normalise(accpp / weight_sum);
-    speedpp = normalise(speedpp / weight_sum);
-
-    const skills: skills = {
-        aim: aimpp,
-        acc: accpp,
-        speed: speedpp
-    }
-
-    return skills;
-
-}
-
 export async function getAllSkills(top_100: any) {
 
     if (top_100 == null) {
@@ -182,7 +36,7 @@ export async function getAllSkills(top_100: any) {
     }
 
     const dopwnload_beatmaps = asyncBatch(top_100,
-        (task: any, taskIndex: number, workerIndex: number) => new Promise(
+        (task: any) => new Promise(
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
                     const dest = `${process.env.FOLDER_TEMP}${task.value.beatmap.id}_${task.value.beatmap.checksum}.osu`;
@@ -209,8 +63,8 @@ export async function getAllSkills(top_100: any) {
     let star: skill_score[] = [];
     let difficulty: skill_score[] = [];
 
-    const generateSkills = await asyncBatch(top_100,
-        (task: any, taskIndex: number, workerIndex: number) => new Promise(
+    await asyncBatch(top_100,
+        (task: any) => new Promise(
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
 
@@ -280,7 +134,7 @@ export async function getAllSkills(top_100: any) {
                                 break;
 
                             }
-                            case "fruits":
+                            case "fruits": {
 
                                 const ACC_BUFF: number = 1.95;
                                 const DIFFICULTY_NERF: number = 0.75;
@@ -303,6 +157,7 @@ export async function getAllSkills(top_100: any) {
                                 acc.push({ value: acc_val, score: task.value });
                                 difficulty.push({ value: value.pp_strain / DIFFICULTY_NERF, score: task.value });
                                 star.push({ value: value.star, score: task.value });
+                            }
 
                         }
 
@@ -349,7 +204,7 @@ function addSkill(label: string, scores: skill_score[]): skill_type {
     let avg = 0;
     let weight_sum = 0;
 
-    scores = scores.sort((a: any, b: any) => { return b.value - a.value; })
+    scores = scores.sort((a: skill_score, b: skill_score) => { return b.value - a.value; })
 
     if (label !== "Star") {
         for (let i = 0; i < 100; i++) {

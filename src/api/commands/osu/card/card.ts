@@ -6,7 +6,7 @@ import { encrypt } from "../../../../utility/encrypt";
 import { generateCard } from "../../../card/card";
 import { getTopForUser } from "../../../osu/top";
 import { getUser, getUserByUsername } from "../../../osu/user";
-import { getAllSkills, getTotalSkills } from "../../../skills/skills";
+import { getAllSkills } from "../../../skills/skills";
 import { getTitle } from "../../../osu/utility/title";
 const DataImageAttachment = require("dataimageattachment");
 
