@@ -21,14 +21,19 @@ export interface skill_type {
     average: number,
 }
 
-export async function getAllSkills(top_100: any) {
+export interface top100 {
+    position: number,
+    value: OsuScore
+}
+
+export async function getAllSkills(top_100: top100[]) {
 
     if (top_100 == null) {
         return;
     }
 
     const dopwnload_beatmaps = asyncBatch(top_100,
-        (task: any) => new Promise(
+        (task: top100) => new Promise(
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
                     const dest = `${process.env.FOLDER_TEMP}${task.value.beatmap.id}_${task.value.beatmap.checksum}.osu`;
@@ -56,14 +61,14 @@ export async function getAllSkills(top_100: any) {
     const difficulty: skill_score[] = [];
 
     await asyncBatch(top_100,
-        (task: any) => new Promise(
+        (task: top100) => new Promise(
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
 
                     const sim: simulateArgs = {
                         mode: task.value.mode,
                         checksum: task.value.beatmap.checksum,
-                        mapid: task.value.beatmap.id,
+                        mapid: task.value.beatmap.id.toString(),
                         mods: task.value.mods,
                         combo: task.value.max_combo,
                         great: task.value.statistics.count_300,
