@@ -1,6 +1,5 @@
 import asyncBatch from "async-batch";
 import { OsuScore } from "../../interfaces/OsuScore";
-import score from "../../models/score";
 import { downloadAndOverrideBeatmap } from "../beatmaps/downloadbeatmap";
 import { simulateArgs } from "../pp/simulate";
 import { simulateFull } from "../pp/simulatefull";
@@ -21,13 +20,6 @@ export interface skill_type {
     label: string,
     average: number,
 }
-
-// based on bath values just slightly tweaked.
-const ACC_NERF: number = 1.4;
-const AIM_NERF: number = 2.6;
-const SPEED_NERF: number = 2.4;
-const MOVEMENT_NERF: number = 0;
-const DIFFICULTY_NERF: number = 0;
 
 export async function getAllSkills(top_100: any) {
 
@@ -120,7 +112,7 @@ export async function getAllSkills(top_100: any) {
                                 // Restrict the expodentional value to 100, otherwise it can be 100.192
                                 const y = Math.min(Math.pow(((task.value.accuracy * 100) / 17.0), 2.6), 100.00)
 
-                                const acc_: any = Math.pow(y / 60.0, 1.5);
+                                const acc_: number = Math.pow(y / 60.0, 1.5);
 
                                 const acc_val = Math.pow(value.star, acc_)
                                     * Math.pow(task.value.beatmap.accuracy / 7.0, 0.25)
@@ -146,7 +138,7 @@ export async function getAllSkills(top_100: any) {
                                 // Restrict the expodentional value to 100, otherwise it can be 100.192
                                 const y = Math.min(Math.pow(((task.value.accuracy * 100) / 17.0), 2.6), 100.00)
 
-                                const acc_: any = Math.pow(y / 60.0, 1.5);
+                                const acc_: number = Math.pow(y / 60.0, 1.5);
 
                                 const acc_val = Math.pow(value.star, acc_)
                                     * Math.pow(task.value.beatmap.accuracy / 7.0, 0.25)
