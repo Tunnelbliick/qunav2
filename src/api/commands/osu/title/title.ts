@@ -47,7 +47,7 @@ export async function title(message: any, args: any) {
 
     }
 
-    const top_100 = await getTopForUser(osu_user.id);
+    const top_100: any = await getTopForUser(osu_user.id);
 
     const skills: any = await getAllSkills(top_100);
 

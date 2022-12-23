@@ -54,7 +54,7 @@ export async function skill(message: any, args: any) {
 
     mode = osu_user.playmode!
 
-    const top_100 = await getTopForUser(osu_user.id, undefined, undefined, mode);
+    const top_100: any = await getTopForUser(osu_user.id, undefined, undefined, mode);
 
     const skills: any = await getAllSkills(top_100);
 
