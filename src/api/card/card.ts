@@ -23,8 +23,8 @@ const tiers = [
 
 export async function generateCard(user: any, skills: skill_type[], title: Title, secondaryTitle: Title | undefined) {
 
-    registerFont('assets/fonts/Ikea-Regular.ttf', { family: 'Ikea', weight: 'Regular' });
-    registerFont('assets/fonts/Ikea-Bold.ttf', { family: 'Ikea', weight: 'Bold' });
+    registerFont('./assets/fonts/Ikea-Regular.ttf', { family: 'Ikea', weight: 'Regular' });
+    registerFont('./assets/fonts/Ikea-Bold.ttf', { family: 'Ikea', weight: 'Bold' });
 
     let total = 0;
     let skill_amount = 0;

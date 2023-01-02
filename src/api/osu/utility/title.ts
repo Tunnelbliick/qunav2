@@ -6,46 +6,49 @@ import { arraytoBinary, arraytoBinaryFix } from "./parsemods";
 
 const aim_title: any = {
     0: { mod: "nm", title: "Sergeant General" },
-    16: { mod: "hr", title: "Precision Biased" },
-    8: { mod: "hd", title: "Disappearing Senses" },
-    64: { mod: "dt", title: "Cultivatist at Work" },
-    24: { mod: "hdhr", title: "Out of Sight" },
-    72: { mod: "hddt", title: "Proud Estate Owner" },
-    88: { mod: "hddthr", title: "Essence of Aim" },
     2: { mod: "ez", title: "Reading Maestro" },
+    8: { mod: "hd", title: "Disappearing Senses" },
     10: { mod: "ezhd", title: "Sublime Masochism" },
+    16: { mod: "hr", title: "Precision Biased" },
+    24: { mod: "hdhr", title: "Out of Sight" },
+    64: { mod: "dt", title: "Cultivatist at Work" },
     66: { mod: "ezdt", title: "Extended Reach" },
+    72: { mod: "hddt", title: "Proud Estate Owner" },
     74: { mod: "ezhddt", title: "Vanishing Point" },
+    80: { mod: "dthr", title: "Precise Velocity" },
+    88: { mod: "hddthr", title: "Essence of Aim" },
     266: { mod: "ezhthd", title: "Scrambling of Time" },
 }
 
 const speed_title: any = {
     0: { mod: "nm", title: "Lengthy Incident" },
-    16: { mod: "hr", title: "Hi-Speed Mechatron" },
-    8: { mod: "hd", title: "Flow of Time" },
-    64: { mod: "dt", title: "Breaking the Limit" },
-    24: { mod: "hdhr", title: "Finding Solace" },
-    72: { mod: "hddt", title: "Traversing Dimensions" },
-    88: { mod: "hddthr", title: "Speed Trap Maniac" },
     2: { mod: "ez", title: "Circumvention of Momentum" },
+    8: { mod: "hd", title: "Flow of Time" },
     10: { mod: "ezhd", title: "Consolidation Reimagined" },
+    16: { mod: "hr", title: "Hi-Speed Mechatron" },
+    24: { mod: "hdhr", title: "Finding Solace" },
+    64: { mod: "dt", title: "Breaking the Limit" },
     66: { mod: "ezdt", title: "Abused Fortitude" },
+    72: { mod: "hddt", title: "Traversing Dimensions" },
     74: { mod: "ezhddt", title: "Fading Sunshine" },
+    80: { mod: "dthr", title: "Rapid Precision" },
+    88: { mod: "hddthr", title: "Speed Trap Maniac" },
     266: { mod: "ezhthd", title: "Excuse me?" },
 }
 
 const acc_title: any = {
     0: { mod: "nomod", title: "Everlasting Cycle" },
-    16: { mod: "hr", title: "Metronomical Prodigy" },
-    8: { mod: "hd", title: "Pathing of Unseen Roads" },
-    64: { mod: "dt", title: "Fortitude of Patience" },
-    24: { mod: "hdhr", title: "The Circle Unveiled" },
-    72: { mod: "hddt", title: "Finite Tenacity" },
-    88: { mod: "hddthr", title: "Vivid Horizons" },
     2: { mod: "ez", title: "Ousted Diminision" },
+    8: { mod: "hd", title: "Pathing of Unseen Roads" },
     10: { mod: "ezhd", title: "Formal Instigation" },
+    16: { mod: "hr", title: "Metronomical Prodigy" },
+    24: { mod: "hdhr", title: "The Circle Unveiled" },
+    64: { mod: "dt", title: "Fortitude of Patience" },
     66: { mod: "ezdt", title: "Sovereign Monocle" },
+    72: { mod: "hddt", title: "Finite Tenacity" },
     74: { mod: "ezhddt", title: "Red Herring" },
+    80: { mod: "dthr", title: "Flawless Execution" },
+    88: { mod: "hddthr", title: "Vivid Horizons" },
     266: { mod: "ezhthd", title: "Epitomy of Cheese" },
 }
 
@@ -60,6 +63,7 @@ const strain_title: any = {
     66: { mod: "ezdt", title: "Grace Under Pressure" },
     72: { mod: "hddt", title: "Unbreakable Will" },
     74: { mod: "ezhddt", title: "Disguised Ease" },
+    80: { mod: "dthr", title: "Intense Focus" },
     88: { mod: "hddthr", title: "Vibrant Vision" },
     266: { mod: "ezhthd", title: "Serene Strength" },
 }
@@ -75,30 +79,36 @@ export function getTitle(skills: skill_type[]): Title {
 
     const most_used_mod_int: any = getMostFrequent(top_skill!.scores.slice(0, 20));
 
-    let title = "Quna Fallback title";
+    let title: any = "Everlasting Cycle";
     let color = doughnut_colors["Acc"];
 
     switch (top_skill?.label) {
         case "Aim":
-            title = `${aim_title[most_used_mod_int].title}`;
+            title = aim_title[most_used_mod_int];
             color = doughnut_colors["Aim"];
             break;
         case "Speed":
-            title = `${speed_title[most_used_mod_int].title}`;
+            title = speed_title[most_used_mod_int];
             color = doughnut_colors["Speed"];
             break;
         case "Acc":
-            title = `${acc_title[most_used_mod_int].title}`;
+            title = acc_title[most_used_mod_int];
             color = doughnut_colors["Acc"];
             break;
         case "Strain":
-            title = `${strain_title[most_used_mod_int].title}`;
+            title = strain_title[most_used_mod_int];
             color = doughnut_colors["Strain"];
             break;
         default:
-            title = `${acc_title[most_used_mod_int].title}`;
+            title = acc_title[most_used_mod_int];
             color = doughnut_colors["Acc"];
             break;
+    }
+
+    if (!title) {
+        title = "Everlasting Cycle";
+    } else {
+        title = title.title;
     }
 
     return { title: title, colors: color };
