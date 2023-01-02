@@ -48,6 +48,9 @@ export async function card(message: any, args: any) {
 
     }
 
+    if (osu_user.playmode !== "osu")
+        osu_user = await getUser(osu_user.id, osu_user.playmode);
+        
     const top_100: any = await getTopForUser(osu_user.id);
 
     const skills: any = await getAllSkills(top_100);
