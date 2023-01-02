@@ -1,3 +1,5 @@
+import { Title } from "../../../interfaces/title";
+import { doughnut_colors } from "../../chart.js/card/doughnut";
 import { skill_type } from "../../skills/skills";
 import { arraytoBinary, arraytoBinaryFix } from "./parsemods";
 
@@ -47,65 +49,59 @@ const acc_title: any = {
     266: { mod: "ezhthd", title: "Epitomy of Cheese" },
 }
 
-enum Type {
-    Aim,
-    Speed,
-    Acc
+const strain_title: any = {
+    0: { mod: "nomod", title: "Steady As You Go" },
+    2: { mod: "ez", title: "Effortless Bliss" },
+    8: { mod: "hd", title: "Intense Path" },
+    10: { mod: "ezhd", title: "Balanced Progression" },
+    16: { mod: "hr", title: "Strenuous Synchrony" },
+    24: { mod: "hdhr", title: "Power Through" },
+    64: { mod: "dt", title: "Unwavering Focus" },
+    66: { mod: "ezdt", title: "Grace Under Pressure" },
+    72: { mod: "hddt", title: "Unbreakable Will" },
+    74: { mod: "ezhddt", title: "Disguised Ease" },
+    88: { mod: "hddthr", title: "Vibrant Vision" },
+    266: { mod: "ezhthd", title: "Serene Strength" },
 }
 
-export function getTitle(skills: skill_type[]) {
 
-    /*acc_title.forEach((title: any) => {
-        console.log(`${(arraytoBinary(parseModString(title.mod)))}: { mod:"${title.mod}", title: "${title.title}"},`);
-    })*/
+export function getTitle(skills: skill_type[]): Title {
 
-    let type: Type;
-    let plays = [];
-    const aim = skills.find((skill: skill_type) => skill.label === "Aim")!.average
-    const speed = skills.find((skill: skill_type) => skill.label === "Speed")!.average
-    const acc = skills.find((skill: skill_type) => skill.label === "Accuracy")!.average
+    let top_skill: skill_type | undefined = skills.reduce((a, b) => a.average > b.average ? a : b);
 
-    const max = Math.max(aim, speed, acc);
+    if (top_skill === undefined || top_skill === null || top_skill.label === "Star") {
+        top_skill = skills.find(skill => skill.label === "Acc")
+    }
 
-    switch (max) {
-        case aim:
-            type = Type.Aim;
-            plays = skills.find((skill: skill_type) => skill.label === "Aim")!.scores.slice(0, 20);
+    const most_used_mod_int: any = getMostFrequent(top_skill!.scores.slice(0, 20));
+
+    let title = "Quna Fallback title";
+    let color = doughnut_colors["Acc"];
+
+    switch (top_skill?.label) {
+        case "Aim":
+            title = `${aim_title[most_used_mod_int].title}`;
+            color = doughnut_colors["Aim"];
             break;
-        case speed:
-            type = Type.Speed;
-            plays = skills.find((skill: skill_type) => skill.label === "Speed")!.scores.slice(0, 20);
+        case "Speed":
+            title = `${speed_title[most_used_mod_int].title}`;
+            color = doughnut_colors["Speed"];
             break;
-        case acc:
-            type = Type.Acc;
-            plays =skills.find((skill: skill_type) => skill.label === "Accuracy")!.scores.slice(0, 20);
+        case "Acc":
+            title = `${acc_title[most_used_mod_int].title}`;
+            color = doughnut_colors["Acc"];
+            break;
+        case "Strain":
+            title = `${strain_title[most_used_mod_int].title}`;
+            color = doughnut_colors["Strain"];
             break;
         default:
-            type = Type.Aim;
-            plays = skills.find((skill: skill_type) => skill.label === "Aim")!.scores.slice(0, 20);
+            title = `${acc_title[most_used_mod_int].title}`;
+            color = doughnut_colors["Acc"];
             break;
     }
 
-    const most_used_mod_int: any = getMostFrequent(plays);
-
-    let title = "Circle Clicker";
-
-    switch (type) {
-        case Type.Aim:
-            title = `Aim - ${aim_title[most_used_mod_int].mod} - ${aim_title[most_used_mod_int].title}`;
-            break;
-        case Type.Speed:
-            title = `Speed - ${aim_title[most_used_mod_int].mod} - ${speed_title[most_used_mod_int].title}`;
-            break;
-        case Type.Acc:
-            title = `Acc - ${aim_title[most_used_mod_int].mod} - ${acc_title[most_used_mod_int].title}`;
-            break;
-        default:
-            title = `Aim - ${aim_title[most_used_mod_int].mod}- ${aim_title[most_used_mod_int].title}`;
-            break;
-    }
-
-    return title;
+    return { title: title, colors: color };
 
 }
 

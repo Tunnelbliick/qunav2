@@ -175,7 +175,7 @@ export async function getAllSkills(top_100: top100[]) {
 
     skills.push(addSkill("Star", star));
     skills.push(addSkill("Aim", aim));
-    skills.push(addSkill("Accuracy", acc));
+    skills.push(addSkill("Acc", acc));
     skills.push(addSkill("Speed", speed));
     skills.push(addSkill("Strain", difficulty));
 

@@ -6,8 +6,13 @@ export function replaceDots(input: any): string {
         return input.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     }
 
-    if(input == undefined)
+    if(input === undefined)
     return input
+
+    if(input === null) {
+    return "-"
+    }
+
     return input.toLocaleString().replaceAll(".", ",");
 }
 

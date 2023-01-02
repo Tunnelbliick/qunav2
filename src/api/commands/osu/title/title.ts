@@ -56,9 +56,7 @@ export async function title(message: any, args: any) {
         return;
     }
 
-    let title = "";
-
-    title = getTitle(skills);
+    const title = getTitle(skills);
 
     let global_rank = osu_user.statistics.global_rank;
     if (global_rank == null)
@@ -71,7 +69,7 @@ export async function title(message: any, args: any) {
     const embed = new MessageEmbed()
     .setColor(0x737df9)
     .setAuthor({ name: `${osu_user.username} - ${osu_user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${osu_user.country_code}${country_rank})`, iconURL: `${osu_user.avatar_url}`, url: `https://osu.ppy.sh/users/${osu_user.id}` })
-    .setDescription(`Title: **${title}**`)
+    .setDescription(`Title: **${title.title}**`)
     .setFooter({text:"Beta command! Only supports std atm."})
 
     await message.reply({ embeds: [embed] });

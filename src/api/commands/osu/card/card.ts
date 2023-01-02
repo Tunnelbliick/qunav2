@@ -8,6 +8,7 @@ import { getTopForUser } from "../../../osu/top";
 import { getUser, getUserByUsername } from "../../../osu/user";
 import { getAllSkills } from "../../../skills/skills";
 import { getTitle } from "../../../osu/utility/title";
+import { Title } from "../../../../interfaces/title";
 const DataImageAttachment = require("dataimageattachment");
 
 export async function card(message: any, args: any) {
@@ -31,7 +32,7 @@ export async function card(message: any, args: any) {
 
     if (userid === null) {
         username = buildUsernameOfArgs(args);
-        osu_user = await getUserByUsername(username, undefined);
+        osu_user = await getUserByUsername(username, null);
     } else {
         userObject = await User.findOne({ discordid: await encrypt(userid) });
 
@@ -51,14 +52,37 @@ export async function card(message: any, args: any) {
 
     const skills: any = await getAllSkills(top_100);
 
-    if(skills === undefined) {
+    if (skills === undefined) {
         stillProcessing(message);
         return;
     }
 
-    const title = "";
+    const title: Title = getTitle(skills);
 
-    const card = await generateCard(osu_user, skills, title);
+    let secondaryTitle: Title | undefined = {
+        title: "",
+        colors: ["#737df9", "#abb1fb"]
+    }
+
+    switch (osu_user.id) {
+        case 7737096:
+        case 13424448:
+            secondaryTitle = {
+                title: "Quna Developer",
+                colors: ["#737df9", "#abb1fb"]
+            }
+            break;
+        case 6795168:
+            secondaryTitle = {
+                title: "1st Pick'em Winner",
+                colors: ["#ac6a9b", "#e9d497"]
+            }
+            break;
+        default:
+            secondaryTitle = undefined;
+    }
+
+    const card = await generateCard(osu_user, skills, title, secondaryTitle);
 
     await message.reply({ files: [new DataImageAttachment(card, `${osu_user.username}_card.png`)] });
 }
