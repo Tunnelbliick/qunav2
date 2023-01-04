@@ -8,6 +8,9 @@ export async function calcualte(mapid: any, checksum: any, mode: any, mods?: any
 
     let map_pp = null;
 
+    map_pp = ppcalc.calculate_map_pp(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary);
+
+    /*
     switch (mode) {
         case "osu":
             map_pp = ppcalc.calculate_map_pp(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary);
@@ -18,7 +21,7 @@ export async function calcualte(mapid: any, checksum: any, mode: any, mods?: any
         default:
             map_pp = ppcalc.calculate_map_pp(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary);
             break;
-    }
+    }*/
 
     return map_pp;
 }
