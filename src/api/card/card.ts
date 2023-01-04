@@ -4,6 +4,7 @@ import { builddoughnut } from '../chart.js/card/doughnut';
 import { skill_type } from '../skills/skills';
 import { replaceDots } from '../../utility/comma';
 import { Title } from '../../interfaces/title';
+import * as path from 'path';
 const { createCanvas, loadImage, registerFont } = require('canvas')
 
 const tiers = [
@@ -23,8 +24,11 @@ const tiers = [
 
 export async function generateCard(user: any, skills: skill_type[], title: Title, secondaryTitle: Title | undefined) {
 
-    registerFont('./assets/fonts/Ikea-Regular.ttf', { family: 'Ikea', weight: 'Regular' });
-    registerFont('./assets/fonts/Ikea-Bold.ttf', { family: 'Ikea', weight: 'Bold' });
+    const ikeaRegular = path.resolve('assets/fonts/Ikea-Regular.ttf');
+    const ikeaBold = path.resolve('assets/fonts/Ikea-Bold.ttf');
+
+    registerFont(ikeaRegular, { family: 'Ikea', weight: 'Regular' });
+    registerFont(ikeaBold, { family: 'Ikea', weight: 'Bold' });
 
     let total = 0;
     let skill_amount = 0;
