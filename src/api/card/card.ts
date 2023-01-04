@@ -24,11 +24,12 @@ const tiers = [
 
 export async function generateCard(user: any, skills: skill_type[], title: Title, secondaryTitle: Title | undefined) {
 
-    const ikeaRegular = path.resolve('assets/fonts/Ikea-Regular.ttf');
+    const ikeaRegular = path.resolve('./assets/fonts/Ikea-Regular.ttf');
     const ikeaBold = path.resolve('assets/fonts/Ikea-Bold.ttf');
 
-    registerFont(ikeaRegular, { family: 'Ikea', weight: 'Regular' });
-    registerFont(ikeaBold, { family: 'Ikea', weight: 'Bold' });
+    // has to be the original font and IKEA Sans in linux god knows why im giving up trying to understand it
+    registerFont(ikeaRegular, { family: 'Ikea Sans', weight: 'regular' });
+    registerFont(ikeaBold, { family: 'Ikea Sans', weight: 'bold' });
 
     let total = 0;
     let skill_amount = 0;
@@ -441,7 +442,7 @@ export async function generateCard(user: any, skills: skill_type[], title: Title
     ctx.restore();
 
     ctx.fillStyle = "#737df9";
-    ctx.font = 'bold 10pt Ikea Sans';
+    ctx.font = 'regular 10pt Ikea Sans';
     ctx.textAlign = 'right';
     ctx.fillText("made by", center - 20, 775, 540);
 
@@ -453,7 +454,7 @@ export async function generateCard(user: any, skills: skill_type[], title: Title
     ctx.restore()
 
     // Quna Banner Text
-    ctx.font = 'bold 15pt Ikea Sans';
+    ctx.font = 'regular 15pt Ikea Sans';
     ctx.textAlign = 'left';
     ctx.fillText("Quna", center + 20, 779, 540);
 
