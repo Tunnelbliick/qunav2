@@ -1,7 +1,7 @@
 const { Canvas, loadImage } = require('skia-canvas');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
-export async function generateProfileChart(data:any) {
+export async function generateProfileChart(data: any) {
     const background = await loadImage(data.cover_url);
 
     const dataset: any = [];
@@ -13,8 +13,8 @@ export async function generateProfileChart(data:any) {
             label.push(index);
         });
 
-    const width = background.width;
-    const height = background.height;
+    const width = 1200;
+    const height = 360;
     const backgroundColour = "transparent";
     const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height, backgroundColour });
     const configuration = {
@@ -62,13 +62,13 @@ export async function generateProfileChart(data:any) {
     const chartURL = await chartJSNodeCanvas.renderToDataURL(configuration);
     const chart = await loadImage(chartURL);
 
-    const canvas = new Canvas(background.width, background.height)
+    const canvas = new Canvas(width, height)
     const ctx = canvas.getContext('2d')
 
     ctx.filter = 'blur(10px) brightness(33%)';
-    ctx.drawImage(background, 0, 0);
+    ctx.drawImage(background, 0, 0, width, height);
     ctx.filter = 'none';
-    ctx.drawImage(chart, 0, 0);
+    ctx.drawImage(chart, 0, 0, width, height);
 
     return canvas.toDataURLSync();
 }

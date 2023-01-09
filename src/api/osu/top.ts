@@ -27,6 +27,46 @@ export async function getTop(userid: any, offset?: any, limit?: any, mode?: any)
     });
 }
 
+export async function getPinned(userid: any, offset?: any, limit?: any, mode?: any): Promise<object[]> {
+    await login();
+    const params: any = {};
+    if (limit != undefined)
+        params.limit = limit;
+    if (offset != undefined)
+        params.offset = offset;
+    params.mode = 0;
+    if (mode != undefined) {
+        if (mode == "catch")
+            mode = "fruits"
+        params.mode = mode;
+    }
+    return new Promise((resolve, rejcet) => {
+        v2.user.scores.category(userid, "pinned", params).then((data: any) => {
+            return resolve(data)
+        });
+    });
+}
+
+export async function getFavorite(userid: any, offset?: any, limit?: any, mode?: any): Promise<object[]> {
+    await login();
+    const params: any = {};
+    if (limit != undefined)
+        params.limit = limit;
+    if (offset != undefined)
+        params.offset = offset;
+    params.mode = 0;
+    if (mode != undefined) {
+        if (mode == "catch")
+            mode = "fruits"
+        params.mode = mode;
+    }
+    return new Promise((resolve, rejcet) => {
+        v2.user.beatmaps.category(userid, "favourite", params).then((data: any) => {
+            return resolve(data)
+        });
+    });
+}
+
 export async function getTopForUser(userid: string, offset?: number, limit?: number, mode?: any, unranked?: boolean) {
 
 
