@@ -33,7 +33,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
     message.channel.sendTyping();
 
     const top_osu = new Procyon({
-        className: 'osu_top'
+        className: 'top_osu'
     })
 
     const userObject: QunaUser | null = await User.findOne({ discordid: await encrypt(message.author.id) });
