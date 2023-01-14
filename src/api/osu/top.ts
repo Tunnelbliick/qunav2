@@ -67,7 +67,7 @@ export async function getFavorite(userid: any, offset?: any, limit?: any, mode?:
     });
 }
 
-export async function getTopForUser(userid: string, offset?: number, limit?: number, mode?: any, unranked?: boolean) {
+export async function getTopForUser(userid: any, offset?: number, limit?: number, mode?: any, unranked?: boolean) {
 
 
     let bestplays: object[] = [];

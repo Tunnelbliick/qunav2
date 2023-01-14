@@ -24,8 +24,8 @@ const tiers = [
 
 export async function generateCard(user: any, skills: skill_type[], title: Title, secondaryTitle: Title | undefined) {
 
-    const ikeaRegular = path.resolve('./assets/fonts/Ikea-Regular.ttf');
-    const ikeaBold = path.resolve('assets/fonts/Ikea-Bold.ttf');
+    const ikeaRegular = path.resolve('./assets/fonts/IKEA-Sans-Regular.ttf');
+    const ikeaBold = path.resolve('assets/fonts/IKEA-Sans-Bold.ttf');
 
     // has to be the original font and IKEA Sans in linux god knows why im giving up trying to understand it
     registerFont(ikeaRegular, { family: 'Ikea Sans', weight: 'regular' });

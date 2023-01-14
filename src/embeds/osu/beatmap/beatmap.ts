@@ -20,6 +20,16 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
         return;
     }
 
+    const { embed, result } = await buildMapEmbedNoResponse(mods, data);
+
+    if (interaction) {
+        await interaction.editReply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
+    } else {
+        await message.reply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
+    }
+}
+
+export async function buildMapEmbedNoResponse(mods: string, data: any) {
     const modArray = parseModString(mods);
     let modString = "";
 
@@ -30,10 +40,20 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
 
     let difficulty;
     let graph;
-    let map_stats: any
-    let ppString: string
+    let map_stats: any;
+    let ppString: string;
+    let background: any;
+    let chartURL: any;
 
-    map_stats = await loadMapPP(data, modArray, data.mode);
+    const statsPromise = loadMapPP(data, modArray, data.mode);
+    const backgroundPromise = loadImage(data.beatmapset.covers.cover);
+    const chartPromise = generateBeatmapChart(graph);
+
+    await Promise.allSettled([statsPromise, backgroundPromise, chartPromise]).then((result: any) => {
+        map_stats = result[0].value;
+        background = result[1].value;
+        chartURL = result[2].value;
+    });
 
     if (map_stats != undefined) {
         difficulty = map_stats.difficulty;
@@ -48,14 +68,10 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
         ppString = "Could not load PP values";
     }
 
-    const background = await loadImage(data.beatmapset.covers.cover);
-
-    const chartURL = await generateBeatmapChart(graph);
-
     const chart = await loadImage(chartURL);
 
-    const canvas = new Canvas(background.width, background.height)
-    const ctx = canvas.getContext('2d')
+    const canvas = new Canvas(background.width, background.height);
+    const ctx = canvas.getContext('2d');
 
     ctx.filter = 'blur(7px) brightness(33%)';
     ctx.drawImage(background, 0, 0);
@@ -70,13 +86,13 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
         bpm: data.beatmapset.bpm,
         mapLength: data.total_length,
         mapDrain: data.hit_length
-    }
+    };
 
     stats = calcualteStatsforMods(stats, modArray);
 
     // extras
-    const successrate = Math.round((data.passcount / data.playcount) * 100)
-    const embedColor = getDifficultyColor(difficulty.star.toFixed(2))
+    const successrate = Math.round((data.passcount / data.playcount) * 100);
+    const embedColor = getDifficultyColor(difficulty.star.toFixed(2));
 
     // @ts-ignore 
     const modeEmote = gamemode_icons[data.mode];
@@ -88,7 +104,7 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
         .setURL(`${data.url}`)
         .setDescription(`🎶 [Song Preview](https:${data.beatmapset.preview_url}) 🖼️ [Background Image](${data.beatmapset.covers.cover})`)
         .setImage(`attachment://chart.png`) // the @2x version does not work sadge
-        .setFooter({ text: `▶ : ${data.playcount.toLocaleString()} plays, ${data.passcount.toLocaleString()} passes (${successrate}% Passrate) | ❤ : ${data.beatmapset.favourite_count.toLocaleString()} | ${cap1stLetter(data.status)}` })
+        .setFooter({ text: `▶ : ${data.playcount.toLocaleString()} plays, ${data.passcount.toLocaleString()} passes (${successrate}% Passrate) | ❤ : ${data.beatmapset.favourite_count.toLocaleString()} | ${cap1stLetter(data.status)}` });
 
     if (data.mode != "mania") {
         embed.addFields([
@@ -109,7 +125,7 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
                 value: `\n\`\`\`${ppString}\`\`\``,
                 inline: false
             }
-        ])
+        ]);
     } else {
         embed.addFields([
             {
@@ -129,14 +145,9 @@ export async function buildMapEmbed(data: any, message: Message, interaction: an
                 value: `\n\`\`\`${ppString}\`\`\``,
                 inline: false
             }
-        ])
+        ]);
     }
-
-    if (interaction) {
-        await interaction.editReply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
-    } else {
-        await message.reply({ embeds: [embed], files: [new DataImageAttachment(result, "chart.png")] })
-    }
+    return { embed, result };
 }
 
 function center(text: string, length: number): string {

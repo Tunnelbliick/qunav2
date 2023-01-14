@@ -2,10 +2,16 @@ import asyncBatch from "async-batch";
 import { MessageEmbed } from "discord.js";
 import { ICommand } from "wokcommands";
 import { getFavorite, getPinned, getTopForUser } from "../../api/osu/top";
+import { getUserByUsername } from "../../api/osu/user";
+import { getDailyTop, getOsuTop10000 } from "../../api/osudaily/dailytop";
 import { like } from "../../interfaces/Like";
 import { QunaUser } from "../../interfaces/QunaUser";
 import RecLike from "../../models/RecLike";
 import User from "../../models/User";
+import UserHash from "../../models/UserHash";
+const hash = require("hash-sum")
+const tabletojson = require('tabletojson').Tabletojson;
+
 
 export default {
 
@@ -26,77 +32,142 @@ export default {
             return;
         }
 
-        const quna_users: QunaUser[] = await User.find({});
-        let index = 0;
+        let offset = 98;
 
-        const race = asyncBatch(quna_users,
-            user => new Promise(
-                async (resolve) => {
-                    index++;
-                    if (user.userid != null || user.userid != undefined) {
+        do {
+            const daily = await getOsuTop10000(offset);
 
-                        const top: any = await getTopForUser(user.userid);
-                        const pinned: any = await getPinned(user.userid);
-                        const favorite: any = await getFavorite(user.userid);
+            const scrape = tabletojson.convert(
+                daily.data,
+            );
 
-                        if (top != "osuapierr") {
+            //const quna_users: QunaUser[] = await User.find({});
+            let index = 0;
 
-                            const userLikes: any[] = [];
+            const race = asyncBatch(scrape[0],
+                (user: any) => new Promise(
+                    async (resolve) => {
+                        index++;
+                        if (user != null && user != undefined) {
 
-                            top.forEach((play: any) => {
-                                const usrLike: like = new RecLike();
-                                usrLike.osuid = +user.userid;
-                                usrLike.beatmapid = play.value.beatmap.id;
-                                usrLike.origin = "top";
-                                usrLike.value = `${play.value.beatmap.id}_${play.value.mods.join("")}`;
-                                usrLike.mode = play.value.beatmap.mode
-                                userLikes.push(usrLike);
-                            })
+                            const profile = await getUserByUsername(user["1"]); 
 
-                            RecLike.bulkSave(userLikes);
+                            const userid = profile.id;
+
+                            if (await RecLike.exists({ osuid: userid }) !== null) {
+                                console.log(`${index}/${scrape[0].length}`);
+                                return resolve(true);
+                            }
+
+                            let top: any = [];
+                            let pinned: any = [];
+                            let favorite: any = [];
+                            let changed = false;
+
+                            const topPromise: any = await getTopForUser(userid);
+                            const pinnedPromise: any = await getPinned(userid);
+                            const favoritePromise: any = await getFavorite(userid);
+
+                            await Promise.allSettled([topPromise, pinnedPromise, favoritePromise]).then(((result: any) => {
+                                top = result[0].value;
+                                pinned = result[1].value;
+                                favorite = result[2].value;
+                            }))
+
+                            const userHash = new UserHash();
+                            userHash.osuid = userid;
+
+                            if (top != "osuapierr") {
+
+                                const userLikes: any[] = [];
+                                const hashList: any[] = [];
+
+                                top.forEach((play: any) => {
+
+                                    let value = `${play.value.beatmap.id}_${play.value.mods.join("")}`
+
+                                    const usrLike: like = new RecLike();
+                                    usrLike.osuid = userid;
+                                    usrLike.beatmapid = play.value.beatmap.id;
+                                    usrLike.origin = "top";
+                                    usrLike.value = value;
+                                    usrLike.mode = play.value.beatmap.mode
+                                    userLikes.push(usrLike);
+                                    hashList.push(value);
+                                })
+
+                                userHash.topHash = hash(hashList);
+                                changed = true;
+
+                                RecLike.bulkSave(userLikes);
+                            }
+
+                            if (!pinned.hasOwnProperty("error")) {
+
+
+                                const userLikes: any[] = [];
+                                const hashList: any[] = [];
+
+                                pinned.forEach((play: any) => {
+
+                                    let value = `${play.beatmap.id}_${play.mods.join("")}`
+
+                                    const usrLike: like = new RecLike();
+                                    usrLike.osuid = userid;
+                                    usrLike.beatmapid = play.beatmap.id;
+                                    usrLike.origin = "pinned";
+                                    usrLike.value = value;
+                                    usrLike.mode = play.beatmap.mode;
+                                    userLikes.push(usrLike);
+                                    hashList.push(value);
+                                })
+
+                                userHash.pinnedHash = hash(hashList);
+                                changed = true;
+                                RecLike.bulkSave(userLikes);
+                            }
+
+                            if (!favorite.hasOwnProperty("error")) {
+
+                                const userLikes: any[] = [];
+                                const hashList: any[] = [];
+
+                                favorite.forEach((beatmap: any) => {
+
+                                    let value = `${beatmap.id}_set`;
+
+                                    const usrLike: any = new RecLike();
+                                    usrLike.osuid = userid
+                                    usrLike.beatmapid = beatmap.id;
+                                    usrLike.origin = "favorite";
+                                    usrLike.value = value;
+                                    usrLike.mode = "";
+                                    userLikes.push(usrLike);
+                                    hashList.push(value);
+                                })
+
+                                userHash.favoriteHash = hash(hashList);
+                                changed = true;
+                                RecLike.bulkSave(userLikes);
+                            }
+
+                            if (changed && (userHash.osuid != null || userHash.osuid != undefined))
+                                await UserHash.updateOne({ osuid: userHash.osuid }, userHash, { upsert: true }).exec();
                         }
 
-                        if (!pinned.hasOwnProperty("error")) {
+                        console.log(`${index}/${scrape[0].length}`);
+                        return resolve(true);
 
-                            const userLikes: any[] = [];
-
-                            pinned.forEach((play: any) => {
-                                const usrLike: like = new RecLike();
-                                usrLike.osuid = +user.userid;
-                                usrLike.beatmapid = play.beatmap.id;
-                                usrLike.origin = "pinned";
-                                usrLike.value = `${play.beatmap.id}_${play.mods.join("")}`;
-                                usrLike.mode = play.beatmap.mode;
-                                userLikes.push(usrLike);
-                            })
-
-                            RecLike.bulkSave(userLikes);
-                        }
-
-                        if (!favorite.hasOwnProperty("error")) {
-
-                            const userLikes: any[] = [];
-
-                            favorite.forEach((beatmap: any) => {
-                                const usrLike: any = new RecLike();
-                                usrLike.osuid = +user.userid;
-                                usrLike.beatmapid = beatmap.id;
-                                usrLike.origin = "favorite";
-                                usrLike.value = `${beatmap.id}_set`;
-                                usrLike.mode = "";
-                                userLikes.push(usrLike);
-                            })
-
-                            RecLike.bulkSave(userLikes);
-                        }
                     }
+                ),
+                3,
+            );
 
-                    return resolve(true);
-
-                }
-            ),
-            2,
-        );
+            await Promise.race([race]);
+            console.log(`Page ${offset} of 200`);
+            await sleep(1000);
+            offset++;
+        } while (offset < 200);
 
         const embed = new MessageEmbed()
             .setTitle("Done!")
@@ -107,3 +178,9 @@ export default {
     }
 
 } as ICommand
+
+function sleep(ms: any) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}

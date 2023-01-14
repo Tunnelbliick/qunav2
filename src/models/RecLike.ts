@@ -6,7 +6,8 @@ const likeSchema = new mongoose.Schema({
     beatmapid: Number,
     origin: String,
     mode: String,
-    value: String
+    value: String,
+    type: String,
 });
 
 export default mongoose.model<like>("like", likeSchema);

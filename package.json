@@ -23,6 +23,7 @@
     "dataimageattachment": "^1.1.2",
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.1",
+    "hash-sum": "^2.0.0",
     "image-to-base64": "^2.2.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.4",
@@ -37,6 +38,7 @@
     "redis-server": "^1.2.2",
     "sagiri": "^3.2.4",
     "skia-canvas": "^0.9.30",
+    "tabletojson": "^2.0.7",
     "ts-retry-promise": "^0.7.0",
     "wokcommands": "^1.5.3"
   }

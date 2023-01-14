@@ -1,20 +1,17 @@
 import { Client, Message } from "discord.js";
-import { categoryvote } from "../../api/recommend/categoryvote/categoryvote";
-import { buildDownvote, buildRecommendation, buildUpvote } from "../../embeds/osu/recommend/recommend/recommend";
-import Recommendation from "../../models/Recommendation";
-import RecommndationList from "../../models/RecommndationList";
-import User from "../../models/User";
-import { encrypt } from "../../utility/encrypt";
+import { getBeatmap } from "../../api/osu/beatmap";
+import { buildMapEmbedNoResponse } from "../../embeds/osu/beatmap/beatmap";
+import { like } from "../../interfaces/Like";
+import RecLike from "../../models/RecLike";
 const DataImageAttachment = require("dataimageattachment");
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
-const { createCanvas } = require('canvas')
 
 const Procyon = require('procyon')
 
 export default (client: Client) => {
 
     const procyon: any = new Procyon({
-        className: 'maps'
+        className: 'osu_top'
     });
 
     client.on('interactionCreate', async (interaction: any) => {
@@ -22,224 +19,128 @@ export default (client: Client) => {
         if (interaction.customId != undefined) {
             const customid = interaction.customId;
 
+            const interaction_discordid = interaction.user.id;
+
             const message: Message = interaction.message;
 
             const para = customid.split("_");
 
-            const userObject: any = await User.findOne({ discordid: await encrypt(interaction.user.id) });
-
             if (para[0] == "recommendation") {
 
+                const discordid = para[2];
+
+                if (discordid !== interaction_discordid) {
+                    await interaction.deferReply({
+                        ephemeral: true
+                    });
+
+                    const embed = new MessageEmbed()
+                        .setColor(0x737df9)
+                        .setTitle(`This is not your embed`)
+                        .setDescription(`Please request your own \`!rec\``);
+
+                    await interaction.editReply({ embeds: [embed] });
+                    return;
+                }
+
                 const method = para[1];
-                const userid = para[2];
-                let index = para[3];
-                const reclistid = para[4];
-                let currentid = para[5];
+                let index: number = +para[3]
+                const userid: number = +para[4];
+                const value = `${para[5]}_${para.length === 6 ? '' : para[6]}`;
+                const mode = para[7];
+                const type = para[8];
+
+                if (mode === undefined || mode === null) {
+                    await interaction.deferReply({
+                        ephemeral: true
+                    });
+
+                    const embed = new MessageEmbed()
+                        .setColor(0x737df9)
+                        .setTitle(`Outdated`)
+                        .setDescription(`Please request a new Recommendation with \`!rec\``);
+
+                    await interaction.editReply({ embeds: [embed] });
+                    return;
+                }
 
                 switch (method) {
-                    case "upvote": {
+                    case "like": {
 
-                        const recommendation: any = await Recommendation.findOne({ _id: currentid });
-
-                        currentid = recommendation.id;
-
-                        const row = new MessageActionRow();
-
-                        const canvas = createCanvas(1, 1);
-                        const img = await canvas.toDataURL();
-
-                        const next = new MessageButton().
-                            setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setEmoji("951821813460115527")
-                            .setStyle("PRIMARY");
-
-                        const prior = new MessageButton().
-                            setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setEmoji("951821813288140840")
-                            .setStyle("PRIMARY");
-
-                        const upvote = new MessageButton()
-                            .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setEmoji("955320158270922772")
-                            .setStyle("SUCCESS");
-
-                        const downvote = new MessageButton()
-                            .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setEmoji("955319940435574794")
-                            .setStyle("DANGER");
-
-                        const vote = new MessageButton().
-                            setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setLabel("Vote")
-                            .setStyle("PRIMARY");
-
-
-                        row.setComponents([prior, upvote, downvote, next, vote]);
-
-                        const embed = await buildUpvote(recommendation, index);
-
-                        await procyon.liked(index, currentid);
-                        await Recommendation.updateOne({ _id: currentid }, { $addToSet: { upvote: userObject.userid }, $pull: { downvote: userObject.userid } });
                         await interaction.deferReply({
                             ephemeral: true
                         });
-                        await interaction.editReply({ embeds: [embed] });
+
+                        let like: like = new RecLike();
+                        like.beatmapid = para[5];
+                        like.mode = mode;
+                        like.origin = "manual_top";
+                        like.type = "like";
+                        like.osuid = userid;
+                        like.value = value;
+
+                        const engine = procyon.liked(userid, value);
+                        const database = RecLike.updateOne({ value: value, osuid: userid }, like, { upsert: true });
+
+                        await Promise.allSettled([engine, database]);
+
+                        const rec = await procyon.recommendIndexFor(userid, index, 0);
+
+                        buildEmbed(message, rec, index, userid, discordid, mode, type);
+
+                        const upvote = new MessageEmbed()
+                            .setColor(0x737df9)
+                            .setTitle(`Successfully liked Beatmap`)
+                            .setDescription(`You have liked this beatmap.`)
+
+                        await interaction.editReply({ embeds: [upvote] });
                         return;
                         break;
 
                     }
 
-                    case "downvote": {
+                    case "dislike": {
 
-                        const recommendation: any = await Recommendation.findOne({ _id: currentid });
-
-                        currentid = recommendation.id;
-
-                        const row = new MessageActionRow();
-
-                        const next = new MessageButton().
-                            setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setEmoji("951821813460115527")
-                            .setStyle("PRIMARY");
-
-                        const prior = new MessageButton().
-                            setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setEmoji("951821813288140840")
-                            .setStyle("PRIMARY");
-
-                        const upvote = new MessageButton()
-                            .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setEmoji("955320158270922772")
-                            .setStyle("SUCCESS");
-
-                        const downvote = new MessageButton()
-                            .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setEmoji("955319940435574794")
-                            .setStyle("DANGER");
-
-                        const vote = new MessageButton().
-                            setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
-                            .setLabel("Vote")
-                            .setStyle("PRIMARY");
-
-
-                        row.setComponents([prior, upvote, downvote, next, vote]);
-
-                        const embed = await buildDownvote(recommendation, index);
-
-                        await procyon.disliked(index, currentid);
-                        await Recommendation.updateOne({ _id: currentid }, { $addToSet: { downvote: userObject.userid }, $pull: { upvote: userObject.userid } });
                         await interaction.deferReply({
                             ephemeral: true
                         });
-                        await interaction.editReply({ embeds: [embed] });
+
+                        let like: like = new RecLike();
+                        like.beatmapid = para[5];
+                        like.mode = mode;
+                        like.origin = "manual_top";
+                        like.type = "dislike";
+                        like.osuid = userid;
+                        like.value = value;
+
+                        const engine = procyon.disliked(userid, value);
+                        const database = RecLike.updateOne({ value: value, osuid: userid }, like, { upsert: true });
+
+                        await Promise.allSettled([engine, database]);
+
+                        const rec = await procyon.recommendIndexFor(userid, index, 0);
+
+                        buildEmbed(message, rec, index, userid, discordid, mode, type);
+
+                        const downvote = new MessageEmbed()
+                            .setColor(0x737df9)
+                            .setTitle(`Successfully disliked Beatmap`)
+                            .setDescription(`You have disliked this beatmap.`)
+
+                        await interaction.editReply({ embeds: [downvote] });
                         return;
 
                     }
 
                     case "next": {
 
-                        const reclist = await RecommndationList.findById({ _id: reclistid });
+                        index++;
 
-                        if (reclist != undefined) {
+                        const rec = await procyon.recommendIndexFor(userid, index, 0);
 
-                            const max = reclist.mongoids.length;
-
-                            if (index == max) {
-
-                                const canvas = createCanvas(1, 1)
-
-                                const img = await canvas.toDataURL();
-
-                                const errorEmbed = new MessageEmbed()
-                                    .setColor(0x737df9)
-                                    .setTitle(`No more recommendations`)
-                                    .setImage("attachment://recommendation.png")
-                                    .setDescription(`Quna currently has no more personal recommendations for you.\n\nUse a filter to find more maps`)
-
-                                const row = new MessageActionRow();
-
-                                const next = new MessageButton().
-                                    setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setEmoji("951821813460115527")
-                                    .setStyle("PRIMARY");
-
-                                const prior = new MessageButton().
-                                    setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setEmoji("951821813288140840")
-                                    .setStyle("PRIMARY");
-
-                                const upvote = new MessageButton()
-                                    .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setEmoji("955320158270922772")
-                                    .setStyle("SUCCESS");
-
-                                const downvote = new MessageButton()
-                                    .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setEmoji("955319940435574794")
-                                    .setStyle("DANGER");
-
-                                const vote = new MessageButton().
-                                    setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setLabel("Vote")
-                                    .setStyle("PRIMARY");
-
-
-                                row.setComponents([prior, upvote, downvote, next, vote]);
-
-                                await message.edit({ embeds: [errorEmbed], components: [row], files: [new DataImageAttachment(img, "recommendation.png")] });
-                                await interaction.deferUpdate();
-                                return;
-
-                            }
-
-                            if (index < max) {
-
-                                index++;
-
-                            }
-
-                            const recommendation: any = await Recommendation.findOne({ _id: reclist.mongoids[index] });
-                            currentid = recommendation.id;
-
-                            const row = new MessageActionRow();
-
-                            const next = new MessageButton().
-                                setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setEmoji("951821813460115527")
-                                .setStyle("PRIMARY");
-
-                            const prior = new MessageButton().
-                                setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setEmoji("951821813288140840")
-                                .setStyle("PRIMARY");
-
-                            const upvote = new MessageButton()
-                                .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setEmoji("955320158270922772")
-                                .setStyle("SUCCESS");
-
-                            const downvote = new MessageButton()
-                                .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setEmoji("955319940435574794")
-                                .setStyle("DANGER");
-
-
-                            const vote = new MessageButton().
-                                setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setLabel("Vote")
-                                .setStyle("PRIMARY");
-
-
-                            row.setComponents([prior, upvote, downvote, next, vote]);
-
-                            const result: any = await buildRecommendation(recommendation, index, max);
-
-                            await message.edit({ embeds: [result.embed], components: [row], files: [new DataImageAttachment(result.img, "recommendation.png")] });
-                            await interaction.deferUpdate();
-                            return;
-                        }
-
+                        buildEmbed(message, rec, index, userid, discordid, mode, type);
+                        await interaction.deferUpdate();
+                        return;
                         break;
 
                     }
@@ -247,110 +148,21 @@ export default (client: Client) => {
 
                     case "prior": {
 
-                        const reclist: any = await RecommndationList.findById({ _id: reclistid });
-
-                        const max = reclist.mongoids.length;
-
-                        if (reclist != undefined) {
-
-                            if (index == 0) {
-
-                                const recommendation: any = await Recommendation.findOne({ _id: reclist.mongoids[index] });
-
-                                const row = new MessageActionRow();
-
-                                const next = new MessageButton().
-                                    setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setEmoji("951821813460115527")
-                                    .setStyle("PRIMARY");
-
-                                const prior = new MessageButton().
-                                    setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setEmoji("951821813288140840")
-                                    .setStyle("PRIMARY");
-
-                                const upvote = new MessageButton()
-                                    .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setEmoji("955320158270922772")
-                                    .setStyle("SUCCESS");
-
-                                const downvote = new MessageButton()
-                                    .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setEmoji("955319940435574794")
-                                    .setStyle("DANGER");
-
-                                const vote = new MessageButton().
-                                    setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
-                                    .setLabel("Vote")
-                                    .setStyle("PRIMARY");
-
-
-                                row.setComponents([prior, upvote, downvote, next, vote]);
-
-                                const result: any = await buildRecommendation(recommendation, index, max);
-
-                                await message.edit({ embeds: [result.embed], components: [row], files: [new DataImageAttachment(result.img, "recommendation.png")] });
-                                await interaction.deferUpdate();
-                                return;
-                            }
-
-                            if (index > 0) {
-
-                                index--;
-
-                            }
-
-                            const recommendation: any = await Recommendation.findOne({ _id: reclist.mongoids[index] });
-                            currentid = recommendation.id;
-
-                            const row = new MessageActionRow();
-
-                            const next = new MessageButton().
-                                setCustomId(`recommendation_next_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setEmoji("951821813460115527")
-                                .setStyle("PRIMARY");
-
-                            const prior = new MessageButton().
-                                setCustomId(`recommendation_prior_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setEmoji("951821813288140840")
-                                .setStyle("PRIMARY");
-
-                            const upvote = new MessageButton()
-                                .setCustomId(`recommendation_upvote_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setEmoji("955320158270922772")
-                                .setStyle("SUCCESS");
-
-                            const downvote = new MessageButton()
-                                .setCustomId(`recommendation_downvote_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setEmoji("955319940435574794")
-                                .setStyle("DANGER");
-
-                            const vote = new MessageButton().
-                                setCustomId(`recommendation_vote_${userid}_${index}_${reclistid}_${currentid}`)
-                                .setLabel("Vote")
-                                .setStyle("PRIMARY");
-
-
-                            row.setComponents([prior, upvote, downvote, next, vote]);
-
-                            const result: any = await buildRecommendation(recommendation, index, max);
-
-                            await message.edit({ embeds: [result.embed], components: [row], files: [new DataImageAttachment(result.img, "recommendation.png")] });
-                            await interaction.deferUpdate();
-                            return;
-
+                        if (index > 0) {
+                            index--;
                         }
+
+                        const rec = await procyon.recommendIndexFor(userid, index, 0);
+
+                        buildEmbed(message, rec, index, userid, discordid, mode, type);
+                        await interaction.deferUpdate();
+                        return;
+
 
                         break;
 
                     }
 
-                    case "vote": {
-
-                        const message = await categoryvote(currentid, userid, interaction)
-
-
-                    }
                 }
 
             }
@@ -358,4 +170,56 @@ export default (client: Client) => {
         }
 
     })
+}
+
+async function buildEmbed(message: any, recommendations: any, index: number, userid: any, discordid: any, mode: any, type: any) {
+
+    if (recommendations.length == 0) {
+        const errorEmbed = new MessageEmbed()
+            .setColor(0x737df9)
+            .setTitle(`No recommendations`)
+            .setDescription(`Quna currently has no personal recommendations for you.\nUse a filter to find normal maps`)
+        await message.edit({ embeds: [errorEmbed] })
+    }
+
+    const rec = recommendations[0];
+    const rec_split = rec.split("_");
+    const beatmapid = rec_split[0];
+    const options = rec_split[1];
+    let mods: string = "";
+
+    if (options == "set") {
+        return;
+    } else {
+        mods = options;
+    }
+
+    const data = await getBeatmap(beatmapid)
+    const { embed, result } = await buildMapEmbedNoResponse(options, data);
+
+    const row = new MessageActionRow();
+
+    const next = new MessageButton().
+        setCustomId(`recommendation_next_${discordid}_${index}_${userid}_${rec}_${mode}_${type}`)
+        .setEmoji("951821813460115527")
+        .setStyle("PRIMARY");
+
+    const prior = new MessageButton().
+        setCustomId(`recommendation_prior_${discordid}_${index}_${userid}_${rec}_${mode}_${type}`)
+        .setEmoji("951821813288140840")
+        .setStyle("PRIMARY");
+
+    const upvote = new MessageButton()
+        .setCustomId(`recommendation_like_${discordid}_${index}_${userid}_${rec}_${mode}_${type}`)
+        .setEmoji("955320158270922772")
+        .setStyle("SUCCESS");
+
+    const downvote = new MessageButton()
+        .setCustomId(`recommendation_dislike_${discordid}_${index}_${userid}_${rec}_${mode}_${type}`)
+        .setEmoji("955319940435574794")
+        .setStyle("DANGER");
+
+    row.addComponents([prior, upvote, downvote, next]);
+
+    await message.edit({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
 }

@@ -1,7 +1,9 @@
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
 import { ICommand } from "wokcommands";
+import { buildMapEmbed, buildMapEmbedNoResponse } from "../../../../../embeds/osu/beatmap/beatmap";
 import { noRecs, queryError } from "../../../../../embeds/osu/recommend/recommend/error";
 import { checkIfUserExists } from "../../../../../embeds/utility/nouserfound";
+import { QunaUser } from "../../../../../interfaces/QunaUser";
 import LastRec from "../../../../../models/LastRec";
 import { LastRecObject } from "../../../../../models/LastRecObject";
 import Recommendation from "../../../../../models/Recommendation";
@@ -12,6 +14,8 @@ import { encrypt } from "../../../../../utility/encrypt";
 import { getDifficultyColor } from "../../../../../utility/gradiant";
 import { categoriechart } from "../../../../chart.js/recommend/categories";
 import { updownvote } from "../../../../chart.js/recommend/upvotes";
+import { getBeatmap } from "../../../../osu/beatmap";
+import { parseModString } from "../../../../osu/utility/parsemods";
 import { buildRecList, buildRecommendByPrycon, buildRecommendByQuery, buildRecommendsBasedOnPriorLikes } from "../../../../recommend/recommend/recommend";
 import { filterRecommends, suggestion_filter } from "../../../../recommend/showsuggestions/filter";
 import { buildSearch, buildSearchForRequest } from "../../../../utility/buildsearch";
@@ -23,168 +27,76 @@ const { createCanvas, loadImage } = require('canvas')
 
 export async function bulldrecommends(message: any, args: any, prefix: any) {
 
+    let type = "top";
+    let mode = "osu";
+
     message.channel.sendTyping();
 
-    const procyon: any = new Procyon({
-        className: 'maps'
-    });
+    const top_osu = new Procyon({
+        className: 'osu_top'
+    })
 
-    const userObject: any = await User.findOne({ discordid: await encrypt(message.author.id) });
-    const typeObject: any = await Type.find();
-    const userid: any = userObject.userid;
-    let mods: any = [];
-    let categoriestring = "";
-    const typeArray: any = [];
-    let recommendations: any;
-    const index = 0;
-    let max_index = 0;
-    let recList: any;
+    const userObject: QunaUser | null = await User.findOne({ discordid: await encrypt(message.author.id) });
 
-    for (const type of typeObject) {
-        typeArray.push(type.name);
-    }
-
-    if (checkIfUserExists(userObject, message)) {
+    if (checkIfUserExists(userObject, message) || userObject == null) {
         return;
     }
 
+    const userid: number = +userObject.userid;
+    let recommendations: string[] = [];
+    let max_index = 0;
+    let index = 0;
 
-    if (!args[0]) {
+    recommendations = await top_osu.recommendFor(userid, 1);
 
-        recommendations = await procyon.recommendFor(userid, 5);
+    // console.log(await top_osu.mostLiked());
 
-        if (recommendations == undefined || recommendations.length == 0) {
-            recommendations = await buildRecommendsBasedOnPriorLikes(userid);
-            recList = await buildRecList(recommendations, userid);
-        } else {
-            recommendations = await buildRecommendByPrycon(recommendations);
-            recList = await buildRecList(recommendations, userid);
-        }
-
-        if (recommendations == null) {
-            noRecs(message);
-            return;
-        }
-
-    } else {
-
-        recommendations = await buildRecommendByQuery(message, args);
-        recList = await buildRecList(recommendations, userid);
-
-    }
-
-
-    max_index = recommendations.length;
-    const recommendation = recommendations.slice(index, 1)[0];
-
-    if (recommendation == null) {
+    if (recommendations.length == 0) {
         noRecs(message);
         return;
     }
 
-    const embedColor = getDifficultyColor(recommendation.star);
+    max_index = recommendations.length;
+    const rec = recommendations[0];
+    const rec_split = rec.split("_");
+    const beatmapid = rec_split[0];
+    const options = rec_split[1];
+    let mods: string = "";
 
-    if (recommendation.mods != undefined)
-        mods = recommendation.mods;
-    let bpm = recommendation.bpm;
-
-    let mapLength = recommendation.length // map length
-    let mapDrain = recommendation.drain // drain time
-
-    if (mods.includes("DT") || mods.includes("NC")) {
-        bpm = bpm * 1.5;
-        mapLength = mapLength / 1.5
-        mapDrain = mapDrain / 1.5
+    if (options == "set") {
+        return;
+    } else {
+        mods = options;
     }
 
-    const min = Math.floor(mapLength / 60)
-    const sec = Math.floor(mapLength - min * 60)
-    let strSec = sec.toFixed(0).toString()
-
-    if (sec < 10) { strSec = "0" + sec }
-
-    const dmin = Math.floor(mapDrain / 60)
-    const dsec = Math.floor(mapDrain - dmin * 60)
-    let strDSec = sec.toFixed(0).toString()
-
-    if (dsec < 10) { strDSec = "0" + dsec }
-
-    let mString = "";
-
-    for (const m of mods) {
-        mString += `\`${m}\` `;
-    }
-
-    if (mString == "") {
-        mString = `\`NM\``;
-    }
-
-    for (const t of recommendation.type) {
-        categoriestring += `\`${t.category}\` `;
-    }
-
-    const upvotedownvoteChart = await updownvote(recommendation);
-    const typesChart = await categoriechart(recommendation);
-
-    const canvas = createCanvas(300, 150)
-    const ctx = canvas.getContext('2d')
-
-    const upvoteDownvote = await loadImage(upvotedownvoteChart);
-    const types = await loadImage(typesChart);
-
-    ctx.drawImage(upvoteDownvote, 0, 0); // Or at whatever offset you like
-    ctx.drawImage(types, canvas.width - types.width, 0);
-
-    const canvasBase = canvas.toDataURL();
+    const data = await getBeatmap(beatmapid)
+    const { embed, result } = await buildMapEmbedNoResponse(options, data);
 
     const row = new MessageActionRow();
 
     const next = new MessageButton().
-        setCustomId(`recommendation_next_${userid}_${index}_${recList.id}_${recommendation.id}`)
+        setCustomId(`recommendation_next_${message.author.id}_${index}_${userid}_${rec}_${mode}_${type}`)
         .setEmoji("951821813460115527")
         .setStyle("PRIMARY");
 
     const prior = new MessageButton().
-        setCustomId(`recommendation_prior_${userid}_${index}_${recList.id}_${recommendation.id}`)
+        setCustomId(`recommendation_prior_${message.author.id}_${index}_${userid}_${rec}_${mode}_${type}`)
         .setEmoji("951821813288140840")
         .setStyle("PRIMARY");
 
     const upvote = new MessageButton()
-        .setCustomId(`recommendation_upvote_${userid}_${index}_${recList.id}_${recommendation.id}`)
+        .setCustomId(`recommendation_like_${message.author.id}_${index}_${userid}_${rec}_${mode}_${type}`)
         .setEmoji("955320158270922772")
         .setStyle("SUCCESS");
 
     const downvote = new MessageButton()
-        .setCustomId(`recommendation_downvote_${userid}_${index}_${recList.id}_${recommendation.id}`)
+        .setCustomId(`recommendation_dislike_${message.author.id}_${index}_${userid}_${rec}_${mode}_${type}`)
         .setEmoji("955319940435574794")
         .setStyle("DANGER");
 
-    const vote = new MessageButton().
-    setCustomId(`recommendation_vote_${userid}_${index}_${recList.id}_${recommendation.id}`)
-    .setLabel("Vote")
-    .setStyle("PRIMARY");
+    row.addComponents([prior, upvote, downvote, next]);
 
-
-    row.setComponents([prior, upvote, downvote, next, vote]);
-
-    const recommendationembed = new MessageEmbed()
-        .setAuthor({ name: `Personal beatmap recommendation (${index + 1}/${max_index})` })
-        .setColor(embedColor)
-        .setTitle(`${recommendation.artist} - ${recommendation.title} [${recommendation.version}]`)
-        .setImage("attachment://recommendation.png")
-        .setDescription(`Length: \`${min}:${strSec}\` (\`${dmin}:${strDSec}\`) BPM: \`${bpm}\` Objects: \`${recommendation.circles + recommendation.sliders + recommendation.spinners}\`\n` +
-            `CS:\`${recommendation.cs}\` AR:\`${recommendation.ar}\` OD:\`${recommendation.od}\` HP:\`${recommendation.hp}\` Stars: \`${recommendation.star}★\``)
-        .setFields([{
-            name: `Mods`,
-            value: mString,
-            inline: false
-        }, {
-            name: `Categories`,
-            value: categoriestring,
-            inline: false,
-        }])
-        .setURL(`https://osu.ppy.sh/beatmaps/${recommendation.mapid}`)
-
-    await message.reply({ embeds: [recommendationembed], components: [row], files: [new DataImageAttachment(canvasBase, "recommendation.png")] });
+    await message.reply({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
+    return;
 
 }
