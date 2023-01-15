@@ -4,21 +4,12 @@ import { buildMapEmbed, buildMapEmbedNoResponse } from "../../../../../embeds/os
 import { noRecs, queryError } from "../../../../../embeds/osu/recommend/recommend/error";
 import { checkIfUserExists } from "../../../../../embeds/utility/nouserfound";
 import { QunaUser } from "../../../../../interfaces/QunaUser";
-import LastRec from "../../../../../models/LastRec";
-import { LastRecObject } from "../../../../../models/LastRecObject";
-import Recommendation from "../../../../../models/Recommendation";
-import RecommndationList from "../../../../../models/RecommndationList";
-import Type from "../../../../../models/Type";
 import User from "../../../../../models/User";
+import UserHash from "../../../../../models/UserHash";
 import { encrypt } from "../../../../../utility/encrypt";
-import { getDifficultyColor } from "../../../../../utility/gradiant";
-import { categoriechart } from "../../../../chart.js/recommend/categories";
-import { updownvote } from "../../../../chart.js/recommend/upvotes";
 import { getBeatmap } from "../../../../osu/beatmap";
-import { parseModString } from "../../../../osu/utility/parsemods";
-import { buildRecList, buildRecommendByPrycon, buildRecommendByQuery, buildRecommendsBasedOnPriorLikes } from "../../../../recommend/recommend/recommend";
-import { filterRecommends, suggestion_filter } from "../../../../recommend/showsuggestions/filter";
-import { buildSearch, buildSearchForRequest } from "../../../../utility/buildsearch";
+import { getTopForUser } from "../../../../osu/top";
+const hash = require("hash-sum")
 
 const DataImageAttachment = require("dataimageattachment");
 const { ObjectId } = require('mongodb');
@@ -37,6 +28,14 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
     })
 
     const userObject: QunaUser | null = await User.findOne({ discordid: await encrypt(message.author.id) });
+    const userHash: any = await UserHash.find({ osuid: userObject?.userid });
+    const top: any = await getTopForUser(userObject?.userid);
+
+    const topHash = hash(JSON.stringify(top));
+
+    if (userHash.topHash === topHash) {
+
+    }
 
     if (checkIfUserExists(userObject, message) || userObject == null) {
         return;

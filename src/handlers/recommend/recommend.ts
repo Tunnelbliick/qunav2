@@ -186,13 +186,6 @@ async function buildEmbed(message: any, recommendations: any, index: number, use
     const rec_split = rec.split("_");
     const beatmapid = rec_split[0];
     const options = rec_split[1];
-    let mods: string = "";
-
-    if (options == "set") {
-        return;
-    } else {
-        mods = options;
-    }
 
     const data = await getBeatmap(beatmapid)
     const { embed, result } = await buildMapEmbedNoResponse(options, data);

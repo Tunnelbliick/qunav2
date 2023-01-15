@@ -43,16 +43,13 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
     let map_stats: any;
     let ppString: string;
     let background: any;
-    let chartURL: any;
 
     const statsPromise = loadMapPP(data, modArray, data.mode);
     const backgroundPromise = loadImage(data.beatmapset.covers.cover);
-    const chartPromise = generateBeatmapChart(graph);
 
-    await Promise.allSettled([statsPromise, backgroundPromise, chartPromise]).then((result: any) => {
+    await Promise.allSettled([statsPromise, backgroundPromise]).then((result: any) => {
         map_stats = result[0].value;
         background = result[1].value;
-        chartURL = result[2].value;
     });
 
     if (map_stats != undefined) {
@@ -68,6 +65,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
         ppString = "Could not load PP values";
     }
 
+    const chartURL = await generateBeatmapChart(graph);
     const chart = await loadImage(chartURL);
 
     const canvas = new Canvas(background.width, background.height);

@@ -6,6 +6,7 @@ import { checkIfUserIsLInked, noUserFound } from "../../../../embeds/utility/nou
 import User from "../../../../models/User";
 import { encrypt } from "../../../../utility/encrypt";
 import { getScoresForBeatMap, getScoresForUsernameForBeatMap } from "../../../osu/score";
+import { checkForBeatmap } from "../../../utility/checkForBeatmap";
 
 export async function compare(message: any, interaction: any, args: any) {
 
@@ -16,13 +17,6 @@ export async function compare(message: any, interaction: any, args: any) {
     let user: any;
     let first = true;
     let tag;
-
-    if (message && message.reference != null) {
-        const reference_id: any = message.reference?.messageId;
-        const reference_message = await message.channel.messages.fetch(reference_id);
-        const embed = reference_message.embeds[0];
-        url = embed.url;
-    }
 
     if (message) {
         userid = message.author.id
@@ -52,7 +46,6 @@ export async function compare(message: any, interaction: any, args: any) {
 
         const options = interaction.options;
 
-        url = options.getString("map") === null ? "" : options.getString("map")!;
         userid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")?.toString()!;
         username = options.getString("username") === null ? "" : options.getString("username")!;
 
@@ -62,47 +55,10 @@ export async function compare(message: any, interaction: any, args: any) {
 
     }
 
-    // If no beatmap is in String
-    if (url == "") {
+    const beatmapCheck = await checkForBeatmap(message, interaction, args);
 
-        let channel = undefined;
+    id = beatmapCheck?.id;
 
-        if (interaction) {
-            channel = interaction.channel;
-        } else {
-            channel = message.channel;
-        }
-
-        await channel.messages.fetch({ limit: 50 }).then((messages: any) => {
-            messages.forEach((mes: any) => {
-                if (url != "") {
-                    return;
-                }
-                for (const embed of mes.embeds) {
-                    if (embed.url != null && embed.url?.includes("//osu.ppy.sh/beatmap")) {
-                        url = embed.url;
-                    }
-                    if (url != "") {
-                        break;
-                    }
-                }
-
-            });
-        })
-    }
-
-    if (url.includes("//osu.ppy.sh/beatmapsets/")) {
-        const split = url.split("beatmapsets/")[1];
-        const para = split.split("/");
-
-        if (para.length == 2) {
-            id = sanitize(para[1]);
-        }
-    }
-    if (url.includes("//osu.ppy.sh/beatmaps/")) {
-        const split = url.split("beatmaps/")[1];
-        id = sanitize(split);
-    }
     if (!id) {
         fetchBeatmapError(message);
         return;
