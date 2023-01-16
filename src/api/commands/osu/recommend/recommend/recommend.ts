@@ -192,7 +192,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
     row.addComponents([prior, upvote, downvote, next]);
 
     if (reply) {
-        await message.editReply({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] });
+        await reply.edit({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] });
     } else {
         await message.reply({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
     }

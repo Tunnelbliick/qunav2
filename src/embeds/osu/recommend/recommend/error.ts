@@ -8,14 +8,17 @@ export function queryError(message: any, error: any) {
     message.reply({ embeds: [errorEmbed] });
 }
 
-export function noRecs(message: any) {
+export function noRecs(message: any, reply?: any) {
 
     const errorEmbed = new MessageEmbed()
         .setColor(0x737df9)
         .setTitle(`No recommendations`)
         .setDescription(`Quna currently has no personal recommendations for you.`)
 
-    message.reply({ embeds: [errorEmbed] });
-
+    if (reply) {
+        reply.edit({ embeds: [errorEmbed] });
+    } else {
+        message.reply({ embeds: [errorEmbed] });
+    }
 
 }
