@@ -136,6 +136,10 @@ export default (client: Client) => {
 
                         index++;
 
+                        if(index > 30) {
+                            index = 0;
+                        }
+
                         const rec = await procyon.recommendIndexFor(userid, index, 0);
 
                         buildEmbed(message, rec, index, userid, discordid, mode, type);
@@ -150,6 +154,8 @@ export default (client: Client) => {
 
                         if (index > 0) {
                             index--;
+                        } else {
+                            index = 30;
                         }
 
                         const rec = await procyon.recommendIndexFor(userid, index, 0);

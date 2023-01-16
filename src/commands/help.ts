@@ -193,14 +193,10 @@ function buildGlobalHelp(prefix: string) {
                 "`cwc`: Look at catch world cup results\n" +
                 "`wcc`: Compare world cup results between countries (medal count)"
         },
-        /*  Commented out cause this is broke until i fix it!
         {
             name: `**__osu! recommend__**`,
-            value: "`suggest`: Suggest a beatmap to Quna for its Suggestion engine engine\n" +
-                "`showsuggestions`: Shows the Suggestions a user has given / liked\n" +
-                "`recommend`: Request a beatmap recommendation from Quna\n"
+            value: "`recommend`: Request a beatmap recommendation from Quna\n"
         }, 
-        */
         {
             name: `**__osu! farm__**`,
             value: "`timezone`: Change the users local timezone\n" +
