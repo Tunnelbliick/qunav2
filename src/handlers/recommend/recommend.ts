@@ -136,7 +136,7 @@ export default (client: Client) => {
 
                         index++;
 
-                        if(index > 30) {
+                        if (index > 29) {
                             index = 0;
                         }
 
@@ -152,10 +152,10 @@ export default (client: Client) => {
 
                     case "prior": {
 
-                        if (index > 0) {
-                            index--;
-                        } else {
-                            index = 30;
+                        index--;
+                        
+                        if (index < 0) {
+                            index = 29;
                         }
 
                         const rec = await procyon.recommendIndexFor(userid, index, 0);
