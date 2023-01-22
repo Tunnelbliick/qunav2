@@ -50,7 +50,7 @@ export async function checkForBeatmap(message: any, interaction: any, args: any)
                 }
 
                 for (const embed of mes.embeds) {
-                    if (embed.url != null && (embed.url?.includes("beatmapsets") || embed.url?.includes("beatmaps") || embed.url?.includes("b") || embed.url?.includes("s"))) {
+                    if (embed.url != null && (embed.url?.includes("//osu.ppy.sh/beatmapsets/") || embed.url?.includes("//osu.ppy.sh/beatmapsets/") || embed.url?.includes("//osu.ppy.sh/b/") || embed.url?.includes("//osu.ppy.sh/s/"))) {
                         url = embed.url;
                     }
                     if (url != "") {
