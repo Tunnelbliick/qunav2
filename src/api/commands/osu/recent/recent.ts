@@ -35,7 +35,7 @@ export async function recent(message: any, interaction: any, args: any, mode: an
         result = await getRecentPlaysForUser(`${userObject.userid}`, filter, filter.mode);
     }
 
-    if(result !== undefined && result.beatmap !== undefined && ["loved","ranked","qualified"].includes(result.beatmap.status) === false && result.recentplay.rank !== "F") {
+    if(result !== undefined && result.beatmap !== undefined && ["loved","ranked","qualified","Approved"].includes(result.beatmap.status) === false && result.recentplay.rank !== "F") {
 
         const max_pp = result.acc100.pp[100];
         stored = true;
