@@ -24,7 +24,7 @@ export async function checkForBeatmap(message: any, interaction: any, args: any)
     } else {
 
         for (const arg of args) {
-            if (arg.includes("//osu.ppy.sh/beatmapsets/") || arg.includes("//osu.ppy.sh/beatmaps/") || arg.includes("//osu.ppy.sh/b/") || arg.includes("//osu.ppy.sh/s/") || isNaN(arg) === false) {
+            if (arg.includes("osu.ppy.sh/beatmapsets/") || arg.includes("osu.ppy.sh/beatmaps/") || arg.includes("osu.ppy.sh/b/") || arg.includes("osu.ppy.sh/s/") || isNaN(arg) === false) {
                 url = arg;
                 id = arg;
             } else {
@@ -50,7 +50,7 @@ export async function checkForBeatmap(message: any, interaction: any, args: any)
                 }
 
                 for (const embed of mes.embeds) {
-                    if (embed.url != null && (embed.url?.includes("//osu.ppy.sh/beatmapsets/") || embed.url?.includes("//osu.ppy.sh/beatmapsets/") || embed.url?.includes("//osu.ppy.sh/b/") || embed.url?.includes("//osu.ppy.sh/s/"))) {
+                    if (embed.url != null && (embed.url?.includes("osu.ppy.sh/beatmapsets/") || embed.url?.includes("osu.ppy.sh/beatmaps/") || embed.url?.includes("osu.ppy.sh/b/") || embed.url?.includes("osu.ppy.sh/s/"))) {
                         url = embed.url;
                     }
                     if (url != "") {
