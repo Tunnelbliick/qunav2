@@ -121,5 +121,17 @@ function getMostFrequent(arr: Array<any>) {
         acc[string_val] = (acc[string_val] || 0) + 1
         return acc
     }, {})
-    return Object.keys(hashmap).reduce((a, b) => hashmap[a] > hashmap[b] ? a : b)
+
+    let result = undefined;
+
+    try {
+        result = Object.keys(hashmap).reduce((a, b) => hashmap[a] > hashmap[b] ? a : b)
+    } catch (error: any) {
+        console.log("There was an error passing the mods for title\n");
+        arr.forEach((val => {
+            console.log(`${val.score.mods}\n`);
+        }))
+    }
+
+    return result;
 }
