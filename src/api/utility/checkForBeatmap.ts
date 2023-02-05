@@ -83,7 +83,7 @@ export async function checkForBeatmap(message: any, interaction: any, args: any)
         isSet = false;
     }
 
-    return { id, setid, isSet };
+    return { id, setid, isSet, mods };
 }
 
 function sanitize(inp: string): string {

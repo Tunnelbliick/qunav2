@@ -7,7 +7,6 @@ import { checkForBeatmap } from "../../../utility/checkForBeatmap";
 export async function beatmap(message: any, interaction: any, args: any) {
 
     let url = "";
-    let mods = "";
 
     if (message && message.reference != null) {
         const reference_id: any = message.reference?.messageId;
@@ -26,7 +25,7 @@ export async function beatmap(message: any, interaction: any, args: any) {
     const data = await getBeatmap(result.id)
 
     try {
-        buildMapEmbed(data, message, interaction, mods);
+        buildMapEmbed(data, message, interaction, result.mods);
     } catch (err) {
         buildErrEmbed(err, message);
         return;
