@@ -23,6 +23,7 @@ export function builFilter(message: any, args: any, default_mode: any) {
 
         if (arg.startsWith("<@")) {
             discordid = args[0].replace("<@", "").replace(">", "");
+            continue;
         }
         else if (arg == "-g" || arg == "-gamemode" || arg == "g" || arg == "gamemode" || arg == "mode" || arg == "-mode") {
             mode = "gamemode";
