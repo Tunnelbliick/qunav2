@@ -128,6 +128,8 @@ function getMostFrequent(arr: Array<any>) {
         result = Object.keys(hashmap).reduce((a, b) => hashmap[a] > hashmap[b] ? a : b)
     } catch (error: any) {
         console.log("There was an error passing the mods for title\n");
+        console.log(error);
+        console.log(hashmap);
         arr.forEach((val => {
             console.log(`${val.score.mods}\n`);
         }))
