@@ -53,7 +53,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         return `${play.beatmap.id}_${play.mods.join("")}`
     })
 
-    if ((userHash !== null || userHash !== undefined) && userHash.updating) {
+    if (userHash !== null && userHash !== undefined && userHash.updating) {
         const errorEmbed = new MessageEmbed()
             .setColor(0x737df9)
             .setTitle(`Recalculating`)
@@ -65,7 +65,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
 
     const topHash = hash(JSON.stringify(top100Values));
 
-    if (userHash.topHash !== topHash || userHash.topHash === undefined || userHash.topHash === null) {
+    if (userHash === null || userHash.topHash !== topHash || userHash.topHash === undefined || userHash.topHash === null) {
 
         const errorEmbed = new MessageEmbed()
             .setColor(0x737df9)
