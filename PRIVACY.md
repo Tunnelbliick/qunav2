@@ -1,6 +1,6 @@
 # Privacy Policy
 
-The use of this application ("Bot") in a server requires the collection of some specific user data ("Data"). The Data collected includes, but is not limited to Discord user ID values. Use of the Bot is considered an agreement to the terms of this Policy. 
+The use of this application ("Bot") in a server requires the collection of some specific user data ("Data"). The Data collected includes, but is not limited to Discord user ID values aswell as osu! account ids. Use of the Bot is considered an agreement to the terms of this Policy. 
 
 ## Access to Data
 
