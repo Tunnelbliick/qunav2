@@ -68,6 +68,28 @@ const mods = [
     ['Mirror', 'MR'],
 ]
 
+const modsFullRestricted = [
+    ['None', 'NM'],
+    ['Easy', 'EZ'],
+    ['HardRock', 'HR'],
+    ['Hidden', 'HD'],
+    ['DoubleTime', 'DT'],
+    ['HalfTime', 'HT'],
+    ['Flashlight', 'FL'],
+    ['Key4', '4K'],
+    ['Key5', '5K'],
+    ['Key6', '6K'],
+    ['Key7', '7K'],
+    ['Key8', '8K'],
+    ['Key9', '9K'],
+    ['Key1', '1K'],
+    ['Key3', '3K'],
+    ['Key2', '2K'],
+    ['Mirror', 'MR'],
+]
+
+const mods_restricted = ['NM', 'EZ', 'HR', 'HD', 'DT', 'HT', 'FL']
+
 
 export function parseModString(input: string | null) {
 
@@ -102,26 +124,48 @@ export function parseModString(input: string | null) {
     return parsedMods;
 }
 
+export function parseModRestricted(input: string[] | null) {
+
+    let return_mods: string[] = [];
+
+    if (input == null) {
+        return [];
+    }
+
+    mods_restricted.forEach((mod) => {
+        input.forEach((i) => {
+            if (i == 'NC') {
+                i = 'DT'
+            }
+            if (mod == i) {
+                return_mods.push(mod);
+            }
+        });
+    });
+
+    return return_mods;
+}
+
 export function arraytoBinary(mods?: Array<any>) {
     let val = 0;
 
     if (mods != undefined)
-    for (const mod of mods) {
-        for (const [key, values] of Object.entries(binaries))
-            for (const arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
+        for (const mod of mods) {
+            for (const [key, values] of Object.entries(binaries))
+                for (const arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
 
-                if(mod.trim().toLowerCase() == "td") {
-                    continue;
-                }
+                    if (mod.trim().toLowerCase() == "td") {
+                        continue;
+                    }
 
-                if(mod.trim().toLowerCase() == "nc") {
-                    val += 64;
-                } else if(mod.trim().toLowerCase() == "pf") {
-                    val += 16384;
+                    if (mod.trim().toLowerCase() == "nc") {
+                        val += 64;
+                    } else if (mod.trim().toLowerCase() == "pf") {
+                        val += 16384;
+                    }
+                    val += parseInt(key);
                 }
-                val += parseInt(key);
-            }
-    }
+        }
     return val;
 }
 
@@ -129,34 +173,34 @@ export function arraytoBinaryFix(mods?: Array<any>) {
     let val = 0;
 
     if (mods != undefined)
-    for (const mod of mods) {
-        for (const [key, values] of Object.entries(binaries))
-            for (const arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
+        for (const mod of mods) {
+            for (const [key, values] of Object.entries(binaries))
+                for (const arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
 
-                switch(mod.trim().toLowerCase()) {
-                    case "nm":
-                        val += 0;
-                        break;
-                    case "ez":
-                        val += 2;
-                        break;
-                    case "hd":
-                        val += 8;
-                        break;
-                    case "hr":
-                        val += 16;
-                        break;
-                    case "dt":
-                        val += 64;
-                        break;
-                    case "nc":
-                        val += 64;
-                        break;
-                    case "ht":
-                        val += 256;
+                    switch (mod.trim().toLowerCase()) {
+                        case "nm":
+                            val += 0;
+                            break;
+                        case "ez":
+                            val += 2;
+                            break;
+                        case "hd":
+                            val += 8;
+                            break;
+                        case "hr":
+                            val += 16;
+                            break;
+                        case "dt":
+                            val += 64;
+                            break;
+                        case "nc":
+                            val += 64;
+                            break;
+                        case "ht":
+                            val += 256;
+                    }
                 }
-            }
-    }
+        }
     return val;
 }
 

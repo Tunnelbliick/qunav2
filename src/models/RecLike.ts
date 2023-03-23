@@ -8,6 +8,7 @@ const likeSchema = new mongoose.Schema({
     mode: String,
     value: String,
     type: String,
+    vote: String,
 });
 
 export default mongoose.model<like>("like", likeSchema);

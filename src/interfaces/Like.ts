@@ -4,5 +4,6 @@ export interface like {
     origin: string,
     mode: string,
     value: string,
-    type: string
+    type: string,
+    vote: string
 }

@@ -10,12 +10,41 @@ import UserHash from "../../../../../models/UserHash";
 import { encrypt } from "../../../../../utility/encrypt";
 import { getBeatmap } from "../../../../osu/beatmap";
 import { getTopForUser } from "../../../../osu/top";
+import { parseModRestricted, parseModString } from "../../../../osu/utility/parsemods";
 const hash = require("hash-sum")
 
 const DataImageAttachment = require("dataimageattachment");
 const { ObjectId } = require('mongodb');
 const Procyon = require('procyon')
 const { createCanvas, loadImage } = require('canvas')
+
+export async function fixrecommends() {
+
+    console.log('Started fixing recommends');
+
+    const expliciteLikes = await RecLike.find({});
+    let index = 0;
+    for (let like of expliciteLikes) {
+        index++;
+
+        if (index % 10000 == 0) {
+            console.log(`${index}/${expliciteLikes.length}`);
+        }
+
+        let value_arr = like.value.split("_");
+
+        if(value_arr.length > 1) {
+            let mods = parseModString(value_arr[1]);
+            let fixed_mods = parseModRestricted(mods);
+            like.value = `${like.beatmapid}_${fixed_mods.join("")}`;
+        }
+
+        like.vote = like.type;
+
+        await like.save();
+    }
+
+}
 
 export async function bulldrecommends(message: any, args: any, prefix: any) {
 

@@ -76,6 +76,7 @@ export default (client: Client) => {
                         like.mode = mode;
                         like.origin = "manual_top";
                         like.type = "like";
+                        like.vote = "like";
                         like.osuid = userid;
                         like.value = value;
 
@@ -110,6 +111,7 @@ export default (client: Client) => {
                         like.mode = mode;
                         like.origin = "manual_top";
                         like.type = "dislike";
+                        like.vote = "dislike";
                         like.osuid = userid;
                         like.value = value;
 
