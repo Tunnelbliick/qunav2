@@ -185,7 +185,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
 
     const beatmap = await getBeatmap(rec[0].mapid);
     const value = `${rec[0].mapid}_${rec[0].mods.join("")}`
-    const { embed, result } = await buildMapEmbedRecommendation(rec[0], beatmap, index, max_index);
+    const { embed, result } = await buildMapEmbedRecommendation(rec[0], beatmap, index, +recInfo.length);
 
     const row = new MessageActionRow();
 
