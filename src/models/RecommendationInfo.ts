@@ -6,7 +6,7 @@ const RecommendationInfoSchema = new mongoose.Schema<RecommendationInfo>({
     osuid: Number,
     currentIndex: Number,
     length: Number,
-    expiration: Date
+    createdAt: Date
 });
 
 export default mongoose.model<RecommendationInfo>("recommendationInfo", RecommendationInfoSchema);

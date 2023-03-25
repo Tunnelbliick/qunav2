@@ -151,21 +151,17 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         recInfo = new RecommendationInfo();
         recInfo.osuid = userid;
         recInfo.currentIndex = 0;
-        let expiration = new Date();
-        expiration.setHours(now.getHours() + 1);
-        recInfo.expiration = expiration;
+        recInfo.createdAt = now;
         recInfo.length = max_index;
 
         await recInfo.save();
         await saveRecommends();
     } else {
 
-        if (now.getTime() >= recInfo.expiration!.getTime()) {
+        if (isAfterLastFullHalfHour(recInfo.createdAt)) {
 
             recInfo.currentIndex = 0;
-            let expiration = new Date();
-            expiration.setHours(now.getHours() + 1);
-            recInfo.expiration = expiration;
+            recInfo.createdAt = now;
             recInfo.length = max_index;
 
             await recInfo.save();
@@ -285,3 +281,16 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
     }
 }
 
+function isAfterLastFullHalfHour(checkTime: Date): boolean {
+
+    const currentTime = new Date();
+
+    // Get the minutes of the current time
+    const currentMinutes = currentTime.getMinutes();
+  
+    // Calculate the last full half-hour of the current time
+    const lastFullHalfHour = currentMinutes >= 30 ? currentTime.setMinutes(30) : currentTime.setMinutes(0);
+  
+    // Compare the checkTime with the last full half-hour
+    return checkTime.getTime() > lastFullHalfHour;
+  }
