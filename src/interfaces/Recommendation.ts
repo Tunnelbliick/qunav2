@@ -1,8 +1,4 @@
-import { Decimal128 } from "mongodb";
-import mongoose from "mongoose";
-import { Recommendation } from "../interfaces/Recommendation";
-
-const RecommendationSchema = new mongoose.Schema<Recommendation>({
+export interface Recommendation {
     osuid: Number,
     mapid: String,
     title: String,
@@ -10,9 +6,9 @@ const RecommendationSchema = new mongoose.Schema<Recommendation>({
     version: String,
     creator: String,
     cover: String,
-    mode: String,
     maxCombo: Number,
-    mods: Array,
+    mode: String,
+    mods: Array<String>,
     drain: Number,
     length: Number,
     acc95: Number,
@@ -25,7 +21,5 @@ const RecommendationSchema = new mongoose.Schema<Recommendation>({
     hp: Number,
     bpm: Number,
     star: Number,
-    score: Number,
-});
-
-export default mongoose.model<Recommendation>("recommendation", RecommendationSchema);
+    score: Number
+}

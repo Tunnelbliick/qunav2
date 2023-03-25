@@ -22,3 +22,18 @@ export function noRecs(message: any, reply?: any) {
     }
 
 }
+
+export function serverOffline(message: any, reply?: any) {
+
+    const errorEmbed = new MessageEmbed()
+        .setColor(0x737df9)
+        .setTitle(`No recommendations`)
+        .setDescription(`The Recommendation Server is currently offline please try again later.`)
+
+    if (reply) {
+        reply.edit({ embeds: [errorEmbed] });
+    } else {
+        message.reply({ embeds: [errorEmbed] });
+    }
+
+}

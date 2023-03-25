@@ -1,8 +1,10 @@
 import { Client, Message } from "discord.js";
 import { getBeatmap } from "../../api/osu/beatmap";
-import { buildMapEmbedNoResponse } from "../../embeds/osu/beatmap/beatmap";
+import { buildMapEmbedNoResponse, buildMapEmbedRecommendation } from "../../embeds/osu/beatmap/beatmap";
 import { like } from "../../interfaces/Like";
 import RecLike from "../../models/RecLike";
+import Recommendation from "../../models/Recommendation";
+import RecommendationInfo from "../../models/RecommendationInfo";
 const DataImageAttachment = require("dataimageattachment");
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
 
@@ -46,19 +48,14 @@ export default (client: Client) => {
                 const method = para[1];
                 let index: number = +para[3]
                 const userid: number = +para[4];
-                const value = `${para[5]}_${para.length === 6 ? '' : para[6]}`;
-                const mode = para[7];
-                const type = para[8];
 
-                if (mode === undefined || mode === null) {
-                    await interaction.deferReply({
-                        ephemeral: true
-                    });
+                let recInfo = await RecommendationInfo.findOne({ osuid: userid })
 
+                if (recInfo == null || recInfo == undefined) {
                     const embed = new MessageEmbed()
                         .setColor(0x737df9)
-                        .setTitle(`Outdated`)
-                        .setDescription(`Please request a new Recommendation with \`!rec\``);
+                        .setTitle(`Something went wrong`)
+                        .setDescription(`Please contact us on discord if this issue keeps poping up!`);
 
                     await interaction.editReply({ embeds: [embed] });
                     return;
@@ -71,23 +68,35 @@ export default (client: Client) => {
                             ephemeral: true
                         });
 
-                        let like: like = new RecLike();
-                        like.beatmapid = para[5];
-                        like.mode = mode;
+                        const rec_id: any = para[5];
+
+                        const current_recommendations = await Recommendation.findOne({ _id: rec_id });
+
+                        if (current_recommendations == null || current_recommendations == undefined) {
+                            const embed = new MessageEmbed()
+                                .setColor(0x737df9)
+                                .setTitle(`Something went wrong`)
+                                .setDescription(`Please contact us on discord if this issue keeps poping up!`);
+
+                            await interaction.editReply({ embeds: [embed] });
+                            return;
+                            break;
+                        }
+
+                        let like = new RecLike();
+                        like.beatmapid = +current_recommendations.mapid;
+                        like.mode = current_recommendations.mode;
                         like.origin = "manual_top";
-                        like.type = "like";
                         like.vote = "like";
                         like.osuid = userid;
-                        like.value = value;
+                        like.value = `${current_recommendations.mapid}_${current_recommendations.mods.join("")}`
 
-                        const engine = procyon.liked(userid, value);
-                        const database = RecLike.updateOne({ value: value, osuid: userid }, like, { upsert: true });
+                        recInfo.length = +recInfo.length - 1;
+                        await like.save();
+                        await recInfo.save();
+                        await current_recommendations.delete();
 
-                        await Promise.allSettled([engine, database]);
-
-                        const rec = await procyon.recommendIndexFor(userid, index, 0);
-
-                        buildEmbed(message, rec, index, userid, discordid, mode, type);
+                        await buildEmbed(message, index, userid, discordid, recInfo);
 
                         const upvote = new MessageEmbed()
                             .setColor(0x737df9)
@@ -106,48 +115,57 @@ export default (client: Client) => {
                             ephemeral: true
                         });
 
-                        let like: like = new RecLike();
-                        like.beatmapid = para[5];
-                        like.mode = mode;
+                        const rec_id: any = para[5];
+
+                        const current_recommendations = await Recommendation.findOne({ _id: rec_id });
+
+                        if (current_recommendations == null || current_recommendations == undefined) {
+                            const embed = new MessageEmbed()
+                                .setColor(0x737df9)
+                                .setTitle(`Something went wrong`)
+                                .setDescription(`Please contact us on discord if this issue keeps poping up!`);
+
+                            await interaction.editReply({ embeds: [embed] });
+                            return;
+                            break;
+                        }
+
+                        let like = new RecLike();
+                        like.beatmapid = +current_recommendations.mapid;
+                        like.mode = current_recommendations.mode;
                         like.origin = "manual_top";
-                        like.type = "dislike";
                         like.vote = "dislike";
                         like.osuid = userid;
-                        like.value = value;
+                        like.value = `${current_recommendations.mapid}_${current_recommendations.mods.join("")}`
 
-                        const engine = procyon.disliked(userid, value);
-                        const database = RecLike.updateOne({ value: value, osuid: userid }, like, { upsert: true });
+                        recInfo.length = +recInfo.length - 1;
+                        await like.save();
+                        await recInfo.save();
+                        await current_recommendations.delete();
 
-                        await Promise.allSettled([engine, database]);
+                        await buildEmbed(message, index, userid, discordid, recInfo);
 
-                        const rec = await procyon.recommendIndexFor(userid, index, 0);
-
-                        buildEmbed(message, rec, index, userid, discordid, mode, type);
-
-                        const downvote = new MessageEmbed()
+                        const upvote = new MessageEmbed()
                             .setColor(0x737df9)
                             .setTitle(`Successfully disliked Beatmap`)
                             .setDescription(`You have disliked this beatmap.`)
 
-                        await interaction.editReply({ embeds: [downvote] });
+                        await interaction.editReply({ embeds: [upvote] });
                         return;
-
+                        break;
                     }
 
                     case "next": {
 
                         index++;
 
-                        if (index > 29) {
+                        if (index > (+recInfo.length - 1)) {
                             index = 0;
                         }
 
-                        const rec = await procyon.recommendIndexFor(userid, index, 0);
-
-                        buildEmbed(message, rec, index, userid, discordid, mode, type);
+                        await buildEmbed(message, index, userid, discordid, recInfo);
                         await interaction.deferUpdate();
                         return;
-                        break;
 
                     }
 
@@ -155,19 +173,14 @@ export default (client: Client) => {
                     case "prior": {
 
                         index--;
-                        
+
                         if (index < 0) {
-                            index = 29;
+                            index = (+recInfo.length - 1);
                         }
 
-                        const rec = await procyon.recommendIndexFor(userid, index, 0);
-
-                        buildEmbed(message, rec, index, userid, discordid, mode, type);
+                        await buildEmbed(message, index, userid, discordid, recInfo);
                         await interaction.deferUpdate();
                         return;
-
-
-                        break;
 
                     }
 
@@ -180,9 +193,11 @@ export default (client: Client) => {
     })
 }
 
-async function buildEmbed(message: any, recommendations: any, index: number, userid: any, discordid: any, mode: any, type: any) {
+async function buildEmbed(message: any, index: number, userid: any, discordid: any, recInfo: any) {
 
-    if (recommendations.length == 0) {
+    const rec = await Recommendation.find({ osuid: userid }).sort({ score: -1 }).skip(index).limit(1).exec();
+
+    if (rec.length == 0) {
         const errorEmbed = new MessageEmbed()
             .setColor(0x737df9)
             .setTitle(`No recommendations`)
@@ -190,33 +205,30 @@ async function buildEmbed(message: any, recommendations: any, index: number, use
         await message.edit({ embeds: [errorEmbed] })
     }
 
-    const rec = recommendations[0];
-    const rec_split = rec.split("_");
-    const beatmapid = rec_split[0];
-    const options = rec_split[1];
 
-    const data = await getBeatmap(beatmapid)
-    const { embed, result } = await buildMapEmbedNoResponse(options, data);
+    const beatmap = await getBeatmap(rec[0].mapid);
+    const value = `${rec[0].mapid}_${rec[0].mods.join("")}`
+    const { embed, result } = await buildMapEmbedRecommendation(rec[0], beatmap, index, +recInfo.length);
 
     const row = new MessageActionRow();
 
     const next = new MessageButton().
-        setCustomId(`recommendation_next_${discordid}_${index}_${userid}_${rec}_${mode}_${type}`)
+        setCustomId(`recommendation_next_${discordid}_${index}_${userid}`)
         .setEmoji("951821813460115527")
         .setStyle("PRIMARY");
 
     const prior = new MessageButton().
-        setCustomId(`recommendation_prior_${discordid}_${index}_${userid}_${rec}_${mode}_${type}`)
+        setCustomId(`recommendation_prior_${discordid}_${index}_${userid}`)
         .setEmoji("951821813288140840")
         .setStyle("PRIMARY");
 
     const upvote = new MessageButton()
-        .setCustomId(`recommendation_like_${discordid}_${index}_${userid}_${rec}_${mode}_${type}`)
+        .setCustomId(`recommendation_like_${discordid}_${index}_${userid}_${rec[0].id}`)
         .setEmoji("955320158270922772")
         .setStyle("SUCCESS");
 
     const downvote = new MessageButton()
-        .setCustomId(`recommendation_dislike_${discordid}_${index}_${userid}_${rec}_${mode}_${type}`)
+        .setCustomId(`recommendation_dislike_${discordid}_${index}_${userid}_${rec[0].id}`)
         .setEmoji("955319940435574794")
         .setStyle("DANGER");
 

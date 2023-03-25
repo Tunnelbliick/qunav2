@@ -44,7 +44,7 @@ export function calcualteStatsFromBeatmapforMods(beatmap: any, mods: Array<strin
 
 }
 
-export function calcualteStatsforMods(stats: BeatmapStats, mods: Array<string>) {
+export function calcualteStatsforMods(stats: BeatmapStats, mods: Array<String>) {
 
     if (mods.includes("EZ")) {
         stats.cs = stats.cs * 0.5

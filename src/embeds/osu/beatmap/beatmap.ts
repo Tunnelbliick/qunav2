@@ -2,8 +2,10 @@
 import { Interaction, Message, MessageEmbed } from "discord.js";
 import { BeatmapStats, calcualteStatsforMods } from "../../../api/beatmaps/stats";
 import { generateBeatmapChart } from "../../../api/chart.js/beatmap/beatmap";
+import { beatmap } from "../../../api/osu/beatmap";
 import { parseModString } from "../../../api/osu/utility/parsemods";
 import { loadMapPP } from "../../../api/pp/db/loadmap";
+import { Recommendation } from "../../../interfaces/Recommendation";
 import { getDifficultyColor } from "../../../utility/gradiant";
 import { gamemode_icons } from "../../../utility/icons";
 const { Canvas, loadImage } = require('skia-canvas');
@@ -147,6 +149,124 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
     }
     return { embed, result };
 }
+
+export async function buildMapEmbedRecommendation(rec: Recommendation, data: beatmap, index: number, length: number) {
+    let modString = "";
+
+    if (rec.mods.length >= 1) {
+        modString = "+";
+        rec.mods.forEach((mod: any) => modString += `${mod}`);
+    }
+
+    let difficulty;
+    let graph;
+    let map_stats: any;
+    let ppString: string;
+    let background: any;
+
+    const statsPromise = loadMapPP(data, rec.mods, data.mode);
+    const backgroundPromise = loadImage(data.beatmapset.covers.cover);
+
+    await Promise.allSettled([statsPromise, backgroundPromise]).then((result: any) => {
+        map_stats = result[0].value;
+        background = result[1].value;
+    });
+
+    if (map_stats != undefined) {
+        difficulty = map_stats.difficulty;
+        graph = map_stats.graph;
+        const acc100 = map_stats.pp[100].toFixed(1);
+        const acc99 = map_stats.pp[99].toFixed(1);
+        const acc97 = map_stats.pp[97].toFixed(1);
+        const acc95 = map_stats.pp[95].toFixed(1);
+
+        ppString = buildpp(acc100, acc99, acc97, acc95, data.mode);
+    } else {
+        ppString = "Could not load PP values";
+    }
+
+    const chartURL = await generateBeatmapChart(graph);
+    const chart = await loadImage(chartURL);
+
+    const canvas = new Canvas(background.width, background.height);
+    const ctx = canvas.getContext('2d');
+
+    ctx.filter = 'blur(7px) brightness(33%)';
+    ctx.drawImage(background, 0, 0);
+    ctx.filter = 'none';
+    ctx.drawImage(chart, 0, 0);
+
+    const result = canvas.toDataURLSync();
+
+    let stats: BeatmapStats = {
+        cs: data.cs,
+        hp: data.drain,
+        bpm: data.beatmapset.bpm,
+        mapLength: data.total_length,
+        mapDrain: data.hit_length
+    };
+
+    stats = calcualteStatsforMods(stats, rec.mods);
+
+    // extras
+    const embedColor = getDifficultyColor(difficulty.star.toFixed(2));
+
+    // @ts-ignore 
+    const modeEmote = gamemode_icons[data.mode];
+
+    const embed = new MessageEmbed()
+        .setAuthor({ name: `Mapset by ${data.beatmapset.creator}`, iconURL: `https://a.ppy.sh/${data.beatmapset.user_id}`, url: `https://osu.ppy.sh/users/${data.beatmapset.user_id}` })
+        .setColor(embedColor)
+        .setTitle(`${data.beatmapset.artist} - ${data.beatmapset.title}`)
+        .setURL(`${data.url}`)
+        .setDescription(`🎶 [Song Preview](https:${data.beatmapset.preview_url}) 🖼️ [Background Image](${data.beatmapset.covers.cover})`)
+        .setImage(`attachment://chart.png`) // the @2x version does not work sadge
+        .setFooter({ text: `Recommendation ${index+1} of ${length} | Score: ${rec.score.toFixed(2)}` });
+
+    if (data.mode != "mania") {
+        embed.addFields([
+            {
+                name: `${modeEmote} [${data.version}] ${modString}`,
+                value: `Combo: \`${data.max_combo}x\` Stars: \`${difficulty.star.toFixed(2)}★\`\n` +
+                    `Length: \`${stats.min}:${stats.strSec}\` (\`${stats.dmin}:${stats.strDsec}\`) Objects: \`${data.count_circles + data.count_sliders + data.count_spinners}\`\n` +
+                    `CS:\`${stats.cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${difficulty.hp.toFixed(2).replace(/[.,]00$/, "")}\` BPM: \`${stats.bpm.toFixed(2).replace(/[.,]00$/, "")}\``,
+                inline: true
+            },
+            {
+                name: `Download`,
+                value: `[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
+                inline: true
+            },
+            {
+                name: "PP",
+                value: `\n\`\`\`${ppString}\`\`\``,
+                inline: false
+            }
+        ]);
+    } else {
+        embed.addFields([
+            {
+                name: `${modeEmote} [${data.version}] ${modString}`,
+                value: `Stars: \`${difficulty.star.toFixed(2)}★\`\n` +
+                    `Length: \`${stats.min}:${stats.strSec}\` (\`${stats.dmin}:${stats.strDsec}\`) Objects: \`${data.count_circles + data.count_sliders + data.count_spinners}\`\n` +
+                    `CS:\`${stats.cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${difficulty.hp.toFixed(2).replace(/[.,]00$/, "")}\` BPM: \`${stats.bpm.toFixed(2).replace(/[.,]00$/, "")}\``,
+                inline: true
+            },
+            {
+                name: `Download`,
+                value: `[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
+                inline: true
+            },
+            {
+                name: "PP",
+                value: `\n\`\`\`${ppString}\`\`\``,
+                inline: false
+            }
+        ]);
+    }
+    return { embed, result };
+}
+
 
 function center(text: string, length: number): string {
     const space = length - text.length;
