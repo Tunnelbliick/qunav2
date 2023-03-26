@@ -77,18 +77,27 @@ export default (client: Client) => {
                             break;
                         }
 
+                        let mode: String = "osu";
+
+                        if(current_recommendations.mode !== null && current_recommendations.mode !== undefined) {
+                            mode = current_recommendations.mode;
+                        }
+
                         let like = new RecLike();
                         like.beatmapid = +current_recommendations.mapid;
-                        like.mode = current_recommendations.mode;
+                        like.mode = mode;
                         like.origin = "manual_top";
                         like.vote = "like";
                         like.osuid = userid;
                         like.value = `${current_recommendations.mapid}_${current_recommendations.mods.join("")}`
 
                         recInfo.length = +recInfo.length - 1;
-                        await like.save();
-                        await recInfo.save();
-                        await current_recommendations.delete();
+
+                        await Promise.all([
+                            like.save(),
+                            recInfo.save(),
+                            current_recommendations.delete()
+                          ]);
 
                         await buildEmbed(message, index, userid, discordid, recInfo);
 
@@ -124,18 +133,28 @@ export default (client: Client) => {
                             break;
                         }
 
+                        
+                        let mode: String = "osu";
+
+                        if(current_recommendations.mode !== null && current_recommendations.mode !== undefined) {
+                            mode = current_recommendations.mode;
+                        }
+
                         let like = new RecLike();
                         like.beatmapid = +current_recommendations.mapid;
-                        like.mode = current_recommendations.mode;
+                        like.mode = mode;
                         like.origin = "manual_top";
                         like.vote = "dislike";
                         like.osuid = userid;
                         like.value = `${current_recommendations.mapid}_${current_recommendations.mods.join("")}`
 
                         recInfo.length = +recInfo.length - 1;
-                        await like.save();
-                        await recInfo.save();
-                        await current_recommendations.delete();
+
+                        await Promise.all([
+                            like.save(),
+                            recInfo.save(),
+                            current_recommendations.delete()
+                          ]);
 
                         await buildEmbed(message, index, userid, discordid, recInfo);
 

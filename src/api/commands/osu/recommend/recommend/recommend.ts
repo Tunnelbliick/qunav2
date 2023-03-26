@@ -28,24 +28,13 @@ export async function fixrecommends() {
 
     console.log('Started fixing recommends');
 
-    const expliciteLikes = await RecLike.find({});
+    const expliciteLikes = await RecLike.find({origin:"manual_top"});
     let index = 0;
     for (let like of expliciteLikes) {
-        index++;
 
-        if (index % 10000 == 0) {
-            console.log(`${index}/${expliciteLikes.length}`);
+        if(like.mode === null || like.mode === undefined) {
+            like.mode = "osu";
         }
-
-        let value_arr = like.value.split("_");
-
-        if (value_arr.length > 1) {
-            let mods = parseModString(value_arr[1]);
-            let fixed_mods = parseModRestricted(mods);
-            like.value = `${like.beatmapid}_${fixed_mods.join("")}`;
-        }
-
-        like.vote = like.type;
 
         await like.save();
     }
@@ -245,6 +234,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
                     recommendation.artist = data.beatmapset.artist;
                     recommendation.version = data.version;
                     recommendation.creator = data.beatmapset.creator;
+                    recommendation.mode = data.mode;
                     recommendation.maxCombo = data.max_combo;
                     recommendation.mods = modArray;
                     recommendation.drain = stats.mapDrain;
