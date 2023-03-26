@@ -169,8 +169,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
         currentTime.setMinutes(30, 0, 0)
     } else {
 
-        currentTime.setMinutes(0, 0, 0);
-        currentTime.setHours(+currentTime.getHours() + 1);
+        currentTime.setHours(+currentTime.getHours() + 1, 0, 0 ,0);
 
     }
 
@@ -183,14 +182,14 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
 
     // Format the remaining time into a string
     let remainingTimeString;
-    if (remainingMinutes > 30) {
-        remainingTimeString = `Building refresh`;
-    } else if (remainingMinutes > 32) {
+    if (remainingMinutes > 32) {
         remainingTimeString = `Refresh available`;
+    } else if (remainingMinutes > 32) {
+        remainingTimeString = `Building refresh`;
     } else if (remainingMinutes > 0) {
-        remainingTimeString = `${remainingMinutes}m`;
+        remainingTimeString = `Refresh in ${remainingMinutes}m`;
     } else {
-        remainingTimeString = `${remainingSeconds}s`;
+        remainingTimeString = `Refresh in ${remainingSeconds}s`;
     }
 
     let difficulty;
@@ -256,7 +255,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
         .setURL(`${data.url}`)
         .setDescription(`🎶 [Song Preview](https:${data.beatmapset.preview_url}) 🖼️ [Background Image](${data.beatmapset.covers.cover})`)
         .setImage(`attachment://chart.png`) // the @2x version does not work sadge
-        .setFooter({ text: `Recommendation ${index + 1} of ${recInfo.length} | Score: ${rec.score.toFixed(2)} | Refresh in ${remainingTimeString}` });
+        .setFooter({ text: `Recommendation ${index + 1} of ${recInfo.length} | Score: ${rec.score.toFixed(2)} | ${remainingTimeString}` });
 
     if (data.mode != "mania") {
         embed.addFields([
