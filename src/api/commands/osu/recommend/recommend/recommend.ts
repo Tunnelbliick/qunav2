@@ -16,12 +16,8 @@ import { getBeatmap } from "../../../../osu/beatmap";
 import { getTopForUser } from "../../../../osu/top";
 import { parseModRestricted, parseModString } from "../../../../osu/utility/parsemods";
 import { loadMapPP } from "../../../../pp/db/loadmap";
-const hash = require("hash-sum")
 
 const DataImageAttachment = require("dataimageattachment");
-const { ObjectId } = require('mongodb');
-const Procyon = require('procyon')
-const { createCanvas, loadImage } = require('canvas')
 
 interface Recommendation_data {
     item: string,

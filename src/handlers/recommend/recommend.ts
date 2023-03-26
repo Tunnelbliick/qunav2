@@ -8,13 +8,7 @@ import RecommendationInfo from "../../models/RecommendationInfo";
 const DataImageAttachment = require("dataimageattachment");
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
 
-const Procyon = require('procyon')
-
 export default (client: Client) => {
-
-    const procyon: any = new Procyon({
-        className: 'top_osu'
-    });
 
     client.on('interactionCreate', async (interaction: any) => {
 
