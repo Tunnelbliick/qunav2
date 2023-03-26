@@ -6,6 +6,7 @@ import { beatmap } from "../../../api/osu/beatmap";
 import { parseModString } from "../../../api/osu/utility/parsemods";
 import { loadMapPP } from "../../../api/pp/db/loadmap";
 import { Recommendation } from "../../../interfaces/Recommendation";
+import { RecommendationInfo } from "../../../interfaces/RecommendationInfo";
 import { getDifficultyColor } from "../../../utility/gradiant";
 import { gamemode_icons } from "../../../utility/icons";
 const { Canvas, loadImage } = require('skia-canvas');
@@ -150,7 +151,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
     return { embed, result };
 }
 
-export async function buildMapEmbedRecommendation(rec: Recommendation, data: beatmap, index: number, length: number) {
+export async function buildMapEmbedRecommendation(rec: Recommendation, data: beatmap, index: number, recInfo: RecommendationInfo) {
     let modString = "";
 
     if (rec.mods.length >= 1) {
@@ -164,14 +165,10 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
     const currentMinutes = currentTime.getMinutes();
     
     // Calculate the last full half-hour of the current time
-    currentMinutes <= 30 ? currentTime.setMinutes(30) : currentTime.setMinutes(0);
-    
-    // Create a new Date object representing the next half-hour or hour
-    const nextTime = new Date(currentTime.getTime());
-    currentMinutes <= 30 ? nextTime.setMinutes(0, 0, 0) : nextTime.setMinutes(30, 0, 0);
+    currentMinutes >= 30 ? currentTime.setMinutes(30, 0, 0) : currentTime.setMinutes(0, 0 ,0);
     
     // Calculate the time difference between the current time and the next half-hour or hour
-    const timeDiff = new Date(nextTime.getTime() - currentTime.getTime());
+    const timeDiff = new Date(recInfo.createdAt.getTime() - currentTime.getTime());
     
     // Extract the remaining minutes and seconds from the time difference
     const remainingMinutes = timeDiff.getMinutes();
@@ -248,7 +245,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
         .setURL(`${data.url}`)
         .setDescription(`🎶 [Song Preview](https:${data.beatmapset.preview_url}) 🖼️ [Background Image](${data.beatmapset.covers.cover})`)
         .setImage(`attachment://chart.png`) // the @2x version does not work sadge
-        .setFooter({ text: `Recommendation ${index + 1} of ${length} | Score: ${rec.score.toFixed(2)} | Refresh in ${remainingTimeString}` });
+        .setFooter({ text: `Recommendation ${index + 1} of ${recInfo.length} | Score: ${rec.score.toFixed(2)} | Refresh in ${remainingTimeString}` });
 
     if (data.mode != "mania") {
         embed.addFields([

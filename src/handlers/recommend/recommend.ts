@@ -221,7 +221,7 @@ async function buildEmbed(message: any, index: number, userid: any, discordid: a
 
     const beatmap = await getBeatmap(rec[0].mapid);
     const value = `${rec[0].mapid}_${rec[0].mods.join("")}`
-    const { embed, result } = await buildMapEmbedRecommendation(rec[0], beatmap, index, +recInfo.length);
+    const { embed, result } = await buildMapEmbedRecommendation(rec[0], beatmap, index, recInfo);
 
     const row = new MessageActionRow();
 
