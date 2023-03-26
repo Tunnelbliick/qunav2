@@ -165,7 +165,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
     const currentMinutes = currentTime.getMinutes();
     
     // Calculate the last full half-hour of the current time
-    if(currentMinutes >= 30) {
+    if(currentMinutes <= 30) {
         currentTime.setMinutes(30, 0, 0)
     } else {
 
@@ -183,7 +183,9 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
     
     // Format the remaining time into a string
     let remainingTimeString;
-    if (remainingMinutes > 0) {
+    if(remainingMinutes > 30) {
+        remainingTimeString = `Refresh available`;
+    }else if (remainingMinutes > 0) {
       remainingTimeString = `${remainingMinutes}m`;
     } else {
       remainingTimeString = `${remainingSeconds}s`;
