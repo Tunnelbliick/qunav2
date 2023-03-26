@@ -178,7 +178,12 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
     const remainingSeconds = timeDiff.getSeconds();
     
     // Format the remaining time into a string
-    const remainingTimeString = `${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+    let remainingTimeString;
+    if (remainingMinutes > 0) {
+      remainingTimeString = `${remainingMinutes}m`;
+    } else {
+      remainingTimeString = `${remainingSeconds}s`;
+    }
 
     let difficulty;
     let graph;
