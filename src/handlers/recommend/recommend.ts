@@ -43,7 +43,7 @@ export default (client: Client) => {
                 let index: number = +para[3]
                 const userid: number = +para[4];
 
-                let recInfo = await RecommendationInfo.findOne({ osuid: userid })
+                const recInfo = await RecommendationInfo.findOne({ osuid: userid })
 
                 if (recInfo == null || recInfo == undefined) {
                     const embed = new MessageEmbed()
@@ -77,7 +77,7 @@ export default (client: Client) => {
                             break;
                         }
 
-                        let like = new RecLike();
+                        const like = new RecLike();
                         like.beatmapid = +current_recommendations.mapid;
                         like.mode = current_recommendations.mode;
                         like.origin = "manual_top";
@@ -124,7 +124,7 @@ export default (client: Client) => {
                             break;
                         }
 
-                        let like = new RecLike();
+                        const like = new RecLike();
                         like.beatmapid = +current_recommendations.mapid;
                         like.mode = current_recommendations.mode;
                         like.origin = "manual_top";
