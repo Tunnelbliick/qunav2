@@ -163,32 +163,34 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
 
     // Get the minutes of the current time
     const currentMinutes = currentTime.getMinutes();
-    
+
     // Calculate the last full half-hour of the current time
-    if(currentMinutes <= 30) {
+    if (currentMinutes <= 30) {
         currentTime.setMinutes(30, 0, 0)
     } else {
 
-        currentTime.setMinutes(0,0,0);
+        currentTime.setMinutes(0, 0, 0);
         currentTime.setHours(+currentTime.getHours() + 1);
 
     }
-    
+
     // Calculate the time difference between the current time and the next half-hour or hour
     const timeDiff = new Date(recInfo.createdAt.getTime() - currentTime.getTime());
-    
+
     // Extract the remaining minutes and seconds from the time difference
     const remainingMinutes = timeDiff.getMinutes();
     const remainingSeconds = timeDiff.getSeconds();
-    
+
     // Format the remaining time into a string
     let remainingTimeString;
-    if(remainingMinutes > 30) {
+    if (remainingMinutes > 30) {
+        remainingTimeString = `Building refresh`;
+    } else if (remainingMinutes > 32) {
         remainingTimeString = `Refresh available`;
-    }else if (remainingMinutes > 0) {
-      remainingTimeString = `${remainingMinutes}m`;
+    } else if (remainingMinutes > 0) {
+        remainingTimeString = `${remainingMinutes}m`;
     } else {
-      remainingTimeString = `${remainingSeconds}s`;
+        remainingTimeString = `${remainingSeconds}s`;
     }
 
     let difficulty;
