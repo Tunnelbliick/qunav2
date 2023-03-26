@@ -174,7 +174,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
     }
 
     // Calculate the time difference between the current time and the next half-hour or hour
-    const timeDiff = new Date(recInfo.createdAt.getTime() - currentTime.getTime());
+    const timeDiff = new Date(currentTime.getTime() - recInfo.createdAt.getTime());
 
     // Extract the remaining minutes and seconds from the time difference
     const remainingMinutes = timeDiff.getMinutes();
