@@ -93,6 +93,10 @@ export default (client: Client) => {
 
                         recInfo.length = +recInfo.length - 1;
 
+                        if (index == recInfo.length) {
+                            index--;
+                        }
+
                         await Promise.all([
                             like.save(),
                             recInfo.save(),
@@ -149,6 +153,10 @@ export default (client: Client) => {
                         like.value = `${current_recommendations.mapid}_${current_recommendations.mods.join("")}`
 
                         recInfo.length = +recInfo.length - 1;
+
+                        if (index == recInfo.length) {
+                            index--;
+                        }
 
                         await Promise.all([
                             like.save(),
