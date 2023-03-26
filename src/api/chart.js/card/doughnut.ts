@@ -86,8 +86,8 @@ export async function builddoughnut(skills: skill_type[]) {
 
 function buildDataset(skills: skill_type[]): doughnut_data {
 
-    let labels: string[] = [];
-    let data: object[] = [];
+    const labels: string[] = [];
+    const data: object[] = [];
 
     skills.forEach(skill => {
 
@@ -121,7 +121,7 @@ function buildGradients(ctx: any) {
     let top = 0;
 
     if (labels.length === 3) {
-        let index = labels.findIndex(label => label === current_label);
+        const index = labels.findIndex(label => label === current_label);
 
         if (index === 1) {
 

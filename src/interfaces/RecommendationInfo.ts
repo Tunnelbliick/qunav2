@@ -1,6 +1,6 @@
 export interface RecommendationInfo {
-    osuid: Number,
-    currentIndex: Number,
-    length: Number,
+    osuid: number,
+    currentIndex: number,
+    length: number,
     createdAt: Date
 }

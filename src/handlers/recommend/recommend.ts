@@ -43,7 +43,7 @@ export default (client: Client) => {
                 let index: number = +para[3]
                 const userid: number = +para[4];
 
-                let recInfo = await RecommendationInfo.findOne({ osuid: userid })
+                const recInfo = await RecommendationInfo.findOne({ osuid: userid })
 
                 if (recInfo == null || recInfo == undefined) {
                     const embed = new MessageEmbed()

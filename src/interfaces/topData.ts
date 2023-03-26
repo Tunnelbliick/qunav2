@@ -1,9 +1,9 @@
 export interface TopData {
-    index: Number,
-    scoreid: Number,
-    pp: String,
-    score: String,
-    mode: String,
-    mods: Array<String>,
-    beatmapid: Number,
+    index: number,
+    scoreid: number,
+    pp: string,
+    score: string,
+    mode: string,
+    mods: Array<string>,
+    beatmapid: number,
 }
