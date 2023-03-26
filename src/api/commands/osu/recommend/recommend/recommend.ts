@@ -28,11 +28,11 @@ export async function fixrecommends() {
 
     console.log('Started fixing recommends');
 
-    const expliciteLikes = await RecLike.find({origin:"manual_top"});
+    const expliciteLikes = await RecLike.find({ origin: "manual_top" });
     let index = 0;
     for (let like of expliciteLikes) {
 
-        if(like.mode === null || like.mode === undefined) {
+        if (like.mode === null || like.mode === undefined) {
             like.mode = "osu";
         }
 
@@ -140,14 +140,14 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         await saveRecommends();
     } else {
 
-        if (isAfterLastFullHalfHour(recInfo.createdAt)) {
+        if (isAfterLastFullHalfHour(recInfo.createdAt) || recInfo.length === 0) {
 
             recInfo.currentIndex = 0;
-            recInfo.createdAt = now; 
+            recInfo.createdAt = now;
             recInfo.length = max_index;
 
             await recInfo.save();
-            await Recommendation.deleteMany({osuid: userid});
+            await Recommendation.deleteMany({ osuid: userid });
             await saveRecommends();
         }
     }
@@ -159,7 +159,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         return;
     }
 
-    const rec = await Recommendation.find({osuid: userid}).sort({ score: -1 }).skip(index).limit(1).exec();
+    const rec = await Recommendation.find({ osuid: userid }).sort({ score: -1 }).skip(index).limit(1).exec();
 
     const beatmap = await getBeatmap(rec[0].mapid);
     const value = `${rec[0].mapid}_${rec[0].mods.join("")}`
@@ -268,10 +268,10 @@ function isAfterLastFullHalfHour(checkTime: Date): boolean {
 
     // Get the minutes of the current time
     const currentMinutes = currentTime.getMinutes();
-  
+
     // Calculate the last full half-hour of the current time
     const lastFullHalfHour = currentMinutes >= 30 ? currentTime.setMinutes(30) : currentTime.setMinutes(0);
-  
+
     // Compare the checkTime with the last full half-hour
     return checkTime.getTime() < lastFullHalfHour;
-  }
+}

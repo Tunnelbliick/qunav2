@@ -165,7 +165,14 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
     const currentMinutes = currentTime.getMinutes();
     
     // Calculate the last full half-hour of the current time
-    currentMinutes >= 30 ? currentTime.setMinutes(30, 0, 0) : currentTime.setMinutes(0, 0 ,0);
+    if(currentMinutes >= 30) {
+        currentTime.setMinutes(30, 0, 0)
+    } else {
+
+        currentTime.setMinutes(0,0,0);
+        currentTime.setHours(+currentTime.getHours() + 1);
+
+    }
     
     // Calculate the time difference between the current time and the next half-hour or hour
     const timeDiff = new Date(recInfo.createdAt.getTime() - currentTime.getTime());

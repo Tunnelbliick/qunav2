@@ -13,7 +13,7 @@ export function noRecs(message: any, reply?: any) {
     const errorEmbed = new MessageEmbed()
         .setColor(0x737df9)
         .setTitle(`No recommendations`)
-        .setDescription(`Quna currently has no personal recommendations for you.`)
+        .setDescription(`Quna currently has no personal recommendations for you.\n\nIf this is your first time requesting you might have to wait until the instance refreshes every xx:00/xx:30`)
 
     if (reply) {
         reply.edit({ embeds: [errorEmbed] });
