@@ -36,10 +36,10 @@ export default {
         }
 
 
-        let country_code = getCodeList();
+        const country_code = getCodeList();
         let offset = 1;
         let skip = true;
-        let skipuntill = "ua"
+        const skipuntill = "ua"
         let last_user: any = undefined;
 
         for (const code in country_code) {
@@ -68,7 +68,7 @@ export default {
 
                             console.log(`Page ${offset} of 200`);
 
-                            let users = scrape[0];
+                            const users = scrape[0];
                             if ((users[0]["1"] === "mrekk" && users[1]["1"] === "lifeline") || last_user == users[0]["1"]) {
                                 offset = 200;
                             } else {
@@ -86,8 +86,8 @@ export default {
                                                 const userid = profile.id;
 
                                                 let top: any = [];
-                                                let pinned: any = [];
-                                                let favorite: any = [];
+                                                const pinned: any = [];
+                                                const favorite: any = [];
                                                 let changed = false;
 
                                                 const topPromise: any = await getTopForUser(userid);
@@ -106,8 +106,8 @@ export default {
 
                                                     top.slice(0, 25).forEach((play: any) => {
 
-                                                        let mods = parseModRestricted(play.value.mods);
-                                                        let value = `${play.value.beatmap.id}_${mods.join("")}`
+                                                        const mods = parseModRestricted(play.value.mods);
+                                                        const value = `${play.value.beatmap.id}_${mods.join("")}`
 
                                                         const usrLike: like = new RecLike();
                                                         usrLike.osuid = userid;
