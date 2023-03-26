@@ -54,9 +54,6 @@ export async function fixrecommends() {
 
 export async function bulldrecommends(message: any, args: any, prefix: any) {
 
-    let type = "top";
-    let mode = "osu";
-
     message.channel.sendTyping();
 
     const userObject: QunaUser | null = await User.findOne({ discordid: await encrypt(message.author.id) });
@@ -157,7 +154,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         if (isAfterLastFullHalfHour(recInfo.createdAt)) {
 
             recInfo.currentIndex = 0;
-            recInfo.createdAt = now;
+            recInfo.createdAt = now; 
             recInfo.length = max_index;
 
             await recInfo.save();
@@ -214,8 +211,6 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         await asyncBatch(recommendations.slice(0, max_index),
             (rec: Recommendation_data) => new Promise(
                 async (resolve) => {
-
-                    console.log(rec.item);
 
                     const rec_split = rec.item.split("_");
                     const beatmapid = rec_split[0];
@@ -288,5 +283,5 @@ function isAfterLastFullHalfHour(checkTime: Date): boolean {
     const lastFullHalfHour = currentMinutes >= 30 ? currentTime.setMinutes(30) : currentTime.setMinutes(0);
   
     // Compare the checkTime with the last full half-hour
-    return checkTime.getTime() > lastFullHalfHour;
+    return checkTime.getTime() < lastFullHalfHour;
   }

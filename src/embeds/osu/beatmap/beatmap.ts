@@ -158,6 +158,28 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
         rec.mods.forEach((mod: any) => modString += `${mod}`);
     }
 
+    const currentTime = new Date();
+
+    // Get the minutes of the current time
+    const currentMinutes = currentTime.getMinutes();
+    
+    // Calculate the last full half-hour of the current time
+    currentMinutes <= 30 ? currentTime.setMinutes(30) : currentTime.setMinutes(0);
+    
+    // Create a new Date object representing the next half-hour or hour
+    const nextTime = new Date(currentTime.getTime());
+    currentMinutes <= 30 ? nextTime.setMinutes(0, 0, 0) : nextTime.setMinutes(30, 0, 0);
+    
+    // Calculate the time difference between the current time and the next half-hour or hour
+    const timeDiff = new Date(nextTime.getTime() - currentTime.getTime());
+    
+    // Extract the remaining minutes and seconds from the time difference
+    const remainingMinutes = timeDiff.getMinutes();
+    const remainingSeconds = timeDiff.getSeconds();
+    
+    // Format the remaining time into a string
+    const remainingTimeString = `${remainingMinutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+
     let difficulty;
     let graph;
     let map_stats: any;
@@ -221,7 +243,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
         .setURL(`${data.url}`)
         .setDescription(`🎶 [Song Preview](https:${data.beatmapset.preview_url}) 🖼️ [Background Image](${data.beatmapset.covers.cover})`)
         .setImage(`attachment://chart.png`) // the @2x version does not work sadge
-        .setFooter({ text: `Recommendation ${index+1} of ${length} | Score: ${rec.score.toFixed(2)}` });
+        .setFooter({ text: `Recommendation ${index + 1} of ${length} | Score: ${rec.score.toFixed(2)} | Refresh in ${remainingTimeString}` });
 
     if (data.mode != "mania") {
         embed.addFields([
