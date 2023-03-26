@@ -123,7 +123,7 @@ export async function getTopForUser(userid: any, offset?: number, limit?: number
 
             top.topData = topData;
 
-            const top100String: String[] = top.topData.map((data: TopData) => {
+            const top100String: string[] = top.topData.map((data: TopData) => {
                 return `${data.scoreid}`;
             })
 

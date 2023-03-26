@@ -1,9 +1,9 @@
 export interface like {
-    osuid: Number,
-    beatmapid: Number,
-    origin: String,
-    mode: String,
-    value: String,
-    type: String,
-    vote: String
+    osuid: number,
+    beatmapid: number,
+    origin: string,
+    mode: string,
+    value: string,
+    type: string,
+    vote: string
 }
