@@ -202,8 +202,8 @@ export async function generateCard(user: any, skills: skill_type[], title: Title
     let userinfo_flag_x = 0;
     let gamemode_icon_x = 0;
     let title_x = 0;
-    let chart_x = 382;
-    let chart_lowskills_x = 406;
+    const chart_x = 382;
+    const chart_lowskills_x = 406;
 
     ctx.textAlign = 'left';
     ctx.font = 'regular 24pt Ikea Sans';
@@ -335,7 +335,7 @@ export async function generateCard(user: any, skills: skill_type[], title: Title
 
     let rarity_y = 338;
     let title_y = 370;
-    let secondary_y = 410;
+    const secondary_y = 410;
 
     if (!secondaryTitle) {
         rarity_y = 358;

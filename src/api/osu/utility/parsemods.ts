@@ -126,7 +126,7 @@ export function parseModString(input: string | null) {
 
 export function parseModRestricted(input: string[] | null) {
 
-    let return_mods: string[] = [];
+    const return_mods: string[] = [];
 
     if (input == null) {
         return [];

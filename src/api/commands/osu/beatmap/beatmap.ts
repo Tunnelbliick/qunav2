@@ -15,7 +15,7 @@ export async function beatmap(message: any, interaction: any, args: any) {
         url = embed.url;
     }
 
-    let result: any = await checkForBeatmap(message, interaction, args);
+    const result: any = await checkForBeatmap(message, interaction, args);
 
     if (result.isSet == true)
         await getBeatmapSet(+result.setid).then((data: any) => {

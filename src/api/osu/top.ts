@@ -96,7 +96,7 @@ export async function getTopForUser(userid: any, offset?: number, limit?: number
                 mode = "osu";
 
             const topData: TopData[] = [];
-            let top: Top = {
+            const top: Top = {
                 osuid: userid,
                 mode: mode,
                 topData: topData
@@ -131,7 +131,7 @@ export async function getTopForUser(userid: any, offset?: number, limit?: number
 
             if (userHash === null || userHash.topHash !== topHash || userHash.topHash === undefined || userHash.topHash === null) {
 
-                let cacheTop = new CacheTop();
+                const cacheTop = new CacheTop();
                 cacheTop.osuid = top.osuid;
                 cacheTop.mode = mode;
                 cacheTop.topData = top.topData;

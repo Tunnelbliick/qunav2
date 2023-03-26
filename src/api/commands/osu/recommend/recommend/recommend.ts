@@ -30,18 +30,18 @@ export async function fixrecommends() {
 
     const expliciteLikes = await RecLike.find({});
     let index = 0;
-    for (let like of expliciteLikes) {
+    for (const like of expliciteLikes) {
         index++;
 
         if (index % 10000 == 0) {
             console.log(`${index}/${expliciteLikes.length}`);
         }
 
-        let value_arr = like.value.split("_");
+        const value_arr = like.value.split("_");
 
         if (value_arr.length > 1) {
-            let mods = parseModString(value_arr[1]);
-            let fixed_mods = parseModRestricted(mods);
+            const mods = parseModString(value_arr[1]);
+            const fixed_mods = parseModRestricted(mods);
             like.value = `${like.beatmapid}_${fixed_mods.join("")}`;
         }
 
@@ -63,8 +63,8 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         return;
     }
 
-    let userPromise = UserHash.findOne({ osuid: +userObject.userid });
-    let topPromise = getTopForUser(userObject?.userid, undefined, undefined, "osu");
+    const userPromise = UserHash.findOne({ osuid: +userObject.userid });
+    const topPromise = getTopForUser(userObject?.userid, undefined, undefined, "osu");
 
     let userHash: any;
     let top100: any;
@@ -94,9 +94,9 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         !top100Values.includes(value) && !expliciteLikesValues.includes(value)
     )
 
-    let newLikes = [];
+    const newLikes = [];
 
-    for (let value of newImpliciteLikes) {
+    for (const value of newImpliciteLikes) {
 
         const like = new RecLike();
         like.osuid = userHash.osuid;
@@ -118,9 +118,9 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
 
     const userid: number = +userObject.userid;
     let recommendations: Recommendation_data[] = [];
-    let max_index = 100;
-    let index = 0;
-    let count = 500;
+    const max_index = 100;
+    const index = 0;
+    const count = 500;
 
     try {
         await axios.get<Recommendation_data[]>(`http://127.0.0.1:8082/recommend/${userid}?count=${count}`).then((resp: any) => {
@@ -206,7 +206,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
 
     async function saveRecommends() {
 
-        let recommendation_cache: any[] = [];
+        const recommendation_cache: any[] = [];
 
         await asyncBatch(recommendations.slice(0, max_index),
             (rec: Recommendation_data) => new Promise(
@@ -219,7 +219,7 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
 
                     const data = await getBeatmap(beatmapid);
 
-                    let recommendation = new Recommendation();
+                    const recommendation = new Recommendation();
 
                     let stats: BeatmapStats = {
                         cs: data.cs,
