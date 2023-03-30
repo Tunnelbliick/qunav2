@@ -21,7 +21,7 @@
     "country-iso-2-to-3": "^1.1.0",
     "country-list": "^2.2.0",
     "dataimageattachment": "^1.1.2",
-    "discord.js": "^13.6.0",
+    "discord.js": "^13.14.0",
     "dotenv": "^16.0.1",
     "hash-sum": "^2.0.0",
     "image-to-base64": "^2.2.0",
