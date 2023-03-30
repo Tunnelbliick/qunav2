@@ -104,13 +104,13 @@ export async function generateCard(user: any, skills: skill_type[], title: Title
 
     })
 
-    var gradient_background = ctx.createLinearGradient(0, 0, background.width, background.height);
+    let gradient_background = ctx.createLinearGradient(0, 0, background.width, background.height);
     const gradient_stops_background = 1 / (currentTier.colors.length - 1);
     currentTier.colors.forEach((color: any, index: any) => {
         gradient_background.addColorStop(gradient_stops_background * index, color);
     });
 
-    var gradient_background_reverse = ctx.createLinearGradient(0, 0, background.width, background.height);
+    let gradient_background_reverse = ctx.createLinearGradient(0, 0, background.width, background.height);
     currentTier.colors.reverse().forEach((color: any, index: any) => {
         gradient_background_reverse.addColorStop(gradient_stops_background * index, color);
     });
@@ -134,7 +134,7 @@ export async function generateCard(user: any, skills: skill_type[], title: Title
     //const level_left = Math.floor(level.next(1, 16777215)).toString(16);
     //const level_right = Math.floor(level.next(1, 16777215)).toString(16);
 
-    var level_gradient = ctx.createLinearGradient(296, 0, 547, 0);
+    let level_gradient = ctx.createLinearGradient(296, 0, 547, 0);
     level_gradient.addColorStop(0, level_left);
     level_gradient.addColorStop(1, level_right);
 
