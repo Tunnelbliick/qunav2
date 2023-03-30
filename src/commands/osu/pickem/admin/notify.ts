@@ -9,6 +9,7 @@ import pickemPrediction from "../../../../models/pickemPrediction";
 import owcgame from "../../../../models/owcgame";
 import { interaction_thinking } from "../../../../embeds/utility/thinking";
 import { selectRoundByIndex } from "../../../../api/pickem/utility";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 const imageToBase64 = require('image-to-base64');
 const DataImageAttachment = require("dataimageattachment");
@@ -23,7 +24,7 @@ export default {
         name: 'text',
         description: 'text',
         required: false,
-        type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+        type: ApplicationCommandOptionTypes.STRING,
         autocomplete: true,
     }],
 

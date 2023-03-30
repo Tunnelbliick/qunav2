@@ -1,8 +1,8 @@
 import { ICommand } from "wokcommands";
 import { compare } from "../../../api/commands/osu/compare/compare";
 import { helpcompare } from "../../../embeds/osu/compare/help";
-import DiscordJS from 'discord.js'
 import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 export default {
 
@@ -14,19 +14,19 @@ export default {
             name: 'username',
             description: 'Look for a specific username',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         },
         {
             name: 'discord',
             description: 'Look for a specific user via mention',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER,
+            type: ApplicationCommandOptionTypes.USER,
         },
         {
             name: 'map',
             description: 'Link or ID of the map',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         },
     ],
     description: "Quna compares your score with recent or beatmap",

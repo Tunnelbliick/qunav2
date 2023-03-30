@@ -1,8 +1,8 @@
 import { ICommand } from "wokcommands";
-import DiscordJS, { MessageEmbed } from 'discord.js';
-import { getInfo } from "../../../../api/owc/owc";
-import { interaction_thinking, message_thinking } from "../../../../embeds/utility/thinking";
+import { MessageEmbed } from 'discord.js';
+import { interaction_thinking } from "../../../../embeds/utility/thinking";
 import Pool from "../../../../models/Pool";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 export default {
 
@@ -16,34 +16,34 @@ export default {
             name: 'year',
             description: 'Year to look at',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         },
         {
             name: 'mode',
             description: 'Gamemode to lookup',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "catch", value: "catch", }, { name: "mania", value: "mania" }]
         },
         {
             name: 'round',
             description: 'Gamemode to lookup',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             choices: [{ name: "Grand Finals", value: "grand_finals", }, { name: "Finals", value: "finals", }, { name: "Semifinals", value: "semifinals", }, { name: "Quarterfinals", value: "quarterfinals" }, { name: "Round of 16", value: "ro16" }, { name: "Round of 32", value: "ro32" }, { name: "Qualifiers", value: "qualifiers" }]
         },
         {
             name: 'keys',
             description: 'Gamemode to lookup',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             choices: [{ name: "4K", value: "4", }, { name: "7K", value: "7", }]
         },
         {
             name: 'pool',
             description: 'Gamemode to lookup',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         },
 
     ],

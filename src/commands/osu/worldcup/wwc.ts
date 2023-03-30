@@ -2,6 +2,7 @@ import { ICommand } from "wokcommands";
 import DiscordJS from 'discord.js';
 import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
 import { compareworldcups } from "../../../api/owc/compare";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 export default {
 
@@ -14,7 +15,7 @@ export default {
             name: 'mode',
             description: 'Gamemode to lookup',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "catch", value: "catch", }, { name: "mania", value: "mania" }]
         },
     ],

@@ -6,6 +6,7 @@ import Pool from "../../../../models/Pool";
 import { current_tournament } from "../../../../api/pickem/pickem";
 import owc from "../../../../models/owc";
 import { noPickEm } from "../../../../embeds/osu/pickem/nopickem";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 export default {
 
@@ -17,7 +18,7 @@ export default {
         name: 'round',
         description: 'round to lock',
         required: false,
-        type: DiscordJS.Constants.ApplicationCommandOptionTypes.NUMBER,
+        type: ApplicationCommandOptionTypes.NUMBER,
         autocomplete: true,
     }],
 

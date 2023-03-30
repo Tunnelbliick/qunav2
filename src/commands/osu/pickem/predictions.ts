@@ -1,7 +1,7 @@
 import { ICommand } from "wokcommands";
-import DiscordJS from 'discord.js';
 import { predictions } from "../../../api/pickem/predictions";
 import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 export default {
 
     category: "osu!",
@@ -13,19 +13,19 @@ export default {
             name: 'discord',
             description: 'Predictions for a specific discord user',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER,
+            type: ApplicationCommandOptionTypes.USER,
         },
         {
             name: 'name',
             description: 'Predictions for a specific username',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         },
         {
             name: 'test',
             description: 'Predictions for a specific username',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         },
     ],
     callback: async ({ message, interaction, args, prefix, }) => {

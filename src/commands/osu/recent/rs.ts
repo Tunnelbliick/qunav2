@@ -1,8 +1,8 @@
 import { ICommand } from "wokcommands";
 import { recent } from "../../../api/commands/osu/recent/recent";
 import { helpRecent } from "../../../embeds/osu/recent/help";
-import DiscordJS from 'discord.js'
 import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 
 export default {
@@ -15,32 +15,32 @@ export default {
             name: 'username',
             description: 'Look for a specific username',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         },
         {
             name: 'discord',
             description: 'Look for a specific user via mention',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.USER,
+            type: ApplicationCommandOptionTypes.USER,
         },
         {
             name: 'mode',
             description: 'Gamemode to lookup',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "ctb", value: "ctb", }, { name: "mania", value: "mania" }]
         },
         {
             name: 'query',
             description: 'Filter for a specific map e.g "Kira Kira"',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         },
         {
             name: 'rank',
             description: 'Filter for plays that acchived a certain rank',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             choices: [
                 { name: "SS", value: "S", },
                 { name: "S", value: "S", },
@@ -54,13 +54,13 @@ export default {
             name: 'index',
             description: 'Select a specific recent play based on the index',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.NUMBER,
+            type: ApplicationCommandOptionTypes.NUMBER,
         },
         {
             name: 'fails',
             description: 'Include failed plays',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.NUMBER,
+            type: ApplicationCommandOptionTypes.NUMBER,
             choices: [{ name: "True", value: 1, }, { name: "False", value: 0, }]
         },
     ],

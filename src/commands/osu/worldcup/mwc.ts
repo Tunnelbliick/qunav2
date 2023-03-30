@@ -1,7 +1,7 @@
 import { ICommand } from "wokcommands";
-import DiscordJS from 'discord.js';
 import { getInfo } from "../../../api/owc/owc";
 import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 export default {
 
@@ -13,7 +13,7 @@ export default {
             name: 'keys',
             description: 'Keys to look at',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             choices: [
                 { name: "4k", value: "4K"},
                 { name: "7k", value: "7K"}
@@ -23,21 +23,21 @@ export default {
             name: 'year',
             description: 'Year to look at',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             autocomplete: true,
         },
         {
             name: 'Country',
             description: 'Country to take a closer look at',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             autocomplete: true,
         },
         {
             name: 'mode',
             description: 'Gamemode to lookup',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
             choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "catch", value: "catch", }, { name: "mania", value: "mania" }]
         },
     ],

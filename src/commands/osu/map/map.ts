@@ -3,6 +3,7 @@ import { beatmap } from "../../../api/commands/osu/beatmap/beatmap";
 import { helpmap } from "../../../embeds/osu/beatmap/help";
 import DiscordJS from 'discord.js'
 import { interaction_thinking, message_thinking } from "../../../embeds/utility/thinking";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 export default {
 
@@ -14,13 +15,13 @@ export default {
             name: 'map',
             description: 'Link or ID of the map',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         },
         {
             name: 'mods',
             description: 'Mods for the Beatmap e.g. hrhd',
             required: false,
-            type: DiscordJS.Constants.ApplicationCommandOptionTypes.STRING,
+            type: ApplicationCommandOptionTypes.STRING,
         }
     ],
     description: "Quna grabs a map or something.",

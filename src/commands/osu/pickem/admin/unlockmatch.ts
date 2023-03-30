@@ -1,11 +1,10 @@
 import { ICommand } from "wokcommands";
-import DiscordJS, { MessageEmbed } from 'discord.js';
-import { getInfo } from "../../../../api/owc/owc";
-import { interaction_thinking, message_thinking } from "../../../../embeds/utility/thinking";
-import Pool from "../../../../models/Pool";
+import { MessageEmbed } from 'discord.js';
+import { interaction_thinking } from "../../../../embeds/utility/thinking";
 import { current_tournament } from "../../../../api/pickem/pickem";
 import owc from "../../../../models/owc";
 import { noPickEm } from "../../../../embeds/osu/pickem/nopickem";
+import { ApplicationCommandOptionTypes } from "discord.js/typings/enums";
 
 export default {
 
@@ -17,7 +16,7 @@ export default {
         name: 'match',
         description: 'match to lock',
         required: false,
-        type: DiscordJS.Constants.ApplicationCommandOptionTypes.NUMBER,
+        type: ApplicationCommandOptionTypes.NUMBER,
         autocomplete: true,
     }],
 
