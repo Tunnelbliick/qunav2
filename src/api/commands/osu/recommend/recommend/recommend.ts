@@ -169,7 +169,7 @@ export async function bulldrecommends(message: any, args: string[], prefix: any)
         await saveRecommends();
     } else {
 
-        if (mods !== recInfo.mods) {
+        if (arraysAreNotEqual(mods, recInfo.mods)) {
 
             if (isFiveMinutesAgo(recInfo.createdAt)) {
 
@@ -333,3 +333,11 @@ function isFiveMinutesAgo(date: Date): boolean {
 
     return Math.abs(currentTime - inputTime) >= fiveMinutesInMilliseconds;
 }
+
+function arraysAreNotEqual<T>(arr1: T[], arr2: T[]): boolean {
+    if (arr1.length !== arr2.length) {
+      return true;
+    }
+  
+    return arr1.some((value, index) => value !== arr2[index]);
+  }
