@@ -97,6 +97,8 @@ export default (client: Client) => {
                             index--;
                         }
 
+                        recInfo.currentIndex = index;
+
                         await Promise.all([
                             like.save(),
                             recInfo.save(),
@@ -158,6 +160,8 @@ export default (client: Client) => {
                             index--;
                         }
 
+                        recInfo.currentIndex = index;
+
                         await Promise.all([
                             like.save(),
                             recInfo.save(),
@@ -184,6 +188,9 @@ export default (client: Client) => {
                             index = 0;
                         }
 
+                        recInfo.currentIndex = index;
+                        recInfo.save();
+
                         await buildEmbed(message, index, userid, discordid, recInfo);
                         await interaction.deferUpdate();
                         return;
@@ -198,6 +205,9 @@ export default (client: Client) => {
                         if (index < 0) {
                             index = (+recInfo.length - 1);
                         }
+
+                        recInfo.currentIndex = index;
+                        recInfo.save();
 
                         await buildEmbed(message, index, userid, discordid, recInfo);
                         await interaction.deferUpdate();

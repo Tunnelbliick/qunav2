@@ -37,3 +37,18 @@ export function serverOffline(message: any, reply?: any) {
     }
 
 }
+
+export function toManyRequests(message: any, reply?: any) {
+
+    const errorEmbed = new MessageEmbed()
+        .setColor(0x737df9)
+        .setTitle(`Please wait`)
+        .setDescription(`Your last recommendations are not older then 5 minutes. Please wait to request new ones`)
+
+    if (reply) {
+        reply.edit({ embeds: [errorEmbed] });
+    } else {
+        message.reply({ embeds: [errorEmbed] });
+    }
+
+}

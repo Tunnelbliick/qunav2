@@ -2,7 +2,7 @@ import asyncBatch from "async-batch";
 import axios from "axios";
 import { MessageActionRow, MessageButton } from "discord.js";
 import { buildMapEmbedRecommendation } from "../../../../../embeds/osu/beatmap/beatmap";
-import { noRecs, serverOffline } from "../../../../../embeds/osu/recommend/recommend/error";
+import { noRecs, serverOffline, toManyRequests } from "../../../../../embeds/osu/recommend/recommend/error";
 import { checkIfUserExists } from "../../../../../embeds/utility/nouserfound";
 import { QunaUser } from "../../../../../interfaces/QunaUser";
 import RecLike from "../../../../../models/RecLike";
@@ -41,7 +41,7 @@ export async function fixrecommends() {
 
 }
 
-export async function bulldrecommends(message: any, args: any, prefix: any) {
+export async function bulldrecommends(message: any, args: string[], prefix: any) {
 
     message.channel.sendTyping();
 
@@ -109,20 +109,48 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
     let recommendations: Recommendation_data[] = [];
     const max_index = 100;
     const index = 0;
-    const count = 500;
+    let count = 1000;
+    let mods: Array<String> = [];
 
-    try {
-        await axios.get<Recommendation_data[]>(`http://127.0.0.1:8082/recommend/${userid}?count=${count}`).then((resp: any) => {
-            recommendations = resp.data;
-        })
-    } catch (e: any) {
+    if(args.length != 0) {
+    
+        const parsedMods = parseModString(args[0]);
+        let mods = parseModRestricted(parsedMods);
 
-        if (e.code === 'ECONNREFUSED') {
-            serverOffline(message);
-            return;
+        if(mods.includes("NM")) {
+            mods = [];
         }
-    }
 
+        count = 10000;
+
+        try {
+            await axios.get<Recommendation_data[]>(`http://127.0.0.1:8082/recommend/mods/${userid}?count=${count}&mods=${mods.join("")}`).then((resp: any) => {
+                recommendations = resp.data;
+            })
+        } catch (e: any) {
+    
+            if (e.code === 'ECONNREFUSED') {
+                serverOffline(message);
+                return;
+            }
+        }
+
+    } else {
+
+        try {
+            await axios.get<Recommendation_data[]>(`http://127.0.0.1:8082/recommend/${userid}?count=${count}`).then((resp: any) => {
+                recommendations = resp.data;
+            })
+        } catch (e: any) {
+    
+            if (e.code === 'ECONNREFUSED') {
+                serverOffline(message);
+                return;
+            }
+        }
+    
+
+    }
 
 
     let recInfo = await RecommendationInfo.findOne({ osuid: userid })
@@ -135,10 +163,28 @@ export async function bulldrecommends(message: any, args: any, prefix: any) {
         recInfo.currentIndex = 0;
         recInfo.createdAt = now;
         recInfo.length = max_index;
+        recInfo.mods = mods;
 
         await recInfo.save();
         await saveRecommends();
     } else {
+
+        if(mods !== recInfo.mods && isFiveMinutesAgo(recInfo.createdAt)) {
+
+            recInfo.currentIndex = 0;
+            recInfo.createdAt = now;
+            recInfo.length = max_index;
+
+            await recInfo.save();
+            await Recommendation.deleteMany({ osuid: userid });
+            await saveRecommends();
+            
+        } else {
+
+            toManyRequests(message);
+            return;
+
+        }
 
         if (isAfterLastFullHalfHour(recInfo.createdAt) || recInfo.length === 0) {
 
@@ -275,3 +321,11 @@ function isAfterLastFullHalfHour(checkTime: Date): boolean {
     // Compare the checkTime with the last full half-hour
     return checkTime.getTime() < lastFullHalfHour;
 }
+
+function isFiveMinutesAgo(date: Date): boolean {
+    const currentTime: number = new Date().getTime();
+    const inputTime: number = date.getTime();
+    const fiveMinutesInMilliseconds: number = 5 * 60 * 1000;
+  
+    return Math.abs(currentTime - inputTime) <= fiveMinutesInMilliseconds;
+  }
