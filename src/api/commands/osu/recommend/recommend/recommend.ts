@@ -112,12 +112,12 @@ export async function bulldrecommends(message: any, args: string[], prefix: any)
     let count = 1000;
     let mods: Array<String> = [];
 
-    if(args.length != 0) {
-    
+    if (args.length != 0) {
+
         const parsedMods = parseModString(args[0]);
         let mods = parseModRestricted(parsedMods);
 
-        if(mods.includes("NM")) {
+        if (mods.includes("NM")) {
             mods = [];
         }
 
@@ -128,7 +128,7 @@ export async function bulldrecommends(message: any, args: string[], prefix: any)
                 recommendations = resp.data;
             })
         } catch (e: any) {
-    
+
             if (e.code === 'ECONNREFUSED') {
                 serverOffline(message);
                 return;
@@ -142,13 +142,13 @@ export async function bulldrecommends(message: any, args: string[], prefix: any)
                 recommendations = resp.data;
             })
         } catch (e: any) {
-    
+
             if (e.code === 'ECONNREFUSED') {
                 serverOffline(message);
                 return;
             }
         }
-    
+
 
     }
 
@@ -169,21 +169,25 @@ export async function bulldrecommends(message: any, args: string[], prefix: any)
         await saveRecommends();
     } else {
 
-        if(mods !== recInfo.mods && isFiveMinutesAgo(recInfo.createdAt)) {
+        if (mods !== recInfo.mods) {
 
-            recInfo.currentIndex = 0;
-            recInfo.createdAt = now;
-            recInfo.length = max_index;
+            if (isFiveMinutesAgo(recInfo.createdAt)) {
 
-            await recInfo.save();
-            await Recommendation.deleteMany({ osuid: userid });
-            await saveRecommends();
+                recInfo.currentIndex = 0;
+                recInfo.createdAt = now;
+                recInfo.length = max_index;
+
+                await recInfo.save();
+                await Recommendation.deleteMany({ osuid: userid });
+                await saveRecommends();
+
+            } else {
+
+                toManyRequests(message);
+                return;
+
+            }
             
-        } else {
-
-            toManyRequests(message);
-            return;
-
         }
 
         if (isAfterLastFullHalfHour(recInfo.createdAt) || recInfo.length === 0) {
@@ -326,6 +330,6 @@ function isFiveMinutesAgo(date: Date): boolean {
     const currentTime: number = new Date().getTime();
     const inputTime: number = date.getTime();
     const fiveMinutesInMilliseconds: number = 5 * 60 * 1000;
-  
-    return Math.abs(currentTime - inputTime) <= fiveMinutesInMilliseconds;
-  }
+
+    return Math.abs(currentTime - inputTime) >= fiveMinutesInMilliseconds;
+}
