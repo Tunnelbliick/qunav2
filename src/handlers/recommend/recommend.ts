@@ -77,13 +77,13 @@ export default (client: Client) => {
                             break;
                         }
 
-                        let mode: String = "osu";
+                        let mode: string = "osu";
 
                         if(current_recommendations.mode !== null && current_recommendations.mode !== undefined) {
                             mode = current_recommendations.mode;
                         }
 
-                        let like = new RecLike();
+                        const like = new RecLike();
                         like.beatmapid = +current_recommendations.mapid;
                         like.mode = mode;
                         like.origin = "manual_top";
@@ -140,13 +140,13 @@ export default (client: Client) => {
                         }
 
                         
-                        let mode: String = "osu";
+                        let mode: string = "osu";
 
                         if(current_recommendations.mode !== null && current_recommendations.mode !== undefined) {
                             mode = current_recommendations.mode;
                         }
 
-                        let like = new RecLike();
+                        const like = new RecLike();
                         like.beatmapid = +current_recommendations.mapid;
                         like.mode = mode;
                         like.origin = "manual_top";

@@ -29,8 +29,8 @@ export async function fixrecommends() {
     console.log('Started fixing recommends');
 
     const expliciteLikes = await RecLike.find({ origin: "manual_top" });
-    let index = 0;
-    for (let like of expliciteLikes) {
+    const index = 0;
+    for (const like of expliciteLikes) {
 
         if (like.mode === null || like.mode === undefined) {
             like.mode = "osu";
