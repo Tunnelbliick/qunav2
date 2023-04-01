@@ -24,7 +24,7 @@ export default (client: Client) => {
 
             const para = customid.split("_");
 
-            if (para[0] == "recommendation") {
+            if (para[0] == "morelike") {
 
                 const discordid = para[2];
 
@@ -45,18 +45,7 @@ export default (client: Client) => {
                 const method = para[1];
                 let index: number = +para[3]
                 const userid: number = +para[4];
-
-                const recInfo = await RecommendationInfo.findOne({ osuid: userid })
-
-                if (recInfo == null || recInfo == undefined) {
-                    const embed = new MessageEmbed()
-                        .setColor(0x737df9)
-                        .setTitle(`Something went wrong`)
-                        .setDescription(`Please contact us on discord if this issue keeps poping up!`);
-
-                    await interaction.editReply({ embeds: [embed] });
-                    return;
-                }
+                const source: string = para[5];
 
                 switch (method) {
                     case "like": {
@@ -65,49 +54,20 @@ export default (client: Client) => {
                             ephemeral: true
                         });
 
-                        const rec_id: any = para[5];
-
-                        const current_recommendations = await Recommendation.findOne({ _id: rec_id });
-
-                        if (current_recommendations == null || current_recommendations == undefined) {
-                            const embed = new MessageEmbed()
-                                .setColor(0x737df9)
-                                .setTitle(`Something went wrong`)
-                                .setDescription(`Please contact us on discord if this issue keeps poping up!`);
-
-                            await interaction.editReply({ embeds: [embed] });
-                            return;
-                        }
-
                         let mode: string = "osu";
 
-                        if (current_recommendations.mode !== null && current_recommendations.mode !== undefined) {
-                            mode = current_recommendations.mode;
-                        }
+                        let split = source.split("_");
 
                         const like = new RecLike();
-                        like.beatmapid = +current_recommendations.mapid;
+                        like.beatmapid = +split[0];
                         like.mode = mode;
                         like.origin = "manual_top";
                         like.vote = "like";
                         like.osuid = userid;
-                        like.value = `${current_recommendations.mapid}_${current_recommendations.mods.join("")}`
+                        like.value = source
 
-                        recInfo.length = +recInfo.length - 1;
-
-                        if (index == recInfo.length) {
-                            index--;
-                        }
-
-                        recInfo.currentIndex = index;
-
-                        await Promise.all([
-                            like.save(),
-                            recInfo.save(),
-                            current_recommendations.delete()
-                        ]);
-
-                        await buildEmbed(message, index, userid, discordid, recInfo);
+                        await like.save();
+                        await buildEmbed(message, index, userid, discordid, source);
                         await interaction.deferUpdate();
                         return;
 
@@ -119,51 +79,20 @@ export default (client: Client) => {
                             ephemeral: true
                         });
 
-                        const rec_id: any = para[5];
-
-                        const current_recommendations = await Recommendation.findOne({ _id: rec_id });
-
-                        if (current_recommendations == null || current_recommendations == undefined) {
-                            const embed = new MessageEmbed()
-                                .setColor(0x737df9)
-                                .setTitle(`Something went wrong`)
-                                .setDescription(`Please contact us on discord if this issue keeps poping up!`);
-
-                            await interaction.editReply({ embeds: [embed] });
-                            return;
-                            break;
-                        }
-
-
                         let mode: string = "osu";
 
-                        if (current_recommendations.mode !== null && current_recommendations.mode !== undefined) {
-                            mode = current_recommendations.mode;
-                        }
+                        let split = source.split("_");
 
                         const like = new RecLike();
-                        like.beatmapid = +current_recommendations.mapid;
+                        like.beatmapid = +split[0];
                         like.mode = mode;
                         like.origin = "manual_top";
                         like.vote = "dislike";
                         like.osuid = userid;
-                        like.value = `${current_recommendations.mapid}_${current_recommendations.mods.join("")}`
+                        like.value = source
 
-                        recInfo.length = +recInfo.length - 1;
-
-                        if (index == recInfo.length) {
-                            index--;
-                        }
-
-                        recInfo.currentIndex = index;
-
-                        await Promise.all([
-                            like.save(),
-                            recInfo.save(),
-                            current_recommendations.delete()
-                        ]);
-
-                        await buildEmbed(message, index, userid, discordid, recInfo);
+                        await like.save();
+                        await buildEmbed(message, index, userid, discordid, source);
                         await interaction.deferUpdate();
                         return;
                     }
@@ -172,14 +101,11 @@ export default (client: Client) => {
 
                         index++;
 
-                        if (index > (+recInfo.length - 1)) {
+                        if (index > 10) {
                             index = 0;
                         }
 
-                        recInfo.currentIndex = index;
-                        recInfo.save();
-
-                        await buildEmbed(message, index, userid, discordid, recInfo);
+                        await buildEmbed(message, index, userid, discordid, source);
                         await interaction.deferUpdate();
                         return;
 
@@ -191,13 +117,10 @@ export default (client: Client) => {
                         index--;
 
                         if (index < 0) {
-                            index = (+recInfo.length - 1);
+                            index = 10;
                         }
 
-                        recInfo.currentIndex = index;
-                        recInfo.save();
-
-                        await buildEmbed(message, index, userid, discordid, recInfo);
+                        await buildEmbed(message, index, userid, discordid, source);
                         await interaction.deferUpdate();
                         return;
 
@@ -208,28 +131,7 @@ export default (client: Client) => {
                         await interaction.deferReply({
                         });
 
-
-                        let recommendations: Recommendation_data[] = [];
-                        const rec_id: any = para[5];
-                        const current_recommendations = await Recommendation.findOne({ _id: rec_id });
-
-                        if (current_recommendations == null) {
-                            return;
-                        }
-
-                        const source = `${current_recommendations.mapid}_${current_recommendations.mods.join("")}`;
-
-                        try {
-                            await axios.get<Recommendation_data[]>(`http://127.0.0.1:8082/morelike/${userid}/${source}?count=100`).then((resp: any) => {
-                                recommendations = resp.data;
-                            })
-                        } catch (e: any) {
-
-                            if (e.code === 'ECONNREFUSED') {
-                                serverOffline(message);
-                                return;
-                            }
-                        }
+                        const recommendations = await getMoreLikeThis(userid, source);
 
                         let top10 = recommendations.slice(0, 10);
 
@@ -269,7 +171,7 @@ export default (client: Client) => {
                             .setLabel("More like this")
                             .setStyle("PRIMARY");
 
-                        row.addComponents([prior, upvote, downvote, next, morelike]);
+                        row.addComponents([prior, upvote, downvote, next]);
 
                         interaction.editReply({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
                         break;
@@ -286,46 +188,69 @@ export default (client: Client) => {
     })
 }
 
-async function buildEmbed(message: any, index: number, userid: any, discordid: any, recInfo: any) {
+async function buildEmbed(interaction: any, index: number, userid: any, discordid: any, source: string) {
 
-    const rec = await Recommendation.find({ osuid: userid }).sort({ score: -1 }).skip(index).limit(1).exec();
+    const rec = await getMoreLikeThis(userid, source);
 
     if (rec.length == 0) {
         const errorEmbed = new MessageEmbed()
             .setColor(0x737df9)
             .setTitle(`No recommendations`)
             .setDescription(`Quna currently has no personal recommendations for you.\nUse a filter to find normal maps`)
-        await message.edit({ embeds: [errorEmbed] })
+        await interaction.edit({ embeds: [errorEmbed] })
     }
 
+    let top10 = rec.slice(index, 10);
 
-    const beatmap = await getBeatmap(rec[0].mapid);
-    const value = `${rec[0].mapid}_${rec[0].mods.join("")}`
-    const { embed, result } = await buildMapEmbedRecommendation(rec[0], beatmap, index, recInfo);
+    let split = top10[0].item.split("_");
+    let beatmapid = split[0];
+
+
+    const beatmap = await getBeatmap(beatmapid);
+    const { embed, result } = await buildMapEmbedMoreLikeThis(split[1], beatmap, index, top10[0].score);
 
     const row = new MessageActionRow();
 
     const next = new MessageButton().
-        setCustomId(`recommendation_next_${discordid}_${index}_${userid}`)
+        setCustomId(`morelike_next_${discordid}_${index}_${userid}_${source}`)
         .setEmoji("951821813460115527")
         .setStyle("PRIMARY");
 
     const prior = new MessageButton().
-        setCustomId(`recommendation_prior_${discordid}_${index}_${userid}`)
+        setCustomId(`morelike_prior_${discordid}_${index}_${userid}_${source}`)
         .setEmoji("951821813288140840")
         .setStyle("PRIMARY");
 
     const upvote = new MessageButton()
-        .setCustomId(`recommendation_like_${discordid}_${index}_${userid}_${rec[0].id}`)
+        .setCustomId(`morelike_like_${discordid}_${index}_${userid}_${source}_${top10[0]}`)
         .setEmoji("955320158270922772")
         .setStyle("SUCCESS");
 
     const downvote = new MessageButton()
-        .setCustomId(`recommendation_dislike_${discordid}_${index}_${userid}_${rec[0].id}`)
+        .setCustomId(`morelike_dislike_${discordid}_${index}_${userid}_${source}_${top10[0]}`)
+        .setEmoji("955319940435574794")
+        .setStyle("DANGER");
+
+    const morelike = new MessageButton()
+        .setCustomId(`morelike_morelike_${discordid}_${index}_${userid}_${source}_${top10[0]}`)
         .setLabel("More like this")
         .setStyle("PRIMARY");
 
-    row.addComponents([prior, upvote, downvote, next]);
+    row.addComponents([prior, upvote, downvote, next, morelike]);
 
-    await message.edit({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
+    await interaction.editReply({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
+}
+
+export async function getMoreLikeThis(userid: number, source: string): Promise<Recommendation_data[]> {
+
+    let recommendations: Recommendation_data[] = [];
+
+    try {
+        const resp = await axios.get<Recommendation_data[]>(`http://127.0.0.1:8082/morelike/${userid}/${source}?count=100`);
+        recommendations = resp.data;
+
+    } catch (e: any) {
+    }
+
+    return recommendations;
 }

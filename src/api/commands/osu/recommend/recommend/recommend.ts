@@ -19,7 +19,7 @@ import { loadMapPP } from "../../../../pp/db/loadmap";
 
 const DataImageAttachment = require("dataimageattachment");
 
-interface Recommendation_data {
+export interface Recommendation_data {
     item: string,
     score: string,
 }
@@ -187,7 +187,7 @@ export async function bulldrecommends(message: any, args: string[], prefix: any)
                 return;
 
             }
-            
+
         }
 
         if (isAfterLastFullHalfHour(recInfo.createdAt) || recInfo.length === 0) {
@@ -237,7 +237,12 @@ export async function bulldrecommends(message: any, args: string[], prefix: any)
         .setEmoji("955319940435574794")
         .setStyle("DANGER");
 
-    row.addComponents([prior, upvote, downvote, next]);
+    const moreLikeThis = new MessageButton().
+        setCustomId(`recommendation_more_${message.author.id}_${index}_${userid}_${rec[0].id}`)
+        .setLabel("More like this")
+        .setStyle("PRIMARY");
+
+    row.addComponents([prior, upvote, downvote, next, moreLikeThis]);
 
     await message.reply({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
 
@@ -336,8 +341,8 @@ function isFiveMinutesAgo(date: Date): boolean {
 
 function arraysAreNotEqual<T>(arr1: T[], arr2: T[]): boolean {
     if (arr1.length !== arr2.length) {
-      return true;
+        return true;
     }
-  
+
     return arr1.some((value, index) => value !== arr2[index]);
-  }
+}
