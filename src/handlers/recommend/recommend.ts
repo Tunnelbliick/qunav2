@@ -238,34 +238,36 @@ export default (client: Client) => {
 
                         const beatmap: beatmap = await getBeatmap(beatmapid);
 
-                        const value = `${beatmap.id}_${split[1]}`
+                        const value = `${beatmap.id}-${split[1]}`
 
                         const { embed, result } = await buildMapEmbedMoreLikeThis(split[1], beatmap, 0, top10[0].score);
 
                         const row = new MessageActionRow();
 
+                        const button_source = `${current_recommendations.mapid}-${current_recommendations.mods.join("")}`;
+
                         const next = new MessageButton().
-                            setCustomId(`morelike_next_${discordid}_0_${userid}_${source}`)
+                            setCustomId(`morelike_next_${discordid}_0_${userid}_${button_source}`)
                             .setEmoji("951821813460115527")
                             .setStyle("PRIMARY");
 
                         const prior = new MessageButton().
-                            setCustomId(`morelike_prior_${discordid}_0_${userid}_${source}`)
+                            setCustomId(`morelike_prior_${discordid}_0_${userid}_${button_source}`)
                             .setEmoji("951821813288140840")
                             .setStyle("PRIMARY");
 
                         const upvote = new MessageButton()
-                            .setCustomId(`morelike_like_${discordid}_0_${userid}_${source}_${value}`)
+                            .setCustomId(`morelike_like_${discordid}_0_${userid}_${button_source}_${value}`)
                             .setEmoji("955320158270922772")
                             .setStyle("SUCCESS");
 
                         const downvote = new MessageButton()
-                            .setCustomId(`morelike_dislike_${discordid}_0_${userid}_${source}_${value}`)
+                            .setCustomId(`morelike_dislike_${discordid}_0_${userid}_${button_source}_${value}`)
                             .setEmoji("955319940435574794")
                             .setStyle("DANGER");
 
                         const morelike = new MessageButton()
-                            .setCustomId(`morelike_morelike_${discordid}_0_${userid}_${source}_${value}`)
+                            .setCustomId(`morelike_more_${discordid}_0_${userid}_${button_source}_${value}`)
                             .setLabel("More like this")
                             .setStyle("PRIMARY");
 
@@ -322,10 +324,15 @@ async function buildEmbed(message: any, index: number, userid: any, discordid: a
 
     const downvote = new MessageButton()
         .setCustomId(`recommendation_dislike_${discordid}_${index}_${userid}_${rec[0].id}`)
+        .setEmoji("955319940435574794")
+        .setStyle("DANGER");
+
+    const more = new MessageButton()
+        .setCustomId(`recommendation_more_${discordid}_${index}_${userid}_${rec[0].id}`)
         .setLabel("More like this")
         .setStyle("PRIMARY");
 
-    row.addComponents([prior, upvote, downvote, next]);
+    row.addComponents([prior, upvote, downvote, next, more]);
 
     await message.edit({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
 }

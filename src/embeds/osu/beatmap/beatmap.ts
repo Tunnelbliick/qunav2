@@ -224,7 +224,7 @@ export async function buildMapEmbedMoreLikeThis(mods: string, data: any, index: 
         .setURL(`${data.url}`)
         .setDescription(`🎶 [Song Preview](https:${data.beatmapset.preview_url}) 🖼️ [Background Image](${data.beatmapset.covers.cover})`)
         .setImage(`attachment://chart.png`) // the @2x version does not work sadge
-        .setFooter({ text: `Similar map ${index + 1} of 10 | Score ${score}` });
+        .setFooter({ text: `Similar map ${index + 1} of 10 | Score ${score.toFixed(2)}` });
 
     if (data.mode != "mania") {
         embed.addFields([

@@ -45,7 +45,7 @@ export default (client: Client) => {
                 const method = para[1];
                 let index: number = +para[3]
                 const userid: number = +para[4];
-                const source: string = para[5];
+                const source: string = para[5].replace("-", "_");
 
                 switch (method) {
                     case "like": {
@@ -56,7 +56,7 @@ export default (client: Client) => {
 
                         let mode: string = "osu";
 
-                        let split = source.split("_");
+                        let split = para[6].replace("-", "_").split("_");
 
                         const like = new RecLike();
                         like.beatmapid = +split[0];
@@ -81,7 +81,7 @@ export default (client: Client) => {
 
                         let mode: string = "osu";
 
-                        let split = source.split("_");
+                        let split = para[6].replace("-", "_").split("_");
 
                         const like = new RecLike();
                         like.beatmapid = +split[0];
@@ -101,7 +101,7 @@ export default (client: Client) => {
 
                         index++;
 
-                        if (index > 10) {
+                        if (index >= 10) {
                             index = 0;
                         }
 
@@ -116,7 +116,7 @@ export default (client: Client) => {
 
                         index--;
 
-                        if (index < 0) {
+                        if (index <= 0) {
                             index = 10;
                         }
 
@@ -131,7 +131,7 @@ export default (client: Client) => {
                         await interaction.deferReply({
                         });
 
-                        const recommendations = await getMoreLikeThis(userid, source);
+                        const recommendations = await getMoreLikeThis(userid, para[6].replace("-", "_"));
 
                         let top10 = recommendations.slice(0, 10);
 
@@ -140,38 +140,38 @@ export default (client: Client) => {
 
                         const beatmap: beatmap = await getBeatmap(beatmapid);
 
-                        const value = `${beatmap.id}_${split[1]}`
+                        const value = `${beatmap.id}-${split[1]}`
 
                         const { embed, result } = await buildMapEmbedMoreLikeThis(split[1], beatmap, 0, top10[0].score);
 
                         const row = new MessageActionRow();
 
                         const next = new MessageButton().
-                            setCustomId(`morelike_next_${discordid}_0_${userid}_${source}`)
+                            setCustomId(`morelike_next_${discordid}_0_${userid}_${para[6]}`)
                             .setEmoji("951821813460115527")
                             .setStyle("PRIMARY");
 
                         const prior = new MessageButton().
-                            setCustomId(`morelike_prior_${discordid}_0_${userid}_${source}`)
+                            setCustomId(`morelike_prior_${discordid}_0_${userid}_${para[6]}`)
                             .setEmoji("951821813288140840")
                             .setStyle("PRIMARY");
 
                         const upvote = new MessageButton()
-                            .setCustomId(`morelike_like_${discordid}_0_${userid}_${source}_${value}`)
+                            .setCustomId(`morelike_like_${discordid}_0_${userid}_${para[6]}_${value}`)
                             .setEmoji("955320158270922772")
                             .setStyle("SUCCESS");
 
                         const downvote = new MessageButton()
-                            .setCustomId(`morelike_dislike_${discordid}_0_${userid}_${source}_${value}`)
+                            .setCustomId(`morelike_dislike_${discordid}_0_${userid}_${para[6]}_${value}`)
                             .setEmoji("955319940435574794")
                             .setStyle("DANGER");
 
                         const morelike = new MessageButton()
-                            .setCustomId(`morelike_morelike_${discordid}_0_${userid}_${source}_${value}`)
+                            .setCustomId(`morelike_more_${discordid}_0_${userid}_${para[6]}_${value}`)
                             .setLabel("More like this")
                             .setStyle("PRIMARY");
 
-                        row.addComponents([prior, upvote, downvote, next]);
+                        row.addComponents([prior, upvote, downvote, next, morelike]);
 
                         interaction.editReply({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
                         break;
@@ -208,37 +208,39 @@ async function buildEmbed(interaction: any, index: number, userid: any, discordi
 
     const beatmap = await getBeatmap(beatmapid);
     const { embed, result } = await buildMapEmbedMoreLikeThis(split[1], beatmap, index, top10[0].score);
+    const button_source = source.replace("_", "-");
+    const reference = `${beatmapid}-${split[1]}`;
 
     const row = new MessageActionRow();
 
     const next = new MessageButton().
-        setCustomId(`morelike_next_${discordid}_${index}_${userid}_${source}`)
+        setCustomId(`morelike_next_${discordid}_${index}_${userid}_${button_source}`)
         .setEmoji("951821813460115527")
         .setStyle("PRIMARY");
 
     const prior = new MessageButton().
-        setCustomId(`morelike_prior_${discordid}_${index}_${userid}_${source}`)
+        setCustomId(`morelike_prior_${discordid}_${index}_${userid}_${button_source}`)
         .setEmoji("951821813288140840")
         .setStyle("PRIMARY");
 
     const upvote = new MessageButton()
-        .setCustomId(`morelike_like_${discordid}_${index}_${userid}_${source}_${top10[0]}`)
+        .setCustomId(`morelike_like_${discordid}_${index}_${userid}_${button_source}_${reference}`)
         .setEmoji("955320158270922772")
         .setStyle("SUCCESS");
 
     const downvote = new MessageButton()
-        .setCustomId(`morelike_dislike_${discordid}_${index}_${userid}_${source}_${top10[0]}`)
+        .setCustomId(`morelike_dislike_${discordid}_${index}_${userid}_${button_source}_${reference}`)
         .setEmoji("955319940435574794")
         .setStyle("DANGER");
 
     const morelike = new MessageButton()
-        .setCustomId(`morelike_morelike_${discordid}_${index}_${userid}_${source}_${top10[0]}`)
+        .setCustomId(`morelike_more_${discordid}_${index}_${userid}_${button_source}_${reference}`)
         .setLabel("More like this")
         .setStyle("PRIMARY");
 
     row.addComponents([prior, upvote, downvote, next, morelike]);
 
-    await interaction.editReply({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
+    await interaction.edit({ embeds: [embed], components: [row], files: [new DataImageAttachment(result, "chart.png")] })
 }
 
 export async function getMoreLikeThis(userid: number, source: string): Promise<Recommendation_data[]> {
