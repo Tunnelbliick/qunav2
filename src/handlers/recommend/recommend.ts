@@ -61,10 +61,6 @@ export default (client: Client) => {
                 switch (method) {
                     case "like": {
 
-                        await interaction.deferReply({
-                            ephemeral: true
-                        });
-
                         const rec_id: any = para[5];
 
                         const current_recommendations = await Recommendation.findOne({ _id: rec_id });
@@ -76,7 +72,7 @@ export default (client: Client) => {
                                 .setDescription(`Please contact us on discord if this issue keeps poping up!`);
 
                             await interaction.editReply({ embeds: [embed] });
-                            return;
+                            break;
                         }
 
                         let mode: string = "osu";
@@ -109,15 +105,11 @@ export default (client: Client) => {
 
                         await buildEmbed(message, index, userid, discordid, recInfo);
                         await interaction.deferUpdate();
-                        return;
+                        break;
 
                     }
 
                     case "dislike": {
-
-                        await interaction.deferReply({
-                            ephemeral: true
-                        });
 
                         const rec_id: any = para[5];
 
@@ -130,7 +122,6 @@ export default (client: Client) => {
                                 .setDescription(`Please contact us on discord if this issue keeps poping up!`);
 
                             await interaction.editReply({ embeds: [embed] });
-                            return;
                             break;
                         }
 
@@ -181,7 +172,7 @@ export default (client: Client) => {
 
                         await buildEmbed(message, index, userid, discordid, recInfo);
                         await interaction.deferUpdate();
-                        return;
+                        break;
 
                     }
 
@@ -199,7 +190,7 @@ export default (client: Client) => {
 
                         await buildEmbed(message, index, userid, discordid, recInfo);
                         await interaction.deferUpdate();
-                        return;
+                        break;
 
                     }
 

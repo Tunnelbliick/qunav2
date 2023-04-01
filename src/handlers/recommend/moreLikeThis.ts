@@ -1,13 +1,9 @@
 import { Client, Message } from "discord.js";
 import { beatmap, getBeatmap } from "../../api/osu/beatmap";
-import { buildMapEmbedMoreLikeThis, buildMapEmbedNoResponse, buildMapEmbedRecommendation } from "../../embeds/osu/beatmap/beatmap";
-import { like } from "../../interfaces/Like";
+import { buildMapEmbedMoreLikeThis } from "../../embeds/osu/beatmap/beatmap";
 import RecLike from "../../models/RecLike";
-import Recommendation from "../../models/Recommendation";
-import RecommendationInfo from "../../models/RecommendationInfo";
 import axios from "axios";
 import { Recommendation_data } from "../../api/commands/osu/recommend/recommend/recommend";
-import { serverOffline } from "../../embeds/osu/recommend/recommend/error";
 const DataImageAttachment = require("dataimageattachment");
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js');
 
@@ -50,10 +46,6 @@ export default (client: Client) => {
                 switch (method) {
                     case "like": {
 
-                        await interaction.deferReply({
-                            ephemeral: true
-                        });
-
                         let mode: string = "osu";
 
                         let split = para[6].replace("-", "_").split("_");
@@ -69,15 +61,11 @@ export default (client: Client) => {
                         await like.save();
                         await buildEmbed(message, index, userid, discordid, source);
                         await interaction.deferUpdate();
-                        return;
+                        break;
 
                     }
 
                     case "dislike": {
-
-                        await interaction.deferReply({
-                            ephemeral: true
-                        });
 
                         let mode: string = "osu";
 
@@ -107,7 +95,7 @@ export default (client: Client) => {
 
                         await buildEmbed(message, index, userid, discordid, source);
                         await interaction.deferUpdate();
-                        return;
+                        break;
 
                     }
 
@@ -117,12 +105,12 @@ export default (client: Client) => {
                         index--;
 
                         if (index <= 0) {
-                            index = 10;
+                            index = 9;
                         }
 
                         await buildEmbed(message, index, userid, discordid, source);
                         await interaction.deferUpdate();
-                        return;
+                        break;
 
                     }
 
