@@ -11,7 +11,7 @@ const moods = [
     " Give a nice response.",
     " Give a meme response.",
     " Respond like an asshole",
-    " Give a response you can use emotes",
+    " Give a cool response it can include discord emotes",
     " Respond like this is a masterchef episode and you rate a dish of a contestent"
 ]
 
@@ -26,10 +26,11 @@ export default {
 
         message.channel.sendTyping();
         let embed = null;
+        let reference_message: any = null;
 
         if (message && message.reference != null) {
             const reference_id: any = message.reference?.messageId;
-            const reference_message = await message.channel.messages.fetch(reference_id);
+            reference_message = await message.channel.messages.fetch(reference_id);
             embed = reference_message.embeds[0];
         }
 
@@ -38,7 +39,8 @@ export default {
         try {
             prompt = buildPromptFromEmbed(embed)
         } catch (err: any) {
-            message.reply("Could not respond to this. Maybee its not implemented yet")
+            message.reply("Could not respond to this. Maybee its not implemented yet");
+            return;
         }
 
         const openai = new OpenAIApi(configuration);
@@ -56,7 +58,7 @@ export default {
 
         const comment: any = completion.data.choices[0].text;
 
-        message.reply(comment);
+        reference_message.reply(comment);
 
     }
 
