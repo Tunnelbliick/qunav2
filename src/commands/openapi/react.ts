@@ -39,6 +39,7 @@ export default {
         try {
             prompt = buildPromptFromEmbed(embed)
         } catch (err: any) {
+            console.log(err);
             message.reply("Could not respond to this. Maybee its not implemented yet");
             return;
         }
@@ -50,11 +51,6 @@ export default {
             temperature: 0.5,
             max_tokens: 250,
         })
-        /*const completion = await openai.createCompletion({
-            model: "gpt-3.5-turbo",
-            messages: generatePrompt("test"),
-            temperature: 0.6,
-        })*/
 
         const comment: any = completion.data.choices[0].text;
 
@@ -180,9 +176,13 @@ function buildPromptFromEmbed(embed: any) {
                 break;
 
             default:
-                playProgress = parsePlayProgress(field.name);
-                playDetail = parsePlayDetail(field.value);
-
+                if (field.name.startsWith("1.")) {
+                    playProgress = parsePlayScore(field.name.toLowerCase());
+                    playDetail = parsePlayData(field.value.toLowerCase());
+                } else {
+                    playProgress = parsePlayProgress(field.name.toLowerCase());
+                    playDetail = parsePlayDetail(field.value.toLowerCase());
+                }
         }
     });
 
@@ -207,7 +207,7 @@ function buildPromptFromEmbed(embed: any) {
 
     prompt += moods[Math.floor(Math.random() * moods.length)]
 
-    //console.log(prompt);
+    console.log(prompt);
 
     return prompt;
 }
@@ -370,6 +370,43 @@ function parsePlayProgress(playProgress: string): PlayProgress {
         accuracy: accuracy,
     };
 }
+
+function parsePlayScore(playScore: string): PlayProgress {
+    const rankMatch = playScore.match(/:ranking(\w+):/);
+    const rank = rankMatch ? rankMatch[1] : "";
+
+    const starsMatch = playScore.match(/\[([^\★]+)\★\]/);
+    const stars = starsMatch ? starsMatch[1] : "";
+
+    const scoreAndAccuracyMatch = playScore.match(/\]\s+(\d+)\s+\(([^%]+)%\)/);
+    const score = scoreAndAccuracyMatch ? scoreAndAccuracyMatch[1] : "";
+    const accuracy = scoreAndAccuracyMatch ? scoreAndAccuracyMatch[2] : "";
+
+    return {
+        rank: rank,
+        score: score,
+        accuracy: accuracy,
+        progress: ""
+    };
+}
+
+function parsePlayData(playData: string): PlayDetail {
+    const ppSplit = playData.split('pp')[0].replace("**", "").split('/');
+    const comboSplit = playData.split('pp')[1].split('x ')[0].replace("**", "").split('/');
+    const hitSplit = playData.split('x ')[1].split('{')[1].split('}')[0].split('/');
+  
+    return {
+      playPP: ppSplit[0],
+      SSPP: ppSplit[1],
+      playCombo: comboSplit[0],
+      maxCombo: comboSplit[1],
+      hit300: hitSplit[0],
+      hit100: hitSplit[1],
+      hit50: hitSplit[2],
+      miss: hitSplit[3],
+    };
+  }
+
 
 type PlayDetail = {
     playPP: string;
