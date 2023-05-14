@@ -78,7 +78,7 @@ function buildPromptFromText(text: any) {
 
     prompt += moods[Math.floor(Math.random() * moods.length)]
 
-    console.log(prompt);
+    //console.log(prompt);
 
     return prompt;
 }
