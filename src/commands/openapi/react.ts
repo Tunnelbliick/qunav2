@@ -10,15 +10,16 @@ const moods = [
     " Give a angry response and roast the score.",
     " Give a nice response.",
     " Give a meme response.",
-    " Respond like an asshole",
-    " Give a cool response it can include discord emotes",
-    " Respond like this is a masterchef episode and you rate a dish of a contestent"
+    " Respond like this is a masterchef episode",
+    " Respond like a dumb twitter user that has no idea what he is talking about",
+    " Respond angry with lines from games like GTA5",
 ]
 
 export default {
 
     category: "openapi!",
     aliases: ["reaction"],
+    cooldown: "20s",
     description: "AI reaction to something",
 
 
@@ -36,19 +37,29 @@ export default {
 
         let prompt = "";
 
-        try {
-            prompt = buildPromptFromEmbed(embed)
-        } catch (err: any) {
-            console.log(err);
-            message.reply("Could not respond to this. Maybee its not implemented yet");
-            return;
+        if (embed != undefined) {
+            try {
+                prompt = buildPromptFromEmbed(embed)
+            } catch (err: any) {
+                console.log(err);
+                message.reply("Could not respond to this. Maybee its not implemented yet");
+                return;
+            }
+        } else {
+            try {
+                prompt = buildPromptFromText(reference_message.content.slice(0,500))
+            } catch (err: any) {
+                console.log(err);
+                message.reply("Could not respond to this. Maybee its not implemented yet");
+                return;
+            }
         }
 
         const openai = new OpenAIApi(configuration);
         const completion = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: prompt,
-            temperature: 0.5,
+            temperature: 0.6,
             max_tokens: 250,
         })
 
@@ -59,6 +70,18 @@ export default {
     }
 
 } as ICommand
+
+function buildPromptFromText(text: any) {
+    let prompt = "a discord user asked you to react to this message: ";
+
+    prompt += text + ",";
+
+    prompt += moods[Math.floor(Math.random() * moods.length)]
+
+    console.log(prompt);
+
+    return prompt;
+}
 
 function buildPromptFromEmbed(embed: any) {
 
@@ -394,18 +417,18 @@ function parsePlayData(playData: string): PlayDetail {
     const ppSplit = playData.split('pp')[0].replace("**", "").split('/');
     const comboSplit = playData.split('pp')[1].split('x ')[0].replace("**", "").split('/');
     const hitSplit = playData.split('x ')[1].split('{')[1].split('}')[0].split('/');
-  
+
     return {
-      playPP: ppSplit[0],
-      SSPP: ppSplit[1],
-      playCombo: comboSplit[0],
-      maxCombo: comboSplit[1],
-      hit300: hitSplit[0],
-      hit100: hitSplit[1],
-      hit50: hitSplit[2],
-      miss: hitSplit[3],
+        playPP: ppSplit[0],
+        SSPP: ppSplit[1],
+        playCombo: comboSplit[0],
+        maxCombo: comboSplit[1],
+        hit300: hitSplit[0],
+        hit100: hitSplit[1],
+        hit50: hitSplit[2],
+        miss: hitSplit[3],
     };
-  }
+}
 
 
 type PlayDetail = {
@@ -422,7 +445,7 @@ type PlayDetail = {
 function parsePlayDetail(playDetail: string): PlayDetail {
     const ppSplit = playDetail.split('pp')[0].replace("**", "").split('/');
     const comboSplit = playDetail.split('pp')[1].split('[')[1].split(']')[0].replace("**", "").split('/');
-    const hitSplit = playDetail.split('[')[1].split(']')[1].replace("{", "").replace("}", "").split('/');
+    const hitSplit = playDetail.split('{')[1].replace("{", "").replace("}", "").split('/');
 
     return {
         playPP: ppSplit[0],
