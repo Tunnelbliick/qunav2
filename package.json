@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Tunnelbliick/qunav2#readme",
   "dependencies": {
+    "discord.js": "^14.11.0",
     "mongoose": "^7.2.4",
     "mongoose-long": "^0.7.0",
     "wokcommands": "^2.1.7"
