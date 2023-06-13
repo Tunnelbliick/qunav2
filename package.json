@@ -20,6 +20,7 @@
     "discord.js": "^14.11.0",
     "mongoose": "^7.2.4",
     "mongoose-long": "^0.7.0",
+    "osu-api-extended": "^2.7.5",
     "wokcommands": "^2.1.7"
   },
   "devDependencies": {
