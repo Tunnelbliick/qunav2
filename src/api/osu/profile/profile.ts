@@ -1,4 +1,4 @@
-import { TextChannel, ChatInputCommandInteraction, Message, User } from "discord.js";
+import { TextChannel, ChatInputCommandInteraction, Message, User, InteractionResponse, AttachmentBuilder } from "discord.js";
 import { Gamemode } from "../../../interfaces/enum/gamemodes";
 import { Server } from "../../../interfaces/enum/server";
 import { thinking } from "../../../utility/thinking";
@@ -8,6 +8,10 @@ import { OsuUser } from "../../../interfaces/osu/user/osuUser";
 import qunaUser from "../../../mongodb/qunaUser";
 import { encrypt } from "../../../utility/jwt";
 import { finishTransaction, sentryError, startTransaction } from "../../utility/sentry";
+import { buildCompressedProfile, buildProfileEmbed } from "../../../embeds/profile";
+import { generateProfileChart } from "../../../graphs/profile/profile";
+import { cricitcalError, noBanchoAPI, userNotLinked, useridNotFound, usernameNotFound } from "../../../embeds/errors/error";
+const DataImageAttachment = require("dataimageattachment");
 
 class ProfileArguments {
     userid: string | undefined;
@@ -20,15 +24,14 @@ class ProfileArguments {
 
 export async function profile(channel: TextChannel, user: User, message: Message, interaction: ChatInputCommandInteraction, args: string[], mode: Gamemode) {
 
-    try {
+    const profileArguments: ProfileArguments = handleProfileParameters(user, args, interaction, mode);
+    const transaction = startTransaction("Load Profile", "Load the User Profile", user.username, "profile");
 
-        const transaction = startTransaction("Load Profile", "Load the User Profile", user.username, "profile");
+    try {
 
         thinking(channel, interaction);
 
-        let userData: OsuUser | undefined = undefined;
-
-        const profileArguments: ProfileArguments = handleProfileParameters(user, args, interaction, mode);
+        let userData: OsuUser | undefined;
 
         if (profileArguments.discordid) {
 
@@ -66,28 +69,103 @@ export async function profile(channel: TextChannel, user: User, message: Message
 
         }
 
-        finishTransaction(transaction);
+        if (userData === undefined) {
+            throw new Error("NOTFOUND");
+        }
+
+        const embed = await buildProfileEmbed(userData, profileArguments.mode!)
+        const chart = await generateProfileChart(userData);
+
+        let file = new AttachmentBuilder(chart, { name: `${userData.id}_graph.png` });
+
+        if (interaction) {
+            interaction.reply({ embeds: [embed], files: [file] }).then((msg) => {
+
+                setTimeout(() => updateMessage(msg, file, userData!, profileArguments), 60000);
+            });
+        } else {
+            channel.send({ embeds: [embed], files: [file] }).then((msg) => {
+
+                setTimeout(() => updateMessage(msg, file, userData!, profileArguments), 60000);
+            });
+        }
 
     } catch (er: any) {
-        // TODO implement error embeds for feedback
-        // TODO implement Sentry for logging
-        switch (er.message) {
-            case "NOTLINKED":
-                console.log("user is not linked to quna");
-                break;
-            case "NOTFOUND":
-                console.log("no user found");
-                break;
-            case "NOSERVER":
-                sentryError(er);
-                console.log("The API was not found");
-                break;
-            default:
-                sentryError(er);
-        }
+        handleExceptions(er, profileArguments, interaction, message);
+    } finally {
+        finishTransaction(transaction);
     }
 
 }
+
+function handleExceptions(er: Error, profileArguments: ProfileArguments, interaction: ChatInputCommandInteraction, message: Message) {
+
+    let embed = cricitcalError();
+
+    console.log(er.message);
+
+    switch (er.message) {
+        case "NOTLINKED":
+
+            embed = userNotLinked(profileArguments.discordid);
+            if (interaction) {
+                interaction.reply({ embeds: [embed] });
+            } else {
+                message.reply({ embeds: [embed] });
+            }
+            break;
+
+        case "NOTFOUNDID":
+
+            embed = useridNotFound(profileArguments.userid);
+            if (interaction) {
+                interaction.reply({ embeds: [embed] });
+            } else {
+                message.reply({ embeds: [embed] });
+            }
+            break;
+
+        case "NOTFOUNDUSERNAME":
+
+            embed = usernameNotFound(profileArguments.username);
+            if (interaction) {
+                interaction.reply({ embeds: [embed] });
+            } else {
+                message.reply({ embeds: [embed] });
+            }
+            break;
+
+        case "NOSERVER":
+
+            embed = noBanchoAPI();
+            if (interaction) {
+                interaction.reply({ embeds: [embed] });
+            } else {
+                message.reply({ embeds: [embed] });
+            }
+
+            sentryError(er);
+            break;
+
+        default:
+
+            embed = cricitcalError();
+            if (interaction) {
+                interaction.reply({ embeds: [embed] });
+            } else {
+                message.reply({ embeds: [embed] });
+            }
+
+            sentryError(er);
+            console.error(er);
+            break;
+    }
+}
+
+async function updateMessage(msg: Message | InteractionResponse, file: AttachmentBuilder, data: OsuUser, args: ProfileArguments) {
+    const compact = await buildCompressedProfile(data, args.mode!);
+    return msg.edit({ embeds: [compact], files: [file] });
+};
 
 function handleProfileParameters(user: User, args: string[], interaction: ChatInputCommandInteraction, default_mode: Gamemode): typeof profileArguments {
 
@@ -176,7 +254,7 @@ export async function getBanchoUserById(userid: string, mode?: Gamemode): Promis
 
         user.then((data: object) => {
             if (data.hasOwnProperty("error")) {
-                return reject(new Error("NOTFOUND"));
+                return reject(new Error("NOTFOUNDID"));
             }
             return resolve(data as OsuUser);
         });
@@ -199,7 +277,7 @@ export async function getBanchoUserByUsername(username: string, mode?: Gamemode)
 
         user.then((data: object) => {
             if (data.hasOwnProperty("error")) {
-                return reject(new Error("NOTFOUND"));
+                return reject(new Error("NOTFOUNDUSERNAME"));
             }
             return resolve(data as OsuUser);
         });
