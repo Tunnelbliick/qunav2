@@ -89,8 +89,8 @@ export async function profile(channel: TextChannel, user: User, message: Message
             });
         }
 
-    } catch (er: any) {
-        handleExceptions(er, profileArguments, interaction, message);
+    } catch (er: unknown) {
+        handleExceptions(er as Error, profileArguments, interaction, message);
     } finally {
         finishTransaction(transaction);
     }
