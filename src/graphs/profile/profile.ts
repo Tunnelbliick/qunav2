@@ -1,14 +1,16 @@
+import { OsuUser } from "../../interfaces/osu/user/osuUser";
+
 const { Canvas, loadImage } = require('skia-canvas');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
-export async function generateProfileChart(data: any) {
+export async function generateProfileChart(data: OsuUser) {
     const background = await loadImage(data.cover_url);
 
-    const dataset: any = [];
-    const label: any = [];
+    const dataset: number[] = [];
+    const label: number[] = [];
 
     if (data.rankHistory != null && data.rankHistory.data != null)
-        data.rankHistory.data.forEach((data: any, index: any) => {
+        data.rankHistory.data.forEach((data: number, index: number) => {
             dataset.push(data);
             label.push(index);
         });

@@ -112,12 +112,6 @@ export async function buildCompressedProfile(data: OsuUser, mode: Gamemode) {
     if (country_rank == null)
         country_rank = 0;
 
-    // if no previous usernames
-    let usernames = `Also known previously as: ${(data.previous_usernames)}`
-    if (data.previous_usernames.length == 0) {
-        usernames = `Player retains original name! Pog!`
-    }
-
     const gamemode = gamemode_icons[mode];
 
     const compact = new EmbedBuilder()

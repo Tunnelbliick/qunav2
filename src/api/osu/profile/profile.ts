@@ -11,7 +11,6 @@ import { finishTransaction, sentryError, startTransaction } from "../../utility/
 import { buildCompressedProfile, buildProfileEmbed } from "../../../embeds/profile";
 import { generateProfileChart } from "../../../graphs/profile/profile";
 import { cricitcalError, noBanchoAPI, userNotLinked, useridNotFound, usernameNotFound } from "../../../embeds/errors/error";
-const DataImageAttachment = require("dataimageattachment");
 
 class ProfileArguments {
     userid: string | undefined;
@@ -76,7 +75,7 @@ export async function profile(channel: TextChannel, user: User, message: Message
         const embed = await buildProfileEmbed(userData, profileArguments.mode!)
         const chart = await generateProfileChart(userData);
 
-        let file = new AttachmentBuilder(chart, { name: `${userData.id}_graph.png` });
+        const file = new AttachmentBuilder(chart, { name: `${userData.id}_graph.png` });
 
         if (interaction) {
             interaction.reply({ embeds: [embed], files: [file] }).then((msg) => {
@@ -165,7 +164,7 @@ function handleExceptions(er: Error, profileArguments: ProfileArguments, interac
 async function updateMessage(msg: Message | InteractionResponse, file: AttachmentBuilder, data: OsuUser, args: ProfileArguments) {
     const compact = await buildCompressedProfile(data, args.mode!);
     return msg.edit({ embeds: [compact], files: [file] });
-};
+}
 
 function handleProfileParameters(user: User, args: string[], interaction: ChatInputCommandInteraction, default_mode: Gamemode): typeof profileArguments {
 
