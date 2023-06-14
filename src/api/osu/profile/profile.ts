@@ -2,6 +2,11 @@ import { TextChannel, ChatInputCommandInteraction, Message, User } from "discord
 import { Gamemode } from "../../../interfaces/enum/gamemodes";
 import { Server } from "../../../interfaces/enum/server";
 import { thinking } from "../../../utility/thinking";
+import { login } from "../../utility/banchoLogin";
+import { v2 } from "osu-api-extended";
+import { OsuUser } from "../../../interfaces/osu/user/osuUser";
+import qunaUser from "../../../mongodb/qunaUser";
+import { encrypt } from "../../../utility/jwt";
 
 class ProfileArguments {
     userid: string | undefined;
@@ -18,25 +23,65 @@ export async function profile(channel: TextChannel, user: User, message: Message
 
         thinking(channel, interaction);
 
-        handleProfileParameters(user, args, interaction, mode);
+        let userData: OsuUser | undefined = undefined;
 
-        /*osu_user.then((data: any) => {
-    
-            if (check_skills) {
-                // skills(message, userObject.userid, data);
-                return;
-            }
-    
-            try {
-                buildProfileEmbed(data, message, mode)
-            } catch (err) {
-                buildErrEmbed(err, message);
-                return;
-            }
-        })*/
+        const profileArguments: ProfileArguments = handleProfileParameters(user, args, interaction, mode);
 
-    } catch (e) {
-        console.log("error");
+        if (profileArguments.discordid) {
+
+            await qunaUser.findOne({ discordid: await encrypt(profileArguments.discordid) }).then(userObject => {
+                if (userObject === null) {
+                    throw new Error("NOTLINKED");
+                } else {
+                    profileArguments.userid = userObject.userid;
+                }
+            }).catch((error: Error) => {
+                console.error(error);
+                throw new Error("DATABASEERR");
+            });
+
+        }
+
+
+        if (profileArguments.userid || profileArguments.username) {
+
+            if (profileArguments.userid) {
+                await getBanchoUserById(profileArguments.userid, profileArguments.mode).then((data: OsuUser) => {
+                    userData = data;
+                }).catch((error: Error) => {
+                    console.error(error);
+                    throw error;
+                });
+            } else {
+                await getBanchoUserByUsername(profileArguments.username!, profileArguments.mode).then((data: OsuUser) => {
+                    userData = data;
+                }).catch((error: Error) => {
+                    console.error(error);
+                    throw error;
+                });
+            }
+
+        }
+
+    } catch (er: any) {
+        // TODO implement error embeds for feedback
+        // TODO implement Sentry for logging
+        switch (er.message) {
+            case "NOTLINKED":
+                console.log("user is not linked to quna");
+                break;
+            case "NOTFOUND":
+                console.log("no user found");
+                break;
+            case "NOSERVER":
+                console.log("The API was not found");
+                break;
+            case "DATABASEERR":
+                console.log("The database didnt respond");
+                break;
+            default:
+                console.log("something went wrongh");
+        }
     }
 
 }
@@ -114,4 +159,50 @@ function handleLegacyArguments(user: User, args: string[], default_mode: Gamemod
     }
     return profileArguments;
 
+}
+
+export async function getBanchoUserById(userid: string, mode?: Gamemode): Promise<OsuUser> {
+    await login();
+
+    if (mode == undefined) {
+        mode = "osu" as Gamemode;
+    }
+
+    return new Promise((resolve, reject) => {
+        const user = v2.user.details(userid, mode, "id")
+
+        user.then((data: any) => {
+            if (data.error === null) {
+                return reject(new Error("NOTFOUND"));
+            }
+            return resolve(data);
+        });
+
+        user.catch(() => {
+            return reject(new Error("NOSERVEAR"));
+        });
+    });
+}
+
+export async function getBanchoUserByUsername(username: string, mode?: Gamemode): Promise<OsuUser> {
+    await login();
+
+    if (mode == undefined) {
+        mode = "osu" as Gamemode;
+    }
+
+    return new Promise((resolve, reject) => {
+        const user = v2.user.details(username, mode, "username")
+
+        user.then((data: any) => {
+            if (data.error === null) {
+                return reject(new Error("NOTFOUND"));
+            }
+            return resolve(data);
+        });
+
+        user.catch(() => {
+            return reject(new Error("NOSERVEAR"));
+        });
+    });
 }

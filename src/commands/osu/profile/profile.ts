@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionType, ChatInputCommandInteraction, Message, TextChannel, User } from "discord.js";
 import { CommandObject, CommandType } from "wokcommands";
-import WOKCommands from "wokcommands";
 import { profile } from "../../../api/osu/profile/profile";
 import { Gamemode } from "../../../interfaces/enum/gamemodes";
 
@@ -51,7 +50,7 @@ export default {
       description: 'Gamemode to lookup',
       required: false,
       type: ApplicationCommandOptionType.String,
-      choices: [{ name: "osu", value: "OSU", }, { name: "taiko", value: "TAIKO", }, { name: "ctb", value: "CTB", }, { name: "mania", value: "MANIA" }]
+      choices: [{ name: "osu", value: "osu", }, { name: "taiko", value: "taiko", }, { name: "ctb", value: "fruits", }, { name: "mania", value: "mania" }]
     },
     {
       name: 'server',
