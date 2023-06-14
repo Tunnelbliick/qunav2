@@ -14,7 +14,7 @@ export async function login() {
         const timeInSeconds = Math.floor(new Date().getTime() / 1000);
 
         if(expireTime != null && (expireTime - grace) < timeInSeconds) {
-            auth.re_login().then((result: any) => {
+            auth.re_login().then(() => {
 
                 expireTime = timeInSeconds + expires_in;
 
@@ -24,9 +24,9 @@ export async function login() {
         }
 
         if (expireTime == null) {
-            const osuid: any = process.env.osuid;
-            const secret: any = process.env.osusecret;
-            auth.login(osuid, secret, scope).then((result: any) => {
+            const osuid: number | undefined = +process.env.osuid!;
+            const secret: string | undefined = process.env.osusecret!;
+            auth.login(osuid, secret, scope).then((result) => {
 
                 expires_in = result.expires_in;
                 expireTime = timeInSeconds + result.expires_in;

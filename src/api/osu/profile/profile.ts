@@ -171,11 +171,11 @@ export async function getBanchoUserById(userid: string, mode?: Gamemode): Promis
     return new Promise((resolve, reject) => {
         const user = v2.user.details(userid, mode, "id")
 
-        user.then((data: any) => {
-            if (data.error === null) {
+        user.then((data: object) => {
+            if (data.hasOwnProperty("error")) {
                 return reject(new Error("NOTFOUND"));
             }
-            return resolve(data);
+            return resolve(data as OsuUser);
         });
 
         user.catch(() => {
@@ -194,11 +194,11 @@ export async function getBanchoUserByUsername(username: string, mode?: Gamemode)
     return new Promise((resolve, reject) => {
         const user = v2.user.details(username, mode, "username")
 
-        user.then((data: any) => {
-            if (data.error === null) {
+        user.then((data: object) => {
+            if (data.hasOwnProperty("error")) {
                 return reject(new Error("NOTFOUND"));
             }
-            return resolve(data);
+            return resolve(data as OsuUser);
         });
 
         user.catch(() => {
