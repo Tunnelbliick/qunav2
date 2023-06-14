@@ -7,6 +7,7 @@ import { v2 } from "osu-api-extended";
 import { OsuUser } from "../../../interfaces/osu/user/osuUser";
 import qunaUser from "../../../mongodb/qunaUser";
 import { encrypt } from "../../../utility/jwt";
+import { finishTransaction, sentryError, startTransaction } from "../../utility/sentry";
 
 class ProfileArguments {
     userid: string | undefined;
@@ -20,6 +21,8 @@ class ProfileArguments {
 export async function profile(channel: TextChannel, user: User, message: Message, interaction: ChatInputCommandInteraction, args: string[], mode: Gamemode) {
 
     try {
+
+        const transaction = startTransaction("Load Profile", "Load the User Profile", user.username, "profile");
 
         thinking(channel, interaction);
 
@@ -35,9 +38,9 @@ export async function profile(channel: TextChannel, user: User, message: Message
                 } else {
                     profileArguments.userid = userObject.userid;
                 }
-            }).catch((error: Error) => {
-                console.error(error);
-                throw new Error("DATABASEERR");
+            }).catch((err: Error) => {
+                console.error(err);
+                throw err;
             });
 
         }
@@ -63,6 +66,8 @@ export async function profile(channel: TextChannel, user: User, message: Message
 
         }
 
+        finishTransaction(transaction);
+
     } catch (er: any) {
         // TODO implement error embeds for feedback
         // TODO implement Sentry for logging
@@ -74,13 +79,11 @@ export async function profile(channel: TextChannel, user: User, message: Message
                 console.log("no user found");
                 break;
             case "NOSERVER":
+                sentryError(er);
                 console.log("The API was not found");
                 break;
-            case "DATABASEERR":
-                console.log("The database didnt respond");
-                break;
             default:
-                console.log("something went wrongh");
+                sentryError(er);
         }
     }
 

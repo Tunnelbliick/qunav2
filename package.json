@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Tunnelbliick/qunav2#readme",
   "dependencies": {
+    "@sentry/node": "^7.55.2",
     "discord.js": "^14.11.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.4",

@@ -15,9 +15,9 @@ const client = new Client({
 
 client.on("ready", () => {
 
-    console.log("The bot is ready");
+  console.log("The bot is ready");
 
-    new WOK({
+  new WOK({
     // The client for your bot. This is the only required property
     client,
     // Path to your commands folder
