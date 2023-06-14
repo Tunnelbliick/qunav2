@@ -55,7 +55,7 @@ function handleProfileParameters(user: User, args: string[], interaction: ChatIn
 
 function handleInteractionOptions(interaction: ChatInputCommandInteraction, default_mode: Gamemode) {
 
-    let profileArguments: ProfileArguments = new ProfileArguments;
+    const profileArguments: ProfileArguments = new ProfileArguments;
 
     const options = interaction.options;
 
@@ -76,7 +76,7 @@ function handleInteractionOptions(interaction: ChatInputCommandInteraction, defa
 
 function handleLegacyArguments(user: User, args: string[], default_mode: Gamemode) {
 
-    let profileArguments: ProfileArguments = new ProfileArguments;
+    const profileArguments: ProfileArguments = new ProfileArguments;
 
     profileArguments.server = Server.BANCHO;
     profileArguments.mode = default_mode;
@@ -86,7 +86,7 @@ function handleLegacyArguments(user: User, args: string[], default_mode: Gamemod
         return profileArguments;
     }
 
-    for (let arg of args) {
+    for (const arg of args) {
 
         switch (arg) {
             case "-ts":
