@@ -32,7 +32,7 @@ export async function profile(channel: TextChannel, user: User, message: Message
 
         let userData: OsuUser | undefined;
 
-        if (profileArguments.discordid) {
+        if ((profileArguments.userid == undefined && profileArguments.username === undefined) && profileArguments.discordid) {
 
             await qunaUser.findOne({ discordid: await encrypt(profileArguments.discordid) }).then(userObject => {
                 if (userObject === null) {
@@ -78,7 +78,7 @@ export async function profile(channel: TextChannel, user: User, message: Message
         const file = new AttachmentBuilder(chart, { name: `${userData.id}_graph.png` });
 
         if (interaction) {
-            interaction.reply({ embeds: [embed], files: [file] }).then((msg) => {
+            interaction.editReply({ embeds: [embed], files: [file] }).then((msg) => {
 
                 setTimeout(() => updateMessage(msg, file, userData!, profileArguments), 60000);
             });
@@ -193,7 +193,9 @@ function handleInteractionOptions(interaction: ChatInputCommandInteraction, defa
 
     if (profileArguments.discordid) {
         profileArguments.discordid = profileArguments.discordid.replace("<@", "").replace(">", "");
-    }
+    } 
+
+    console.log(profileArguments);
 
     return profileArguments;
 
@@ -259,7 +261,7 @@ export async function getBanchoUserById(userid: string, mode?: Gamemode): Promis
         });
 
         user.catch(() => {
-            return reject(new Error("NOSERVEAR"));
+            return reject(new Error("NOSERVER"));
         });
     });
 }
@@ -282,7 +284,7 @@ export async function getBanchoUserByUsername(username: string, mode?: Gamemode)
         });
 
         user.catch(() => {
-            return reject(new Error("NOSERVEAR"));
+            return reject(new Error("NOSERVER"));
         });
     });
 }
