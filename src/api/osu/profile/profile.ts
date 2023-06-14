@@ -1,65 +1,117 @@
-import { Interaction, Message } from "discord.js";
+import { TextChannel, ChatInputCommandInteraction, Message, User } from "discord.js";
 import { Gamemode } from "../../../interfaces/enum/gamemodes";
-import { QunaUser } from "../../../interfaces/qunaUser";
-import { OsuUser } from "../../../interfaces/osu/user/osuUser";
+import { Server } from "../../../interfaces/enum/server";
+import { thinking } from "../../../utility/thinking";
 
-interface profileArguments {
-    userid: string,
-    username: string,
-    userObject: QunaUser,
-    check_skills: boolean,
-    osu_user: OsuUser
+class ProfileArguments {
+    userid: string | undefined;
+    username: string | undefined;
+    discordid: string | undefined;
+    check_skills: boolean | undefined;
+    mode: Gamemode | undefined;
+    server: Server | undefined;
 }
 
-export async function profile(message: Message, args: string[], mode: Gamemode) {
+export async function profile(channel: TextChannel, user: User, message: Message, interaction: ChatInputCommandInteraction, args: string[], mode: Gamemode) {
 
-    message.channel.sendTyping();
+    try {
 
-    osu_user.then((data: any) => {
+        thinking(channel, interaction);
 
-        if (check_skills) {
-            // skills(message, userObject.userid, data);
-            return;
-        }
+        handleProfileParameters(user, args, interaction, mode);
 
-        try {
-            buildProfileEmbed(data, message, mode)
-        } catch (err) {
-            buildErrEmbed(err, message);
-            return;
-        }
-    })
-
-}
-
-function handleProfileParameters(args: string[], interaction: Interaction): profileArguments {
-
+        /*osu_user.then((data: any) => {
     
-    /*if (!args[0]) {
-        userid = message.author.id
+            if (check_skills) {
+                // skills(message, userObject.userid, data);
+                return;
+            }
+    
+            try {
+                buildProfileEmbed(data, message, mode)
+            } catch (err) {
+                buildErrEmbed(err, message);
+                return;
+            }
+        })*/
+
+    } catch (e) {
+        console.log("error");
     }
 
-    if (args[0] && args[0].startsWith("<@")) {
-        userid = args[0].replace("<@", "").replace(">", "");
+}
+
+function handleProfileParameters(user: User, args: string[], interaction: ChatInputCommandInteraction, default_mode: Gamemode): typeof profileArguments {
+
+    let profileArguments: ProfileArguments = new ProfileArguments;
+
+    if (interaction)
+        profileArguments = handleInteractionOptions(interaction, default_mode);
+    else
+        profileArguments = handleLegacyArguments(user, args, default_mode);
+
+    return profileArguments;
+}
+
+function handleInteractionOptions(interaction: ChatInputCommandInteraction, default_mode: Gamemode) {
+
+    let profileArguments: ProfileArguments = new ProfileArguments;
+
+    const options = interaction.options;
+
+    profileArguments.username = options.getString("username", false) === null ? "" : options.getString("username", false)!;
+    profileArguments.userid = options.getString("userid", false) === null ? "" : options.getString("userid", false)!;
+    profileArguments.discordid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")!.toString();
+    profileArguments.check_skills = options.getBoolean("skills") === null ? false : options.getBoolean("skills", false)!;
+    profileArguments.mode = (options.getString("mode", false) === null ? default_mode : options.getString("mode", false)!) as Gamemode;
+    profileArguments.server = (options.getString("server", false) === null ? Server.BANCHO : options.getString("server", false)!) as Server;
+
+    if (profileArguments.discordid) {
+        profileArguments.discordid = profileArguments.discordid.replace("<@", "").replace(">", "");
     }
 
-    if (args.includes("-ts")) {
-        check_skills = true;
+    return profileArguments;
+
+}
+
+function handleLegacyArguments(user: User, args: string[], default_mode: Gamemode) {
+
+    let profileArguments: ProfileArguments = new ProfileArguments;
+
+    profileArguments.server = Server.BANCHO;
+    profileArguments.mode = default_mode;
+
+    if (args.length === 0) {
+        profileArguments.discordid = user.id;
+        return profileArguments;
     }
 
-    if (userid === null) {
-        username = buildUsernameOfArgs(args);
-        osu_user = getUserByUsername(username, mode);
-    } else {
-        userObject = await User.findOne({ discordid: await encrypt(userid) });
+    for (let arg of args) {
 
-        if (checkIfUserIsLInked(userObject, args[0], message)) {
-            return;
+        switch (arg) {
+            case "-ts":
+                profileArguments.check_skills = true;
+                break;
+            case "-akatsuki":
+                profileArguments.server = Server.AKATSUKI;
+                break;
+            case "-gatari":
+                profileArguments.server = Server.GATARI;
+                break;
+            case "-bancho":
+                profileArguments.server = Server.BANCHO;
+                break;
+            default:
+                if (arg.startsWith("<@")) {
+                    profileArguments.discordid = arg.replace("<@", "").replace(">", "");
+                } else if (isNaN(+arg)) {
+                    profileArguments.username = arg;
+                } else {
+                    profileArguments.userid = arg;
+                }
         }
 
-        osu_user = getUser(userObject!.userid, mode);
-    }*/
+    }
+    return profileArguments;
 
-
-    return undefined;
 }

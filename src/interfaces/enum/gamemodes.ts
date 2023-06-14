@@ -1,3 +1,6 @@
 export enum Gamemode {
-    OSU, MANIA, CTB, TAIKO
+    OSU = "OSU", 
+    MANIA = "MANIA", 
+    CTB = "CTB", 
+    TAIKO = "TAIKO"
 }
