@@ -7,15 +7,13 @@ import { v2 } from "osu-api-extended";
 import { OsuUser } from "../../../interfaces/osu/user/osuUser";
 import qunaUser from "../../../mongodb/qunaUser";
 import { encrypt } from "../../../utility/jwt";
-import { finishTransaction, sentryError, startTransaction } from "../../utility/sentry";
+import { finishTransaction, startTransaction } from "../../utility/sentry";
 import { buildCompressedProfile, buildProfileEmbed } from "../../../embeds/profile";
 import { generateProfileChart } from "../../../graphs/profile/profile";
-import { cricitcalError, noBanchoAPI, userNotLinked, useridNotFound, usernameNotFound } from "../../../embeds/errors/error";
+import { Arguments } from "../../../interfaces/arguments";
+import { handleExceptions } from "../../utility/exceptionHandler";
 
-class ProfileArguments {
-    userid: string | undefined;
-    username: string | undefined;
-    discordid: string | undefined;
+class ProfileArguments extends Arguments {
     check_skills: boolean | undefined;
     mode: Gamemode | undefined;
     server: Server | undefined;
@@ -86,70 +84,6 @@ export async function profile(channel: TextChannel, user: User, message: Message
         finishTransaction(transaction);
     }
 
-}
-
-function handleExceptions(er: Error, profileArguments: ProfileArguments, interaction: ChatInputCommandInteraction, message: Message) {
-
-    let embed = cricitcalError();
-
-    console.log(er.message);
-
-    switch (er.message) {
-        case "NOTLINKED":
-
-            embed = userNotLinked(profileArguments.discordid);
-            if (interaction) {
-                interaction.reply({ embeds: [embed] });
-            } else {
-                message.reply({ embeds: [embed] });
-            }
-            break;
-
-        case "NOTFOUNDID":
-
-            embed = useridNotFound(profileArguments.userid);
-            if (interaction) {
-                interaction.reply({ embeds: [embed] });
-            } else {
-                message.reply({ embeds: [embed] });
-            }
-            break;
-
-        case "NOTFOUNDUSERNAME":
-
-            embed = usernameNotFound(profileArguments.username);
-            if (interaction) {
-                interaction.reply({ embeds: [embed] });
-            } else {
-                message.reply({ embeds: [embed] });
-            }
-            break;
-
-        case "NOSERVER":
-
-            embed = noBanchoAPI();
-            if (interaction) {
-                interaction.reply({ embeds: [embed] });
-            } else {
-                message.reply({ embeds: [embed] });
-            }
-
-            sentryError(er);
-            break;
-
-        default:
-
-            embed = cricitcalError();
-            if (interaction) {
-                interaction.reply({ embeds: [embed] });
-            } else {
-                message.reply({ embeds: [embed] });
-            }
-
-            sentryError(er);
-            console.error(er);
-            break;
-    }
 }
 
 async function updateMessage(msg: Message | InteractionResponse, file: AttachmentBuilder, data: OsuUser, args: ProfileArguments) {

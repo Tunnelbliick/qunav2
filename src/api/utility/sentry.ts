@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/node';
 
 export function sentryError(err: Error) {
     Sentry.init({
-        dsn: "https://2a84c6712afa463595fd2555a4eff2cb@o4505358567211008.ingest.sentry.io/4505358569439232",
+        dsn: process.env.SENTRY_CDN,
 
         // Set tracesSampleRate to 1.0 to capture 100%
         // of transactions for performance monitoring.
@@ -16,7 +16,7 @@ export function sentryError(err: Error) {
 export function startTransaction(operation: string, message: string, user: string, tag: string): Sentry.Transaction {
 
     Sentry.init({
-        dsn: "https://2a84c6712afa463595fd2555a4eff2cb@o4505358567211008.ingest.sentry.io/4505358569439232",
+        dsn: process.env.SENTRY_CDN,
 
         // Set tracesSampleRate to 1.0 to capture 100%
         // of transactions for performance monitoring.
@@ -36,7 +36,7 @@ export function startTransaction(operation: string, message: string, user: strin
 export function finishTransaction(transaction: Sentry.Transaction) {
 
     Sentry.init({
-        dsn: "https://2a84c6712afa463595fd2555a4eff2cb@o4505358567211008.ingest.sentry.io/4505358569439232",
+        dsn: process.env.SENTRY_CDN,
 
         // Set tracesSampleRate to 1.0 to capture 100%
         // of transactions for performance monitoring.
