@@ -40,10 +40,7 @@ export async function profile(channel: TextChannel, user: User, message: Message
                 } else {
                     profileArguments.userid = userObject.userid;
                 }
-            }).catch((err: Error) => {
-                console.error(err);
-                throw err;
-            });
+            })
 
         }
 
@@ -53,17 +50,11 @@ export async function profile(channel: TextChannel, user: User, message: Message
             if (profileArguments.userid) {
                 await getBanchoUserById(profileArguments.userid, profileArguments.mode).then((data: OsuUser) => {
                     userData = data;
-                }).catch((error: Error) => {
-                    console.error(error);
-                    throw error;
-                });
+                })
             } else {
                 await getBanchoUserByUsername(profileArguments.username!, profileArguments.mode).then((data: OsuUser) => {
                     userData = data;
-                }).catch((error: Error) => {
-                    console.error(error);
-                    throw error;
-                });
+                })
             }
 
         }
@@ -193,9 +184,7 @@ function handleInteractionOptions(interaction: ChatInputCommandInteraction, defa
 
     if (profileArguments.discordid) {
         profileArguments.discordid = profileArguments.discordid.replace("<@", "").replace(">", "");
-    } 
-
-    console.log(profileArguments);
+    }
 
     return profileArguments;
 

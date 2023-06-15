@@ -15,7 +15,7 @@ export default {
   type: CommandType.BOTH,
 
   description: "Look up a osu! Profile",
-  aliases: ["profile", "p"],
+  aliases: ["o", "isu"],
   testOnly: false,
   guildOnly: false,
   ownerOnly: false,

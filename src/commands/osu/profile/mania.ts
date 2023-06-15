@@ -14,8 +14,8 @@ type CallbackParams = {
 export default {
   type: CommandType.BOTH,
 
-  description: "Look up a osu! Profile",
-  aliases: ["profile", "p"],
+  description: "Look up a mania Profile",
+  aliases: ["pmania", "profilemania", "maniaprofile"],
   testOnly: false,
   guildOnly: false,
   ownerOnly: false,
@@ -62,6 +62,6 @@ export default {
   ],
 
   callback: ({ channel, user, message, interaction, args }: CallbackParams) => {
-    profile(channel, user, message, interaction, args, Gamemode.OSU);
+    profile(channel, user, message, interaction, args, Gamemode.MANIA);
   },
 } as CommandObject;
