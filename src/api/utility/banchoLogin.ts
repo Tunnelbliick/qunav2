@@ -9,7 +9,7 @@ const scope: auth_scopes = ['public'];
 const grace = 1000;
 
 export async function login() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
 
         const timeInSeconds = Math.floor(new Date().getTime() / 1000);
 

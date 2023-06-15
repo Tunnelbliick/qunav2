@@ -1,6 +1,5 @@
-import { Decimal128, ReplaceOneModel } from "mongodb";
 import mongoose from "mongoose";
-import { RecommendationInfo } from "../interfaces/mongodb/recommendationInfo";
+import { RecommendationInfo } from "../interfaces/osu/recommend/recommendationInfo";
 
 const RecommendationInfoSchema = new mongoose.Schema<RecommendationInfo>({
     osuid: Number,

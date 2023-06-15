@@ -1,4 +1,3 @@
-import { Decimal128 } from "mongodb";
 import mongoose from "mongoose";
 
 const LastRecommendationSchema = new mongoose.Schema({

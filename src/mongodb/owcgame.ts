@@ -1,6 +1,5 @@
-import { Int32 } from "mongodb";
 import mongoose from "mongoose";
-import { OwcGame } from "../interfaces/mongodb/owcgame";
+import { OwcGame } from "../interfaces/osu/tournament/owcgame";
 
 const owcgameSchema = new mongoose.Schema({
     matchid: Number,

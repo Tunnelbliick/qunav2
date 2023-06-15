@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { PickemRegistration } from "../interfaces/mongodb/pickemRegistration";
+import { PickemRegistration } from "../interfaces/osu/tournament/pickemRegistration";
 
 const pcikemRegistrationSchema = new mongoose.Schema({
     owc: { type: mongoose.Schema.Types.ObjectId, ref: 'owc' },

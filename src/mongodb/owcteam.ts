@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { OwcTeam } from "../interfaces/mongodb/owcteam";
+import { OwcTeam } from "../interfaces/osu/tournament/owcteam";
 
 const owcteamSchema = new mongoose.Schema({
     owc: {type: mongoose.Schema.Types.ObjectId, ref: 'owc'},
