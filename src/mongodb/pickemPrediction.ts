@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { PickemPrediction } from "../interfaces/mongodb/pickemPredictions";
+import { PickemPrediction } from "../interfaces/osu/tournament/pickemPredictions";
 
 const pickemPredictionSchema = new mongoose.Schema({
     registration: { type: mongoose.Schema.Types.ObjectId, ref: 'pickemRegistration' },
