@@ -1,5 +1,8 @@
-export function calcRetries(recentplay: Array<any>, mapid: any, mods: any) {
-    const trys = recentplay.filter(r => (r.beatmap.id == mapid && arrayEquals(r.mods, mods)))
+import { OsuScore } from "../../interfaces/osu/score/osuScore";
+import { RecentPlayArguments } from "../osu/recent/recent";
+
+export function calcRetries(plays: OsuScore[], mapid: number, mods: string[]) {
+    const trys = plays.filter(r => (r.beatmap.id == mapid && arrayEquals(r.mods, mods)))
     return trys.length;
 }
 
@@ -10,8 +13,8 @@ export function arrayEquals(a: any, b: any) {
         a.every((val, index) => val === b[index]);
 }
 
-export function filterRecent(recentplays: any, filter: any) {
-    return recentplays.findIndex((r: any) => {
+export function filterRecent(plays: OsuScore[], filter: RecentPlayArguments) {
+    return plays.findIndex((r: any) => {
 
         const filterresults = [];
 

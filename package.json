@@ -24,6 +24,7 @@
     "mongoose": "^7.2.4",
     "mongoose-long": "^0.7.0",
     "osu-api-extended": "^2.7.5",
+    "quna-pp": "file:../quna-pp",
     "skia-canvas": "^1.0.1",
     "wokcommands": "^2.1.7"
   },

@@ -14,8 +14,11 @@ import { Arguments } from "../../../interfaces/arguments";
 import { handleExceptions } from "../../utility/exceptionHandler";
 import { OsuScore } from "../../../interfaces/osu/score/osuScore";
 import { calcRetries, filterRecent } from "../../utility/recentUtility";
+import { downloadBeatmap } from "../../utility/downloadbeatmap";
+import { simulateRecentPlay } from "../../pp/rosupp/simulate";
+import { getBeatmapFromCache } from "../beatmap/beatmap";
 
-class RecentPlayArguments extends Arguments {
+export class RecentPlayArguments extends Arguments {
     search: string | undefined;
     offset: number = 0;
     mods: string[] = [];
@@ -87,6 +90,12 @@ export async function recent(channel: TextChannel, user: User, message: Message,
             }
         })
 
+        if (recentPlayArguments.userid) {
+
+            await getRecentPlaysForUser(recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
+
+        }
+
     }
 
     try {
@@ -118,15 +127,15 @@ function handleInteractionOptions(interaction: ChatInputCommandInteraction, defa
 
     const options = interaction.options;
 
-    recentPlayArguments.username = options.getString("username", false) === null ? "" : options.getString("username", false)!;
-    recentPlayArguments.userid = options.getString("userid", false) === null ? "" : options.getString("userid", false)!;
+    recentPlayArguments.username = options.getString("username", false) === null ? undefined : options.getString("username", false)!;
+    recentPlayArguments.userid = options.getString("userid", false) === null ? undefined : options.getString("userid", false)!;
     recentPlayArguments.discordid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")!.toString();
     recentPlayArguments.mode = (options.getString("mode", false) === null ? default_mode : options.getString("mode", false)!) as Gamemode;
     recentPlayArguments.server = (options.getString("server", false) === null ? Server.BANCHO : options.getString("server", false)!) as Server;
     recentPlayArguments.mods = options.getString("mods") === null ? [] : parseModString(options.getString("mods"));
-    recentPlayArguments.search = options.getString("query") === null ? "" : options.getString("query")?.toLowerCase()!;
+    recentPlayArguments.search = options.getString("query") === null ? undefined : options.getString("query")?.toLowerCase()!;
     recentPlayArguments.offset = options.getNumber("index") === null ? 0 : options.getNumber("index")! - 1;
-    recentPlayArguments.rank = options.getString("rank") === null ? "" : options.getString("rank")?.toLowerCase()!;
+    recentPlayArguments.rank = options.getString("rank") === null ? undefined : options.getString("rank")?.toLowerCase()!;
     recentPlayArguments.include_fails = options.getBoolean("fails") === null ? false : options.getBoolean("fails")!;
 
     if (recentPlayArguments.discordid) {
@@ -218,14 +227,14 @@ type RecentPlayResult = {
     leaderboard?: number;
 }
 
-// Helper function to handle results
+/*// Helper function to handle results
 async function handleResults(
     results: PromiseSettledResult<any>[],
     recentplay: any,
     isRanked: boolean
 ): Promise<RecentPlayResult> {
 
-    const top100 = results[5].value?.find((t: any) => t.value.id === recentplay.best_id);
+    const top100 = results[5].find((t: any) => t.value.id === recentplay.best_id);
     const leaderboard = results[6].value?.find((t: any) => t.value.id === recentplay.best_id);
 
     return {
@@ -240,29 +249,36 @@ async function handleResults(
         top100: top100?.position,
         leaderboard: leaderboard?.position
     };
-}
+}*/
 
-export async function getRecentPlaysForUser(userid: number, args: RecentPlayArguments, mode?: Gamemode): Promise<RecentPlayResult | "osuapierr" | null> {
+export async function getRecentPlaysForUser(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
 
     // Get recent plays
     const max = 50;
     const offset = args.offset;
     const limit = max - offset;
 
+
     const recentplays = await getRecentBancho(userid, args.include_fails, limit.toString(), mode, offset.toString());
 
     // Apply filter
-    const filterFoundIndex = filterRecent(recentplays, filter);
+    const filterFoundIndex = filterRecent(recentplays, args);
     if (filterFoundIndex == -1) {
         return null;
     }
 
+    //console.log(recentplays[0]);
+
     const recentplay = recentplays[filterFoundIndex];
     await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
 
-    const commonPromises = [
+    const resp = await simulateRecentPlay(recentplay);
+    const beatmap = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
+
+    console.log(beatmap);
+
+    /*const commonPromises = [
         getUser(userid, recentplay.mode),
-        getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum),
         loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode),
         difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods)
     ];
@@ -285,7 +301,7 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
         ];
 
         return Promise.allSettled(promises).then(results => handleResults(results, recentplay, false));
-    }
+    }*/
 }
 
 export async function getRecentBancho(
@@ -305,13 +321,13 @@ export async function getRecentBancho(
             offset
         };
 
-        const data: object = await v2.scores.user.category(userid , "recent", params);
+        const data: object = await v2.scores.user.category(userid, "recent", params);
 
         if (data.hasOwnProperty("error")) {
             throw new Error("NOTFOUNDID");
         }
 
-        return data as OsuScore;
+        return data as OsuScore[];
     } catch {
         throw new Error("NOSERVER");
     }

@@ -1,6 +1,7 @@
 import { Client, IntentsBitField, Partials } from "discord.js";
 import WOK from "wokcommands";
 import path from "path";
+import mongoose from "mongoose";
 require("dotenv/config");
 
 const client = new Client({
@@ -16,6 +17,10 @@ const client = new Client({
 client.on("ready", () => {
 
   console.log("The bot is ready");
+
+  mongoose.connect(process.env.mongodb || "", {
+    keepAlive: true
+  })
 
   new WOK({
     // The client for your bot. This is the only required property
