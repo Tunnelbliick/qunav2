@@ -1,3 +1,5 @@
+import { OsuScore } from "../score/osuScore";
+
 export interface Top {
     osuid: number,
     mode: string,
@@ -26,4 +28,9 @@ export class TopPlaysfilter {
     reverse: boolean = true;
     discordid: string = "";
     username: string = "";
+}
+
+export interface Best {
+    position: number,
+    value: OsuScore,
 }

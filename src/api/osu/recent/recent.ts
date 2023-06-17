@@ -10,7 +10,7 @@ import { encrypt } from "../../../utility/jwt";
 import { finishTransaction, sentryError, startTransaction } from "../../utility/sentry";
 import { parseModString } from "../../../utility/parsemods";
 import { buildUsernameOfArgs } from "../../utility/buildusernames";
-import { Arguments } from "../../../interfaces/arguments";
+import { Arguments, BanchoParams } from "../../../interfaces/arguments";
 import { handleExceptions } from "../../utility/exceptionHandler";
 import { OsuScore } from "../../../interfaces/osu/score/osuScore";
 import { filterRecent } from "../../utility/recentUtility";
@@ -22,6 +22,8 @@ import { getBanchoUserById } from "../profile/profile";
 import { loadacc100WithoutBeatMapDownload } from "../../pp/db/loadSS";
 import { difficulty } from "../../../interfaces/pp/difficulty";
 import { OsuBeatmap } from "../../../interfaces/osu/beatmap/osuBeatmap";
+import { getTopForUser } from "../top/top";
+import { Best } from "../../../interfaces/osu/top/top";
 
 export class RecentPlayArguments extends Arguments {
     search: string = "";
@@ -31,14 +33,6 @@ export class RecentPlayArguments extends Arguments {
     include_fails: boolean = true;
     mode: Gamemode | undefined;
     server: Server | undefined;
-}
-
-class BanchoParams {
-    include_fails?: boolean;
-    mode?: 'osu' | 'fruits' | 'mania' | 'taiko';
-    mods?: number;
-    limit?: string;
-    offset?: string;
 }
 
 enum LegacyMode {
@@ -63,10 +57,10 @@ class CommonData {
     user: OsuUser | undefined;
     beatmap: OsuBeatmap | undefined;
     leaderboard: any;
-    best: any;
+    best: Best[] | undefined;
 }
 
-type CommonDataReturnTypes = OsuUser | OsuBeatmap | undefined;
+type CommonDataReturnTypes = OsuUser | OsuBeatmap | Best[] | undefined;
 
 class RecentScore {
     score: OsuScore | undefined;
@@ -247,6 +241,11 @@ function handleModeNone(recentPlayArguments: RecentPlayArguments, arg: string, u
 }
 
 function handleUsername(recentPlayArguments: RecentPlayArguments, username: string): void {
+
+    if (username === undefined || username === "") {
+        return;
+    }
+
     if (isNaN(+username)) {
         recentPlayArguments.username = username;
     } else {
@@ -274,8 +273,6 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
         throw new Error("NOPLAYFOUND");
     }
 
-    //console.log(recentplays[0]);
-
     const recentplay = recentplays[filterFoundIndex];
     await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
 
@@ -298,7 +295,7 @@ async function getCommonData(score: OsuScore) {
     const beatmap = await getBeatmapFromCache(score.beatmap.id, score.beatmap.checksum);
     const user = await getBanchoUserById(score.user_id);
     const leaderboard = undefined;
-    const best = undefined;
+    const best = await getTopForUser(score.user_id, score.mode as Gamemode);
 
     await Promise.allSettled([beatmap, user, leaderboard, best]).then((result: PromiseSettledResult<CommonDataReturnTypes>[]) => {
         result.forEach((outcome, index) => {
@@ -313,6 +310,11 @@ async function getCommonData(score: OsuScore) {
                     case 1:
                         common.user = outcome.value as OsuUser;
                         break;
+                    case 2:
+                        common.leaderboard = undefined;
+                        break;
+                    case 3:
+                        common.best = outcome.value as Best[];
                 }
             }
         });

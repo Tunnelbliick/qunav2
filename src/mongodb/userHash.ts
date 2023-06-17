@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { UserHash } from "../interfaces/userHash";
 
 const UserHashSchema = new mongoose.Schema({
     osuid: Number,
@@ -9,4 +10,4 @@ const UserHashSchema = new mongoose.Schema({
     updating: Boolean,
 });
 
-export default mongoose.model("userHash", UserHashSchema);
+export default mongoose.model<UserHash>("userHash", UserHashSchema);

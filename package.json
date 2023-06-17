@@ -20,6 +20,7 @@
     "@sentry/node": "^7.55.2",
     "chartjs-node-canvas": "^4.1.6",
     "discord.js": "^14.11.0",
+    "hash-sum": "^2.0.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.2.4",
     "mongoose-long": "^0.7.0",

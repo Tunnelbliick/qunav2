@@ -1,5 +1,14 @@
 import { ObjectId } from "mongoose";
 
+export interface statistics {
+    count_100: number;
+    count_300: number;
+    count_50: number;
+    count_geki: number;
+    count_katu: number;
+    count_miss: number;
+}
+
 export interface Score {
     id: ObjectId,
     osuid: number,
@@ -12,7 +21,7 @@ export interface Score {
     accuracy: number,
     max_combo: number,
     max_pp: number,
-    statistics: Object,
+    statistics: statistics,
     created_at: Date,
     mode: string,
     mode_int: number,

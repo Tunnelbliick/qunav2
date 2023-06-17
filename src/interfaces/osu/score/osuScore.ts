@@ -1,6 +1,6 @@
 export interface OsuScore {
     accuracy: number;
-    best_id: number;
+    best_id?: number | undefined;
     created_at: string;
     id: number;
     max_combo: number;
@@ -8,10 +8,11 @@ export interface OsuScore {
     mode_int: number;
     mods: string[];
     passed: boolean;
-    perfect: boolean;
+    perfect: boolean | undefined;
     pp: number;
-    rank: string;
-    replay: boolean;
+    max_pp: number | undefined;
+    rank?: string | undefined;
+    replay: boolean | undefined;
     score: number;
     statistics: {
         count_100: number;
@@ -22,7 +23,7 @@ export interface OsuScore {
         count_miss: number;
     };
     user_id: number;
-    current_user_attributes: {
+    current_user_attributes?: {
         pin: string;
     };
     beatmap: {
@@ -84,8 +85,8 @@ export interface OsuScore {
         user_id: number;
         video: boolean;
     };
-    rank_global: number;
-    user: {
+    rank_global?: number | undefined;
+    user?: {
         avatar_url: string;
         country_code: string;
         default_group: string;

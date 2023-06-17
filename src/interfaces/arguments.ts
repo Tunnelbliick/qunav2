@@ -3,3 +3,11 @@ export class Arguments {
     username: string | undefined;
     discordid: string | undefined;
 }
+
+export class BanchoParams {
+    include_fails?: boolean;
+    mode?: 'osu' | 'fruits' | 'mania' | 'taiko';
+    mods?: number;
+    limit?: string;
+    offset?: string;
+}
