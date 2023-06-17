@@ -61,7 +61,7 @@ export async function getLeaderBoardPosition(mapid: number, mode: Gamemode, scor
 
     const leaderboard: OsuScore[] = await loadLeaderBoard(mapid, mode);
 
-    const leaderboardArray: Array<Best> = [];
+    const leaderboardArray: Best[] = [];
 
     if (leaderboard == undefined) {
         return null;
@@ -84,7 +84,7 @@ export async function getLeaderBoardPositionByScore(mapid: number, mode: Gamemod
 
     const leaderboard: OsuScore[] = await loadLeaderBoard(mapid, mode);
 
-    const leaderboardArray: Array<Best> = [];
+    const leaderboardArray:Best[] = [];
 
     if (leaderboard == undefined) {
         return undefined;
