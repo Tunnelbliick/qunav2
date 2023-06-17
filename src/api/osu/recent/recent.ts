@@ -24,6 +24,7 @@ import { difficulty } from "../../../interfaces/pp/difficulty";
 import { OsuBeatmap } from "../../../interfaces/osu/beatmap/osuBeatmap";
 import { getTopForUser } from "../top/top";
 import { Best } from "../../../interfaces/osu/top/top";
+import { LeaderboardPosition, getLeaderBoardPositionByScore } from "../leaderboard/leaderboard";
 
 export class RecentPlayArguments extends Arguments {
     search: string = "";
@@ -60,7 +61,7 @@ class CommonData {
     best: Best[] | undefined;
 }
 
-type CommonDataReturnTypes = OsuUser | OsuBeatmap | Best[] | undefined;
+type CommonDataReturnTypes = OsuUser | OsuBeatmap | Best[] | LeaderboardPosition | undefined;
 
 class RecentScore {
     score: OsuScore | undefined;
@@ -292,10 +293,10 @@ async function getCommonData(score: OsuScore) {
 
     const common: CommonData = new CommonData();
 
-    const beatmap = await getBeatmapFromCache(score.beatmap.id, score.beatmap.checksum);
-    const user = await getBanchoUserById(score.user_id);
-    const leaderboard = undefined;
-    const best = await getTopForUser(score.user_id, score.mode as Gamemode);
+    const beatmap = getBeatmapFromCache(score.beatmap.id, score.beatmap.checksum);
+    const user = getBanchoUserById(score.user_id);
+    const leaderboard = getLeaderBoardPositionByScore(score.beatmap.id, score.mode as Gamemode, score);
+    const best = getTopForUser(score.user_id, score.mode as Gamemode);
 
     await Promise.allSettled([beatmap, user, leaderboard, best]).then((result: PromiseSettledResult<CommonDataReturnTypes>[]) => {
         result.forEach((outcome, index) => {
@@ -311,7 +312,7 @@ async function getCommonData(score: OsuScore) {
                         common.user = outcome.value as OsuUser;
                         break;
                     case 2:
-                        common.leaderboard = undefined;
+                        common.leaderboard = outcome.value as LeaderboardPosition;
                         break;
                     case 3:
                         common.best = outcome.value as Best[];
