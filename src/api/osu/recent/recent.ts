@@ -214,7 +214,7 @@ function handleLegacyArguments(user: User, args: string[], default_mode: Gamemod
 
 }
 
-type RecentPlayResult = {
+/*type RecentPlayResult = {
     retries: number;
     recentplay: OsuScore;
     user: any;
@@ -225,7 +225,7 @@ type RecentPlayResult = {
     difficulty: any;
     top100?: number;
     leaderboard?: number;
-}
+}*/
 
 /*// Helper function to handle results
 async function handleResults(
