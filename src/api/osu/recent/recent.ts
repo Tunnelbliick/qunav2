@@ -50,6 +50,31 @@ enum LegacyMode {
     Rank,
 }
 
+class Performance {
+    difficulty: difficulty | undefined;
+    accSS: number | undefined;
+    simulated: number | undefined;
+    simulatedFc: number | undefined;
+}
+
+type PerformanceReturnTypes = difficulty | number;
+
+class CommonData {
+    user: OsuUser | undefined;
+    beatmap: OsuBeatmap | undefined;
+    leaderboard: any;
+    best: any;;
+}
+
+type CommonDataReturnTypes = OsuUser | OsuBeatmap | undefined;
+
+class RecentScore {
+    score: OsuScore | undefined;
+    user: OsuUser | undefined;
+    beatmap: OsuBeatmap | undefined;
+    performance: Performance | undefined;
+}
+
 type CommandGroup = {
     commands: string[],
     handler: () => LegacyMode,
@@ -218,59 +243,6 @@ function handleLegacyArguments(user: User, args: string[], default_mode: Gamemod
 
 }
 
-/*t ype RecentPlayResult = {
-    retries: number;
-    recentplay: OsuScore;
-    user: any;
-    beatmap: any;
-    acc100: any;
-    ppOfPlay?: any;
-    ppIffc: any;
-    difficulty: any;
-    top100?: number;
-    leaderboard?: number;
-}*/
-
-/*// Helper function to handle results
-async function handleResults(
-    results: PromiseSettledResult<any>[],
-    recentplay: any,
-    isRanked: boolean
-): Promise<RecentPlayResult> {
-
-    const top100 = results[5].find((t: any) => t.value.id === recentplay.best_id);
-    const leaderboard = results[6].value?.find((t: any) => t.value.id === recentplay.best_id);
-
-    return {
-        retries: calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods),
-        recentplay: recentplay,
-        user: results[0].value,
-        beatmap: results[1].value,
-        acc100: results[2].value,
-        ppOfPlay: isRanked ? results[3].value : undefined,
-        ppIffc: results[3].value,
-        difficulty: results[4].value,
-        top100: top100?.position,
-        leaderboard: leaderboard?.position
-    };
-}*/
-
-class Performance {
-    difficulty: difficulty | undefined;
-    accSS: number | undefined;
-    simulated: number | undefined;
-    simulatedFc: number | undefined;
-}
-
-type PerformanceReturnTypes = difficulty | number;
-
-interface recentScore {
-    score: OsuScore,
-    user: OsuUser,
-    beatmap: OsuBeatmap,
-    performance: Performance
-}
-
 export async function getRecentPlaysForUser(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
 
     // Get recent plays
@@ -295,34 +267,47 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
     const recentplay = recentplays[filterFoundIndex];
     await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
 
-    const beatmap = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
+    const common = await getCommonData(recentplay);
     const performance = await getPerformance(recentplay);
-    console.log(recentplay);
-    console.log(performance);
 
-    /*const commonPromises = [
-        loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode),
-    ];
+    const recentScore: RecentScore = new RecentScore();
 
-    if (recentplay.pp === null) {
-        const promises = [
-            ...commonPromises,
-            simulateRecentPlay(recentplay),
-            simulateRecentPlayFC(recentplay, await commonPromises[1])
-        ];
+    recentScore.beatmap = common.beatmap;
+    recentScore.score = recentplay;
+    recentScore.performance = performance;
 
-        return Promise.allSettled(promises).then(results => handleResults(results, recentplay, true));
+    console.log(recentScore);
+}
 
-    } else {
-        const promises = [
-            ...commonPromises,
-            simulateRecentPlayFC(recentplay, await commonPromises[1]),
-            getTopForUser(userid, undefined, undefined, recentplay.mode),
-            getLeaderBoard(recentplay.beatmap.id, recentplay.mode)
-        ];
+async function getCommonData(score: OsuScore) {
 
-        return Promise.allSettled(promises).then(results => handleResults(results, recentplay, false));
-    }*/
+    const common: CommonData = new CommonData();
+
+    const beatmap = await getBeatmapFromCache(score.beatmap.id, score.beatmap.checksum);
+    const user = await getBanchoUserById(score.user_id);
+    const leaderboard = undefined;
+    const best = undefined;
+
+    await Promise.allSettled([beatmap, user, leaderboard, best]).then((result: PromiseSettledResult<CommonDataReturnTypes>[]) => {
+        result.forEach((outcome, index) => {
+            if (outcome.status === 'rejected') {
+                const err = new Error(`Promise ${index} was rejected with reason: ${outcome.reason}`)
+                sentryError(err);
+            } else {
+                switch (index) {
+                    case 0:
+                        common.beatmap = outcome.value as OsuBeatmap;
+                        break;
+                    case 1:
+                        common.user = outcome.value as OsuUser;
+                        break;
+                }
+            }
+        });
+    })
+
+    return common;
+
 }
 
 async function getPerformance(score: OsuScore) {
