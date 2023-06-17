@@ -1,4 +1,4 @@
-import { TextChannel, ChatInputCommandInteraction, Message, User, InteractionResponse, AttachmentBuilder } from "discord.js";
+import { TextChannel, ChatInputCommandInteraction, Message, User } from "discord.js";
 import { Gamemode } from "../../../interfaces/enum/gamemodes";
 import { Server } from "../../../interfaces/enum/server";
 import { thinking } from "../../../utility/thinking";
@@ -13,7 +13,7 @@ import { buildUsernameOfArgs } from "../../utility/buildusernames";
 import { Arguments } from "../../../interfaces/arguments";
 import { handleExceptions } from "../../utility/exceptionHandler";
 import { OsuScore } from "../../../interfaces/osu/score/osuScore";
-import { calcRetries, filterRecent } from "../../utility/recentUtility";
+import { filterRecent } from "../../utility/recentUtility";
 import { downloadBeatmap } from "../../utility/downloadbeatmap";
 import { simulateRecentPlay, simulateRecentPlayFC } from "../../pp/rosupp/simulate";
 import { getBeatmapFromCache } from "../beatmap/beatmap";
@@ -63,7 +63,7 @@ class CommonData {
     user: OsuUser | undefined;
     beatmap: OsuBeatmap | undefined;
     leaderboard: any;
-    best: any;;
+    best: any;
 }
 
 type CommonDataReturnTypes = OsuUser | OsuBeatmap | undefined;
@@ -108,26 +108,28 @@ export async function recent(channel: TextChannel, user: User, message: Message,
     const recentPlayArguments: RecentPlayArguments = handleRecentParameters(user, args, interaction, mode);
     const transaction = startTransaction("Recentplay", "Shows the recentplay for a user", user.username, "recent");
 
-    if ((recentPlayArguments.userid == undefined && recentPlayArguments.username === undefined) && recentPlayArguments.discordid) {
-
-        await qunaUser.findOne({ discordid: await encrypt(recentPlayArguments.discordid) }).then(userObject => {
-            if (userObject === null) {
-                throw new Error("NOTLINKED");
-            } else {
-                recentPlayArguments.userid = userObject.userid;
-            }
-        })
-    }
-
-    console.log(recentPlayArguments);
-
-    if (recentPlayArguments.userid) {
-
-        await getRecentPlaysForUser(+recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
-
-    }
-
     try {
+
+        thinking(channel, interaction);
+
+        if ((recentPlayArguments.userid == undefined && recentPlayArguments.username === undefined) && recentPlayArguments.discordid) {
+
+            await qunaUser.findOne({ discordid: await encrypt(recentPlayArguments.discordid) }).then(userObject => {
+                if (userObject === null) {
+                    throw new Error("NOTLINKED");
+                } else {
+                    recentPlayArguments.userid = userObject.userid;
+                }
+            })
+        }
+
+        console.log(recentPlayArguments);
+
+        if (recentPlayArguments.userid) {
+
+            await getRecentPlaysForUser(+recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
+
+        }
 
 
     } catch (er: unknown) {
