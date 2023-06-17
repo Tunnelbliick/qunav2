@@ -3,5 +3,5 @@ export interface RecommendationInfo {
     currentIndex: number,
     length: number,
     createdAt: Date,
-    mods: Array<String>
+    mods: Array<string>
 }
