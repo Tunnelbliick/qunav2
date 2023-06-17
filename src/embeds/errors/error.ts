@@ -8,7 +8,7 @@ export function userNotLinked(discord: string | undefined) {
     return embed;
 }
 
-export function useridNotFound(userid: string | undefined) {
+export function useridNotFound(userid: string | number | undefined) {
     const embed = new EmbedBuilder()
         .setDescription(`No user was found with the id ${userid == undefined ? "" : userid}`)
         .setColor(0x737df9)

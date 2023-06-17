@@ -30,7 +30,7 @@ export async function loadacc100(mapid: number, checksum: string, mode: string, 
 
     }
 
-    return ppObject;
+    return ppObject.pp[100];
 
 }
 
@@ -57,5 +57,5 @@ export async function loadacc100WithoutBeatMapDownload(mapid: number, checksum: 
 
     }
 
-    return ppObject;
+    return ppObject.pp[100];
 }

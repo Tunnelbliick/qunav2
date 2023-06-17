@@ -1,5 +1,5 @@
 export class Arguments {
-    userid: string | undefined;
+    userid: string | number | undefined;
     username: string | undefined;
     discordid: string | undefined;
 }

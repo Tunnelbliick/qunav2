@@ -15,15 +15,20 @@ import { handleExceptions } from "../../utility/exceptionHandler";
 import { OsuScore } from "../../../interfaces/osu/score/osuScore";
 import { calcRetries, filterRecent } from "../../utility/recentUtility";
 import { downloadBeatmap } from "../../utility/downloadbeatmap";
-import { simulateRecentPlay } from "../../pp/rosupp/simulate";
+import { simulateRecentPlay, simulateRecentPlayFC } from "../../pp/rosupp/simulate";
 import { getBeatmapFromCache } from "../beatmap/beatmap";
+import { getBeatmapDifficulty } from "../../pp/rosupp/difficulty";
+import { getBanchoUserById } from "../profile/profile";
+import { loadacc100WithoutBeatMapDownload } from "../../pp/db/loadSS";
+import { difficulty } from "../../../interfaces/pp/difficulty";
+import { OsuBeatmap } from "../../../interfaces/osu/beatmap/osuBeatmap";
 
 export class RecentPlayArguments extends Arguments {
-    search: string | undefined;
+    search: string = "";
     offset: number = 0;
     mods: string[] = [];
     rank: string | undefined;
-    include_fails: boolean | undefined;
+    include_fails: boolean = true;
     mode: Gamemode | undefined;
     server: Server | undefined;
 }
@@ -78,8 +83,6 @@ export async function recent(channel: TextChannel, user: User, message: Message,
     const recentPlayArguments: RecentPlayArguments = handleRecentParameters(user, args, interaction, mode);
     const transaction = startTransaction("Recentplay", "Shows the recentplay for a user", user.username, "recent");
 
-    console.log(recentPlayArguments);
-
     if ((recentPlayArguments.userid == undefined && recentPlayArguments.username === undefined) && recentPlayArguments.discordid) {
 
         await qunaUser.findOne({ discordid: await encrypt(recentPlayArguments.discordid) }).then(userObject => {
@@ -89,12 +92,13 @@ export async function recent(channel: TextChannel, user: User, message: Message,
                 recentPlayArguments.userid = userObject.userid;
             }
         })
+    }
 
-        if (recentPlayArguments.userid) {
+    console.log(recentPlayArguments);
 
-            await getRecentPlaysForUser(recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
+    if (recentPlayArguments.userid) {
 
-        }
+        await getRecentPlaysForUser(+recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
 
     }
 
@@ -133,7 +137,7 @@ function handleInteractionOptions(interaction: ChatInputCommandInteraction, defa
     recentPlayArguments.mode = (options.getString("mode", false) === null ? default_mode : options.getString("mode", false)!) as Gamemode;
     recentPlayArguments.server = (options.getString("server", false) === null ? Server.BANCHO : options.getString("server", false)!) as Server;
     recentPlayArguments.mods = options.getString("mods") === null ? [] : parseModString(options.getString("mods"));
-    recentPlayArguments.search = options.getString("query") === null ? undefined : options.getString("query")!.toLowerCase()!;
+    recentPlayArguments.search = options.getString("query") === null ? "" : options.getString("query")!.toLowerCase()!;
     recentPlayArguments.offset = options.getNumber("index") === null ? 0 : options.getNumber("index")! - 1;
     recentPlayArguments.rank = options.getString("rank") === null ? undefined : options.getString("rank")!.toLowerCase()!;
     recentPlayArguments.include_fails = options.getBoolean("fails") === null ? false : options.getBoolean("fails")!;
@@ -214,7 +218,7 @@ function handleLegacyArguments(user: User, args: string[], default_mode: Gamemod
 
 }
 
-/*type RecentPlayResult = {
+/*t ype RecentPlayResult = {
     retries: number;
     recentplay: OsuScore;
     user: any;
@@ -251,6 +255,20 @@ async function handleResults(
     };
 }*/
 
+class Performance {
+    difficulty: difficulty | undefined;
+    accSS: number | undefined;
+    simulated: number | undefined;
+    simulatedFc: number | undefined;
+}
+
+interface recentScore {
+    score: OsuScore,
+    user: OsuUser,
+    beatmap: OsuBeatmap,
+    performance: Performance
+}
+
 export async function getRecentPlaysForUser(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
 
     // Get recent plays
@@ -260,11 +278,14 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
 
 
     const recentplays = await getRecentBancho(userid, args.include_fails, limit.toString(), mode, offset.toString());
+    if (recentplays.length == 0) {
+        throw new Error("NORECENTPLAYS");
+    }
 
     // Apply filter
     const filterFoundIndex = filterRecent(recentplays, args);
     if (filterFoundIndex == -1) {
-        return null;
+        throw new Error("NOPLAYFOUND");
     }
 
     //console.log(recentplays[0]);
@@ -272,15 +293,13 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
     const recentplay = recentplays[filterFoundIndex];
     await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
 
-    const resp = await simulateRecentPlay(recentplay);
     const beatmap = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
-
-    console.log(beatmap);
+    const performance = await getPerformance(recentplay);
+    console.log(recentplay);
+    console.log(performance);
 
     /*const commonPromises = [
-        getUser(userid, recentplay.mode),
         loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode),
-        difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods)
     ];
 
     if (recentplay.pp === null) {
@@ -302,6 +321,34 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
 
         return Promise.allSettled(promises).then(results => handleResults(results, recentplay, false));
     }*/
+}
+
+async function getPerformance(score: OsuScore) {
+
+    const performance: Performance = new Performance();
+
+    const diff = getBeatmapDifficulty(score.beatmap.id, score.beatmap.checksum, score.mods);
+    const accSS = await loadacc100WithoutBeatMapDownload(score.beatmap.id, score.beatmap.checksum, score.mods, score.mode);
+    let simulated = undefined;
+    let simulatedFc = undefined;
+
+    if (score.pp === null) {
+        simulated = simulateRecentPlay(score);
+        simulatedFc = simulateRecentPlayFC(score);
+    } else {
+        simulated = score.pp;
+        simulatedFc = simulateRecentPlayFC(score);
+    }
+
+    await Promise.allSettled([diff, accSS, simulated, simulatedFc]).then((result: any) => {
+        performance.difficulty = result[0].value;
+        performance.accSS = result[1].value;
+        performance.simulated = result[2].value;
+        performance.simulatedFc = result[3].value;
+
+    })
+
+    return performance;
 }
 
 export async function getRecentBancho(

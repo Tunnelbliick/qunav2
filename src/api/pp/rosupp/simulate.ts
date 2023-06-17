@@ -1,5 +1,6 @@
 import { OsuScore } from "../../../interfaces/osu/score/osuScore";
 import { arraytoBinary } from "../../../utility/parsemods";
+import { sentryError } from "../../utility/sentry";
 
 const ppcalc = require('quna-pp');
 
@@ -19,94 +20,86 @@ export interface simulateArgs {
 
 export async function simulateRecentPlay(recentplay: OsuScore): Promise<number> {
 
-    const mapid = recentplay.beatmap.id;
-    const checksum = recentplay.beatmap.checksum;
-    const misses = recentplay.statistics.count_miss;
-    const mehs = recentplay.statistics.count_50;
-    const goods = recentplay.statistics.count_100;
-    const great = recentplay.statistics.count_300;
-    const combo = recentplay.max_combo;
-    const score = recentplay.score;
-    const mode = recentplay.mode;
-    const mods = recentplay.mods
-
-    const modbinary = arraytoBinary(mods);
-
-    let map_pp: number = 0;
-    switch (mode) {
-        case "mania":
-            map_pp = await ppcalc.simulatemania(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary, score);
-            break;
-        default:
-            map_pp = await ppcalc.simulatestd(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary, great, goods, mehs, misses, combo);
-            break;
+    const args: simulateArgs = {
+        mapid: recentplay.beatmap.id.toString(),
+        checksum: recentplay.beatmap.checksum,
+        misses: recentplay.statistics.count_miss,
+        mehs: recentplay.statistics.count_50,
+        goods: recentplay.statistics.count_100,
+        great: recentplay.statistics.count_300,
+        combo: recentplay.max_combo,
+        score: recentplay.score,
+        mode: recentplay.mode,
+        mods: recentplay.mods
     }
 
-    if (map_pp === Infinity) {
-        map_pp = 0;
-    }
-
-    return map_pp
+    return simulate(args);
 }
 
-export async function simulateRecentPlayFC(recentplay: OsuScore, beatmap: any): Promise<number> {
+export async function simulateRecentPlayFC(recentplay: OsuScore): Promise<number> {
 
-    const mapid = recentplay.beatmap.id;
-    const checksum = recentplay.beatmap.checksum;
-    const misses = 0;
-    const mehs = recentplay.statistics.count_50;
-    const goods = recentplay.statistics.count_100;
-    const great = 0;
-    const combo = beatmap.max_combo;
-    const score = recentplay.score;
-    const mode = recentplay.mode;
-    const mods = recentplay.mods
-
-    const modbinary = arraytoBinary(mods);
-
-    let map_pp = null;
-    switch (mode) {
-        case "mania":
-            map_pp = await ppcalc.simulatemania(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary, score);
-            break;
-        default:
-            map_pp = await ppcalc.simulatestd(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary, great, goods, mehs, misses, combo);
-            break;
+    const args: simulateArgs = {
+        mapid: recentplay.beatmap.id.toString(),
+        checksum: recentplay.beatmap.checksum,
+        misses: 0,
+        mehs: recentplay.statistics.count_50,
+        goods: recentplay.statistics.count_100,
+        great: 0,
+        combo: recentplay.max_combo,
+        score: recentplay.score,
+        mode: recentplay.mode,
+        mods: recentplay.mods
     }
 
-    return map_pp
+    return simulateFC(args);
+
 }
 
 export async function simulate(args: simulateArgs): Promise<number> {
 
-    const modbinary = arraytoBinary(args.mods);
+    try {
+        const modbinary = arraytoBinary(args.mods);
 
-    let map_pp = null;
-    switch (args.mode) {
-        case "mania":
-            map_pp = await ppcalc.simulatemania(`${process.env.FOLDER_TEMP}${args.mapid}_${args.checksum}.osu`, modbinary, args.score);
-            break;
-        default:
-            map_pp = await ppcalc.simulatestd(`${process.env.FOLDER_TEMP}${args.mapid}_${args.checksum}.osu`, modbinary, args.great, args.goods, args.mehs, args.misses, args.combo);
-            break;
+        let map_pp = null;
+        switch (args.mode) {
+            case "mania":
+                map_pp = await ppcalc.simulatemania(`${process.env.FOLDER_TEMP}${args.mapid}_${args.checksum}.osu`, modbinary, args.score);
+                break;
+            default:
+                map_pp = await ppcalc.simulatestd(`${process.env.FOLDER_TEMP}${args.mapid}_${args.checksum}.osu`, modbinary, args.great, args.goods, args.mehs, args.misses, args.combo);
+                break;
+        }
+
+        return map_pp;
+
+    } catch (err: any) {
+        sentryError(err);
     }
 
-    return map_pp
+    return 0;
 }
 
 export async function simulateFC(args: simulateArgs): Promise<number> {
 
-    const modbinary = arraytoBinary(args.mods);
+    try {
 
-    let map_pp = null;
-    switch (args.mode) {
-        case "mania":
-            map_pp = await ppcalc.simulatemania(`${process.env.FOLDER_TEMP}${args.mapid}_${args.checksum}.osu`, modbinary, args.score);
-            break;
-        default:
-            map_pp = await ppcalc.simulatestd(`${process.env.FOLDER_TEMP}${args.mapid}_${args.checksum}.osu`, modbinary, 0, args.goods, args.mehs, 0, args.combo);
-            break;
+        const modbinary = arraytoBinary(args.mods);
+
+        let map_pp = null;
+        switch (args.mode) {
+            case "mania":
+                map_pp = await ppcalc.simulatemania(`${process.env.FOLDER_TEMP}${args.mapid}_${args.checksum}.osu`, modbinary, args.score);
+                break;
+            default:
+                map_pp = await ppcalc.simulatestd(`${process.env.FOLDER_TEMP}${args.mapid}_${args.checksum}.osu`, modbinary, 0, args.goods, args.mehs, 0, args.combo);
+                break;
+        }
+
+        return map_pp
+
+    } catch (err: any) {
+        sentryError(err);
     }
 
-    return map_pp
+    return 0;
 }

@@ -46,7 +46,7 @@ export async function profile(channel: TextChannel, user: User, message: Message
         if (profileArguments.userid || profileArguments.username) {
 
             if (profileArguments.userid) {
-                await getBanchoUserById(profileArguments.userid, profileArguments.mode).then((data: OsuUser) => {
+                await getBanchoUserById(+profileArguments.userid, profileArguments.mode).then((data: OsuUser) => {
                     userData = data;
                 })
             } else {
@@ -166,7 +166,7 @@ function handleLegacyArguments(user: User, args: string[], default_mode: Gamemod
 
 }
 
-export async function getBanchoUserById(userid: string, mode?: Gamemode): Promise<OsuUser> {
+export async function getBanchoUserById(userid: number, mode?: Gamemode): Promise<OsuUser> {
     await login();
 
     if (mode == undefined) {
