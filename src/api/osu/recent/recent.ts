@@ -176,74 +176,84 @@ function handleInteractionOptions(interaction: ChatInputCommandInteraction, defa
     return recentPlayArguments;
 
 }
+
 function handleLegacyArguments(user: User, args: string[], default_mode: Gamemode): RecentPlayArguments {
-
     const recentPlayArguments: RecentPlayArguments = new RecentPlayArguments;
-    const usernameargs: string[] = [];
-
     recentPlayArguments.mode = default_mode;
     recentPlayArguments.discordid = user.id;
 
-    // Build handlers map
-    const handlers: { [command: string]: () => LegacyMode } = {};
-
+    const handlers = buildHandlers();
     let mode: LegacyMode = LegacyMode.None;
 
+    const usernameargs: string[] = [];
+
+    args
+        .map(arg => arg.toLowerCase())
+        .forEach(arg => {
+            if (handlers[arg]) {
+                mode = handlers[arg]();
+            } else {
+                handleArgsByMode(recentPlayArguments, mode, arg, usernameargs);
+            }
+        });
+
+    const username = buildUsernameOfArgs(usernameargs);
+    handleUsername(recentPlayArguments, username);
+
+    return recentPlayArguments;
+}
+
+function buildHandlers(): { [command: string]: () => LegacyMode } {
+    const handlers: { [command: string]: () => LegacyMode } = {};
     for (const group of commandGroups) {
         for (const command of group.commands) {
             handlers[command] = group.handler;
         }
     }
-
-    for (let i = 0; i < args.length; i++) {
-
-        const arg = args[i].toLowerCase();
-
-        if (handlers[arg]) {
-            mode = handlers[arg]();
-            continue;
-        }
-
-        switch (mode) {
-            case LegacyMode.None:
-                if (i === 0 && !isNaN(+arg) && +arg <= 50) {
-                    recentPlayArguments.offset = +arg;
-                } else if (arg.startsWith("<@")) {
-                    recentPlayArguments.discordid = args[0].replace("<@", "").replace(">", "");
-                } else {
-                    usernameargs.push(arg);
-                }
-                break;
-            case LegacyMode.Fail:
-                recentPlayArguments.include_fails = arg === "true" ? true : arg === "false" ? false : recentPlayArguments.include_fails;
-                break;
-            case LegacyMode.Gamemode:
-                recentPlayArguments.mode = arg as Gamemode;
-                break;
-            case LegacyMode.Search:
-                recentPlayArguments.search += arg;
-                break;
-            case LegacyMode.Mods:
-                recentPlayArguments.mods.push(arg);
-                break;
-            case LegacyMode.Rank:
-                recentPlayArguments.rank += arg;
-                break;
-        }
-
-        const username = buildUsernameOfArgs(usernameargs);
-
-        if (isNaN(+username)) {
-            recentPlayArguments.username = username;
-        } else {
-            recentPlayArguments.userid = username;
-        }
-
-    }
-
-    return recentPlayArguments;
-
+    return handlers;
 }
+
+function handleArgsByMode(recentPlayArguments: RecentPlayArguments, mode: LegacyMode, arg: string, usernameargs: string[]): void {
+    switch (mode) {
+        case LegacyMode.None:
+            handleModeNone(recentPlayArguments, arg, usernameargs);
+            break;
+        case LegacyMode.Fail:
+            recentPlayArguments.include_fails = arg === "true" ? true : arg === "false" ? false : recentPlayArguments.include_fails;
+            break;
+        case LegacyMode.Gamemode:
+            recentPlayArguments.mode = arg as Gamemode;
+            break;
+        case LegacyMode.Search:
+            recentPlayArguments.search += arg;
+            break;
+        case LegacyMode.Mods:
+            recentPlayArguments.mods.push(arg);
+            break;
+        case LegacyMode.Rank:
+            recentPlayArguments.rank += arg;
+            break;
+    }
+}
+
+function handleModeNone(recentPlayArguments: RecentPlayArguments, arg: string, usernameargs: string[]): void {
+    if (!isNaN(+arg) && +arg <= 50) {
+        recentPlayArguments.offset = +arg;
+    } else if (arg.startsWith("<@")) {
+        recentPlayArguments.discordid = arg.replace("<@", "").replace(">", "");
+    } else {
+        usernameargs.push(arg);
+    }
+}
+
+function handleUsername(recentPlayArguments: RecentPlayArguments, username: string): void {
+    if (isNaN(+username)) {
+        recentPlayArguments.username = username;
+    } else {
+        recentPlayArguments.userid = username;
+    }
+}
+
 
 export async function getRecentPlaysForUser(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
 
