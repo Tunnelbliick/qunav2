@@ -7,7 +7,7 @@ import { v2 } from "osu-api-extended";
 import { OsuUser } from "../../../interfaces/osu/user/osuUser";
 import qunaUser from "../../../mongodb/qunaUser";
 import { encrypt } from "../../../utility/jwt";
-import { finishTransaction, startTransaction } from "../../utility/sentry";
+import { finishTransaction, sentryError, startTransaction } from "../../utility/sentry";
 import { parseModString } from "../../../utility/parsemods";
 import { buildUsernameOfArgs } from "../../utility/buildusernames";
 import { Arguments } from "../../../interfaces/arguments";
@@ -262,6 +262,8 @@ class Performance {
     simulatedFc: number | undefined;
 }
 
+type PerformanceReturnTypes = difficulty | number;
+
 interface recentScore {
     score: OsuScore,
     user: OsuUser,
@@ -340,12 +342,26 @@ async function getPerformance(score: OsuScore) {
         simulatedFc = simulateRecentPlayFC(score);
     }
 
-    await Promise.allSettled([diff, accSS, simulated, simulatedFc]).then((result: any) => {
-        performance.difficulty = result[0].value;
-        performance.accSS = result[1].value;
-        performance.simulated = result[2].value;
-        performance.simulatedFc = result[3].value;
-
+    await Promise.allSettled([diff, accSS, simulated, simulatedFc]).then((result: PromiseSettledResult<PerformanceReturnTypes>[]) => {
+        result.forEach((outcome, index) => {
+            if (outcome.status === 'rejected') {
+                const err = new Error(`Promise ${index} was rejected with reason: ${outcome.reason}`)
+                sentryError(err);
+            } else {
+                switch (index) {
+                    case 0:
+                        performance.difficulty = outcome.value as difficulty;
+                        break;
+                    case 1:
+                    case 2:
+                    case 3:
+                        performance.accSS = outcome.value as number;
+                        performance.simulated = outcome.value as number;
+                        performance.simulatedFc = outcome.value as number;
+                        break;
+                }
+            }
+        });
     })
 
     return performance;
