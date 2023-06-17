@@ -80,9 +80,9 @@ async function loadAndCacheTopFromBancho(bestplays: OsuScore[], userid: number, 
     if (hash === null || hash.topHash !== topHash || hash.topHash === undefined || hash.topHash === null) {
 
         const top = new cacheTop();
-        top.osuid = top.osuid;
+        top.osuid = userid;
         top.mode = mode;
-        top.topData = top.topData;
+        top.topData = topData;
 
         hash.topHash = topHash;
 
