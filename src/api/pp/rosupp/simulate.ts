@@ -72,8 +72,8 @@ export async function simulate(args: simulateArgs): Promise<number> {
 
         return map_pp;
 
-    } catch (err: any) {
-        sentryError(err);
+    } catch (err: unknown) {
+        sentryError(err as Error);
     }
 
     return 0;
@@ -97,8 +97,8 @@ export async function simulateFC(args: simulateArgs): Promise<number> {
 
         return map_pp
 
-    } catch (err: any) {
-        sentryError(err);
+    } catch (err: unknown) {
+        sentryError(err as Error);
     }
 
     return 0;
