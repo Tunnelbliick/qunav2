@@ -1,4 +1,3 @@
-import { AnyComponentBuilder } from "@discordjs/builders"
 import { v2 } from "osu-api-extended"
 import { login } from "../../utility/banchoLogin";
 import { Gamemode } from "../../../interfaces/enum/gamemodes";
@@ -58,7 +57,7 @@ export async function getLeaderBoard(mapid: number, mode: Gamemode) {
     return leaderboardArray;
 }
 
-export async function getLeaderBoardPosition(mapid: number, mode: Gamemode, scoreid: any) {
+export async function getLeaderBoardPosition(mapid: number, mode: Gamemode, scoreid: number) {
 
     const leaderboard: OsuScore[] = await loadLeaderBoard(mapid, mode);
 
