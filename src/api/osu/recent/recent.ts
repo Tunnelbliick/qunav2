@@ -22,7 +22,7 @@ import { getBanchoUserById } from "../profile/profile";
 import { loadacc100WithoutBeatMapDownload } from "../../pp/db/loadSS";
 import { difficulty } from "../../../interfaces/pp/difficulty";
 import { OsuBeatmap } from "../../../interfaces/osu/beatmap/osuBeatmap";
-import { getTopForUser } from "../top/top";
+import { TopPosition, getTopForUser, getTopPositionForUser } from "../top/top";
 import { Best } from "../../../interfaces/osu/top/top";
 import { LeaderboardPosition, getLeaderBoardPositionByScore } from "../leaderboard/leaderboard";
 
@@ -57,13 +57,15 @@ type PerformanceReturnTypes = difficulty | number;
 class CommonData {
     user: OsuUser | undefined;
     beatmap: OsuBeatmap | undefined;
-    leaderboard: any;
-    best: Best[] | undefined;
+    leaderboard: LeaderboardPosition | undefined;
+    best: TopPosition | undefined;
 }
 
-type CommonDataReturnTypes = OsuUser | OsuBeatmap | Best[] | LeaderboardPosition | undefined;
+type CommonDataReturnTypes = OsuUser | OsuBeatmap | TopPosition | LeaderboardPosition | undefined;
 
 class RecentScore {
+    leaderboard: LeaderboardPosition | undefined;
+    best: TopPosition | undefined;
     score: OsuScore | undefined;
     user: OsuUser | undefined;
     beatmap: OsuBeatmap | undefined;
@@ -281,9 +283,12 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
     const performance = await getPerformance(recentplay);
 
     const recentScore: RecentScore = new RecentScore();
-
-    recentScore.beatmap = common.beatmap;
+    
     recentScore.score = recentplay;
+    recentScore.beatmap = common.beatmap;
+    recentScore.user = common.user;
+    recentScore.leaderboard = common.leaderboard;
+    recentScore.best = common.best;
     recentScore.performance = performance;
 
     console.log(recentScore);
@@ -293,10 +298,12 @@ async function getCommonData(score: OsuScore) {
 
     const common: CommonData = new CommonData();
 
+    const isunranked = score.pp === null ? true : false;
+
     const beatmap = getBeatmapFromCache(score.beatmap.id, score.beatmap.checksum);
     const user = getBanchoUserById(score.user_id);
     const leaderboard = getLeaderBoardPositionByScore(score.beatmap.id, score.mode as Gamemode, score);
-    const best = getTopForUser(score.user_id, score.mode as Gamemode);
+    const best = getTopPositionForUser(score, score.mode as Gamemode, isunranked);
 
     await Promise.allSettled([beatmap, user, leaderboard, best]).then((result: PromiseSettledResult<CommonDataReturnTypes>[]) => {
         result.forEach((outcome, index) => {
@@ -315,7 +322,7 @@ async function getCommonData(score: OsuScore) {
                         common.leaderboard = outcome.value as LeaderboardPosition;
                         break;
                     case 3:
-                        common.best = outcome.value as Best[];
+                        common.best = outcome.value as TopPosition;
                 }
             }
         });

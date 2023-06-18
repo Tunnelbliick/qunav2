@@ -9,6 +9,19 @@ import userHash from "../../../mongodb/userHash";
 import cacheTop from "../../../mongodb/cacheTop";
 const makeHash = require("hash-sum")
 
+export enum TopType {
+    NORMAL,
+    NOTSUBMITTED,
+    FAILED,
+    SCOREV1D, // Higher pp less score
+    IFRANKED, // If the beatmap would be ranked
+}
+
+export class TopPosition {
+    index: number | undefined = undefined;
+    type: TopType | undefined = undefined;
+}
+
 export async function getTopForUser(userid: number, mode: Gamemode, offset?: string, limit?: string, unranked?: boolean) {
 
     let bestplays: OsuScore[] = [];
@@ -114,4 +127,54 @@ export async function getBanchoTop(userid: number, offset?: string, limit?: stri
     } catch {
         throw new Error("NOSERVER");
     }
+}
+
+export async function getTopPositionForUser(play: OsuScore, mode: Gamemode, unranked: boolean) {
+
+    const top = await getTopForUser(play.user_id, mode, "0", "100", false)
+
+    const position = new TopPosition();
+
+    let foundTop: Best | undefined = top.find(s => s.value.id === play.best_id);
+
+    if (foundTop) {
+        position.index = foundTop.position;
+        position.type = TopType.NORMAL
+
+        return position;
+    }
+
+    const sameBeatmap: Best | undefined = top.find(s => s.value.beatmap.id === play.beatmap.id);
+
+    // If the same beatmap is in top check if sv1d
+    if (sameBeatmap) {
+
+        const beatmapScore = sameBeatmap.value;
+
+        if (beatmapScore.pp < play.pp && beatmapScore.score > play.score) {
+            position.index = sameBeatmap.position;
+            position.type = TopType.SCOREV1D;
+
+            return position;
+        }
+
+    }
+
+    foundTop = top.find(s => s.value.pp < play.pp);
+
+    if (foundTop) {
+
+        if (unranked) {
+            position.index = foundTop.position;
+            position.type = TopType.NOTSUBMITTED
+        } else {
+            position.index = foundTop.position;
+            position.type = TopType.IFRANKED;
+        }
+    }
+
+    return position;
+
+
+
 }
