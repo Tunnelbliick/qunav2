@@ -1,8 +1,8 @@
 export interface UserHash {
-    osuid: Number,
-    mode: String,
-    topHash: String,
-    pinnedHash: String,
-    favoriteHash: String,
-    updating: Boolean,
+    osuid: number,
+    mode: string,
+    topHash: string,
+    pinnedHash: string,
+    favoriteHash: string,
+    updating: boolean,
 }
