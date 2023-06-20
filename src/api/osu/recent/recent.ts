@@ -22,8 +22,7 @@ import { getBanchoUserById } from "../profile/profile";
 import { loadacc100WithoutBeatMapDownload } from "../../pp/db/loadSS";
 import { difficulty } from "../../../interfaces/pp/difficulty";
 import { OsuBeatmap } from "../../../interfaces/osu/beatmap/osuBeatmap";
-import { TopPosition, getTopForUser, getTopPositionForUser } from "../top/top";
-import { Best } from "../../../interfaces/osu/top/top";
+import { TopPosition, getTopPositionForUser } from "../top/top";
 import { LeaderboardPosition, getLeaderBoardPositionByScore } from "../leaderboard/leaderboard";
 import { generateRecentEmbed, generateRecentEmbedCompact } from "../../../embeds/recent";
 
