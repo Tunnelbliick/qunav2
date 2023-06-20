@@ -1,4 +1,4 @@
-import { TextChannel, ChatInputCommandInteraction, Message, User } from "discord.js";
+import { TextChannel, ChatInputCommandInteraction, Message, User, InteractionResponse } from "discord.js";
 import { Gamemode } from "../../../interfaces/enum/gamemodes";
 import { Server } from "../../../interfaces/enum/server";
 import { thinking } from "../../../utility/thinking";
@@ -13,7 +13,7 @@ import { buildUsernameOfArgs } from "../../utility/buildusernames";
 import { Arguments, BanchoParams } from "../../../interfaces/arguments";
 import { handleExceptions } from "../../utility/exceptionHandler";
 import { OsuScore } from "../../../interfaces/osu/score/osuScore";
-import { filterRecent } from "../../utility/recentUtility";
+import { calcRetries, filterRecent } from "../../utility/recentUtility";
 import { downloadBeatmap } from "../../utility/downloadbeatmap";
 import { simulateRecentPlay, simulateRecentPlayFC } from "../../pp/rosupp/simulate";
 import { getBeatmapFromCache } from "../beatmap/beatmap";
@@ -25,6 +25,7 @@ import { OsuBeatmap } from "../../../interfaces/osu/beatmap/osuBeatmap";
 import { TopPosition, getTopForUser, getTopPositionForUser } from "../top/top";
 import { Best } from "../../../interfaces/osu/top/top";
 import { LeaderboardPosition, getLeaderBoardPositionByScore } from "../leaderboard/leaderboard";
+import { generateRecentEmbed, generateRecentEmbedCompact } from "../../../embeds/recent";
 
 export class RecentPlayArguments extends Arguments {
     search: string = "";
@@ -63,7 +64,8 @@ class CommonData {
 
 type CommonDataReturnTypes = OsuUser | OsuBeatmap | TopPosition | LeaderboardPosition | undefined;
 
-class RecentScore {
+export class RecentScore {
+    retry_count: number | undefined;
     leaderboard: LeaderboardPosition | undefined;
     best: TopPosition | undefined;
     score: OsuScore | undefined;
@@ -104,6 +106,7 @@ export async function recent(channel: TextChannel, user: User, message: Message,
 
     const recentPlayArguments: RecentPlayArguments = handleRecentParameters(user, args, interaction, mode);
     const transaction = startTransaction("Recentplay", "Shows the recentplay for a user", user.username, "recent");
+    let recentScore = new RecentScore();
 
     try {
 
@@ -124,8 +127,22 @@ export async function recent(channel: TextChannel, user: User, message: Message,
 
         if (recentPlayArguments.userid) {
 
-            await getRecentPlaysForUser(+recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
+            recentScore = await getRecentPlaysForUser(+recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
 
+        }
+
+        const embed = generateRecentEmbed(recentScore, undefined);
+
+        if (interaction) {
+            interaction.editReply({ embeds: [embed] }).then((msg) => {
+
+                setTimeout(() => updateMessage(msg, recentScore), 1000);
+            });
+        } else {
+            channel.send({ embeds: [embed] }).then((msg) => {
+
+                setTimeout(() => updateMessage(msg, recentScore), 1000);
+            });
         }
 
 
@@ -134,6 +151,11 @@ export async function recent(channel: TextChannel, user: User, message: Message,
     } finally {
         finishTransaction(transaction);
     }
+}
+
+async function updateMessage(msg: Message | InteractionResponse, data: RecentScore) {
+    const compact = await generateRecentEmbedCompact(data, false);
+    return msg.edit({ embeds: [compact] });
 }
 
 
@@ -278,12 +300,14 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
 
     const recentplay = recentplays[filterFoundIndex];
     await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
+    const retries = calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods);
 
     const common = await getCommonData(recentplay);
     const performance = await getPerformance(recentplay);
 
     const recentScore: RecentScore = new RecentScore();
-    
+
+    recentScore.retry_count = retries;
     recentScore.score = recentplay;
     recentScore.beatmap = common.beatmap;
     recentScore.user = common.user;
@@ -291,7 +315,7 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
     recentScore.best = common.best;
     recentScore.performance = performance;
 
-    console.log(recentScore);
+    return recentScore;
 }
 
 async function getCommonData(score: OsuScore) {

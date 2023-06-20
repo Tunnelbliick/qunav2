@@ -46,6 +46,7 @@ export async function getTopForUser(userid: number, mode: Gamemode, offset?: str
 }
 
 async function loadAndCacheTopFromBancho(bestplays: OsuScore[], userid: number, offset: string | undefined, limit: string | undefined, mode: Gamemode) {
+
     bestplays = await getBanchoTop(userid, offset, limit, mode);
 
     let hash = await userHash.findOne({ osuid: userid });
