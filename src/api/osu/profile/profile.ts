@@ -12,6 +12,8 @@ import { buildCompressedProfile, buildProfileEmbed } from "../../../embeds/profi
 import { generateProfileChart } from "../../../graphs/profile/profile";
 import { Arguments } from "../../../interfaces/arguments";
 import { handleExceptions } from "../../utility/exceptionHandler";
+import axios from "axios";
+import { AkatsukiUser, AkatsukiUserInfo, AkatsukiUserRank } from "../../../interfaces/osu/user/akatsukiUser";
 
 class ProfileArguments extends Arguments {
     check_skills: boolean | undefined;
@@ -210,4 +212,184 @@ export async function getBanchoUserByUsername(username: string, mode?: Gamemode)
             return reject(new Error("NOSERVER"));
         });
     });
+}
+
+export async function getAkatsukiUserById(userid: number, mode?: Gamemode): Promise<OsuUser> {
+    let mode_int = 0;
+
+    switch (mode) {
+        case Gamemode.OSU:
+            mode_int = 0;
+            break;
+        case Gamemode.TAIKO:
+            mode_int = 1;
+            break;
+        case Gamemode.FRUITS:
+            mode_int = 2;
+            break;
+        case Gamemode.MANIA:
+            mode_int = 3;
+            break;
+    }
+
+    try {
+
+        const user: AkatsukiUser = (await axios.get(`${process.env.AKATSUKI_API}get_user?u=${userid}&m=${mode_int}`)).data[0];
+        const info: AkatsukiUserInfo = (await axios.get(`${process.env.AKATSUKI_API}users?id=${userid}&mode=${mode_int}`)).data;
+        const rank: AkatsukiUserRank = (await axios.get(`${process.env.AKATSUKI_API}profile-history/rank?user_id=${userid}&mode=${mode_int}`)).data.data;
+
+        console.log(info);
+        console.log(rank);
+
+        return akatsukiToOsu(user, info, rank);
+
+    } catch (err) {
+
+        console.log(err);
+
+        throw new Error("NOSERVER");
+    }
+}
+
+function akatsukiToOsu(user: AkatsukiUser, info: AkatsukiUserInfo, rank: AkatsukiUserRank) {
+
+    let osuUser: OsuUser = {
+        avatar_url: `https://a.akatsuki.gg/${user.user_id}`,
+        country_code: info.country,
+        default_group: "",
+        id: +user.user_id,
+        is_active: false,
+        is_bot: false,
+        is_deleted: false,
+        is_online: false,
+        is_supporter: false,
+        last_visit: info.latest_activity,
+        pm_friends_only: false,
+        profile_colour: "",
+        username: user.username,
+        cover_url: "",
+        discord: "",
+        has_supported: false,
+        interests: "",
+        join_date: info.registered_on,
+        kudosu: {
+            total: 0,
+            available: 0
+        },
+        location: "",
+        max_blocks: 0,
+        max_friends: 0,
+        occupation: "",
+        playmode: akatsukiModeToOsuMode(user.mode),
+        playstyle: [],
+        post_count: 0,
+        profile_order: [],
+        title: "",
+        title_url: "",
+        twitter: "",
+        website: "",
+        country: {
+            code: info.country,
+            name: info.country
+        },
+        cover: {
+            custom_url: "",
+            url: "",
+            id: ""
+        },
+        account_history: [],
+        active_tournament_banner: "",
+        badges: [],
+        beatmap_playcounts_count: +user.playcount,
+        comments_count: 0,
+        favourite_beatmapset_count: 0,
+        follower_count: 0,
+        graveyard_beatmapset_count: 0,
+        groups: [],
+        guest_beatmapset_count: 0,
+        loved_beatmapset_count: 0,
+        mapping_follower_count: 0,
+        monthly_playcounts: [],
+        page: {
+            html: "",
+            raw: ""
+        },
+        pending_beatmapset_count: 0,
+        previous_usernames: [],
+        ranked_beatmapset_count: 0,
+        replays_watched_counts: [],
+        scores_best_count: 0,
+        scores_first_count: 0,
+        scores_pinned_count: 0,
+        scores_recent_count: 0,
+        statistics: {
+            level: {
+                current: +user.level.split(".")[0],
+                progress: +user.level.split(".")[1]
+            },
+            global_rank: +user.pp_rank,
+            pp: +user.pp_raw,
+            ranked_score: +user.ranked_score,
+            hit_accuracy: 0,
+            play_count: +user.playcount,
+            play_time: 0,
+            total_score: +user.total_score,
+            total_hits: 0,
+            maximum_combo: 0,
+            replays_watched_by_others: 0,
+            is_ranked: false,
+            grade_counts: {
+                ss: +user.count_rank_ss,
+                ssh: +user.count_rank_ssh,
+                s: +user.count_rank_s,
+                sh: +user.count_rank_sh,
+                a: +user.count_rank_a
+            },
+            country_rank: +user.pp_country_rank,
+            rank: {
+                country: +user.pp_country_rank
+            },
+            variants: []
+        },
+        support_level: 0,
+        user_achievements: [],
+        rankHistory: {
+            mode: akatsukiModeToOsuMode(user.mode),
+            data: akatsukiHistoryToOsuHistory(rank)
+        },
+        rank_history: {
+            mode: akatsukiModeToOsuMode(user.mode),
+            data: akatsukiHistoryToOsuHistory(rank)
+        },
+        ranked_and_approved_beatmapset_count: 0,
+        unranked_beatmapset_count: 0
+    }
+
+    return osuUser;
+}
+
+function akatsukiModeToOsuMode(mode_int: number): string {
+    switch (mode_int) {
+        case 0:
+            return "osu";
+        case 1:
+            return "taiko";
+        case 2:
+            return "fruits";
+        case 3:
+            return "mania";
+        default:
+            return "osu";
+    }
+}
+
+function akatsukiHistoryToOsuHistory(rank: AkatsukiUserRank) {
+
+    const data: number[] = [];
+
+    rank.captures.forEach(caputre => {
+        data.push(caputre.overall);
+    })
+
+    return data;
 }

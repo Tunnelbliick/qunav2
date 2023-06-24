@@ -91,7 +91,7 @@ export function stdCompact(param: RecentEmbedParameters, embed: EmbedBuilder) {
     embed.setFields(
         {
             name: `**${rankEmote} ${progress} ${appliedmods == "+" ? "" : appliedmods}**  ${replaceDots(score.score)}  (${replaceDots(round(score.accuracy * 100))}%) Attempted <t:${currentTimeInSeconds}:R>`,
-            value: `**${round(performacne.simulated)}**/${round(performacne.simulatedFc)}pp  [**${score.max_combo}x**/${map.max_combo}x]  {${score.statistics.count_300}/${score.statistics.count_100}/${score.statistics.count_50}/${score.statistics.count_miss}}`,
+            value: `**${round(performacne.simulated)}**/${round(performacne.accSS)}pp  [**${score.max_combo}x**/${map.max_combo}x]  {${score.statistics.count_300}/${score.statistics.count_100}/${score.statistics.count_50}/${score.statistics.count_miss}}`,
             inline: true
         });
 

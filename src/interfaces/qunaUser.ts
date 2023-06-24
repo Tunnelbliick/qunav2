@@ -8,6 +8,7 @@ export interface QunaUser {
     creationDate: Date,
     discordid: string,
     username: string,
+    akatsuki: string,
     userid: string,
     linksucess: boolean,
     notification: boolean,

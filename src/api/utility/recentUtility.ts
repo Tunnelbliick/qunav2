@@ -6,7 +6,7 @@ export function calcRetries(plays: OsuScore[], mapid: number, mods: string[]) {
     return trys.length;
 }
 
-export function arrayEquals(a: any, b: any) {
+export function arrayEquals(a: Array<unknown>, b: Array<unknown>) {
     return Array.isArray(a) &&
         Array.isArray(b) &&
         a.length === b.length &&
@@ -14,7 +14,7 @@ export function arrayEquals(a: any, b: any) {
 }
 
 export function filterRecent(plays: OsuScore[], filter: RecentPlayArguments) {
-    return plays.findIndex((r: any) => {
+    return plays.findIndex((r: OsuScore) => {
 
         const filterresults = [];
 
@@ -25,7 +25,8 @@ export function filterRecent(plays: OsuScore[], filter: RecentPlayArguments) {
             filterresults.push(arrayEquals(r.mods, filter.mods))
         }
         if (filter.rank != null && filter.rank != "") {
-            filterresults.push(r.rank.toLowerCase() == filter.rank)
+            if (r.rank !== undefined)
+                filterresults.push(r.rank.toLowerCase() == filter.rank)
         }
 
         if (filterresults.length == 0) {

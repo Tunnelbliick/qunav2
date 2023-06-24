@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema({
     discordid: String,
     username: String,
     userid: String,
+    akatsuki: String,
     linksucess: Boolean,
     notification: Boolean,
     timezone: String,

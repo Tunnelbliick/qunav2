@@ -31,17 +31,17 @@ export function generateRecentEmbed(score: RecentScore, stored?: boolean) {
     let stats: BeatmapStats = {
         cs: map.cs,
         hp: map.drain,
-        bpm: map.beatmapset.bpm,
+        bpm: map.beatmapset.bpm == undefined ? 0 : map.beatmapset.bpm,
         mapLength: map.total_length,
         mapDrain: map.hit_length
     }
 
     // User stats
-    let global_rank = user.statistics.global_rank;
+    let global_rank = user.statistics === undefined ? 0 : user.statistics.global_rank;
     if (global_rank == null)
         global_rank = 0;
 
-    let country_rank = user.statistics.rank.country;
+    let country_rank = user.statistics === undefined ? 0 : user.statistics.rank.country;
     if (country_rank == null)
         country_rank = 0;
 

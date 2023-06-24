@@ -8,7 +8,7 @@ import { OsuUser } from "../../../interfaces/osu/user/osuUser";
 import qunaUser from "../../../mongodb/qunaUser";
 import { encrypt } from "../../../utility/jwt";
 import { finishTransaction, sentryError, startTransaction } from "../../utility/sentry";
-import { parseModString } from "../../../utility/parsemods";
+import { decomposeMods, parseModString } from "../../../utility/parsemods";
 import { buildUsernameOfArgs } from "../../utility/buildusernames";
 import { Arguments, BanchoParams } from "../../../interfaces/arguments";
 import { handleExceptions } from "../../utility/exceptionHandler";
@@ -18,13 +18,18 @@ import { downloadBeatmap } from "../../utility/downloadbeatmap";
 import { simulateRecentPlay, simulateRecentPlayFC } from "../../pp/rosupp/simulate";
 import { getBeatmapFromCache } from "../beatmap/beatmap";
 import { getBeatmapDifficulty } from "../../pp/rosupp/difficulty";
-import { getBanchoUserById } from "../profile/profile";
+import { getAkatsukiUserById, getBanchoUserById } from "../profile/profile";
 import { loadacc100WithoutBeatMapDownload } from "../../pp/db/loadSS";
 import { difficulty } from "../../../interfaces/pp/difficulty";
 import { OsuBeatmap } from "../../../interfaces/osu/beatmap/osuBeatmap";
 import { TopPosition, getTopPositionForUser } from "../top/top";
 import { LeaderboardPosition, getLeaderBoardPositionByScore } from "../leaderboard/leaderboard";
 import { generateRecentEmbed, generateRecentEmbedCompact } from "../../../embeds/recent";
+import { AkatsukiScore } from "../../../interfaces/osu/score/akatsukiScore";
+import axios from "axios";
+import beatmap from "../../../mongodb/beatmap";
+import { Beatmap } from "../../../interfaces/osu/beatmap/beatmap";
+import { calculateAcc } from "../../utility/stats";
 
 export class RecentPlayArguments extends Arguments {
     search: string = "";
@@ -70,6 +75,7 @@ export class RecentScore {
     score: OsuScore | undefined;
     user: OsuUser | undefined;
     beatmap: OsuBeatmap | undefined;
+    server: Server | undefined;
     performance: Performance | undefined;
 }
 
@@ -117,16 +123,28 @@ export async function recent(channel: TextChannel, user: User, message: Message,
                 if (userObject === null) {
                     throw new Error("NOTLINKED");
                 } else {
-                    recentPlayArguments.userid = userObject.userid;
+                    switch (recentPlayArguments.server) {
+                        case Server.AKATSUKI:
+                            recentPlayArguments.userid = userObject.akatsuki;
+                            break;
+                        default:
+                            recentPlayArguments.userid = userObject.userid;
+                            break;
+                    }
                 }
             })
         }
 
-        console.log(recentPlayArguments);
-
         if (recentPlayArguments.userid) {
 
-            recentScore = await getRecentPlaysForUser(+recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
+            switch (recentPlayArguments.server) {
+                case Server.AKATSUKI:
+                    recentScore = await getRecentPlaysForUserAkatsuki(+recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
+                    break;
+                default:
+                    recentScore = await getRecentPlaysForUserBancho(+recentPlayArguments.userid, recentPlayArguments, recentPlayArguments.mode);
+                    break;
+            }
 
         }
 
@@ -277,8 +295,7 @@ function handleUsername(recentPlayArguments: RecentPlayArguments, username: stri
     }
 }
 
-
-export async function getRecentPlaysForUser(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
+export async function getRecentPlaysForUserBancho(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
 
     // Get recent plays
     const max = 50;
@@ -317,6 +334,46 @@ export async function getRecentPlaysForUser(userid: number, args: RecentPlayArgu
     return recentScore;
 }
 
+export async function getRecentPlaysForUserAkatsuki(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
+
+    // Get recent plays
+    const max = 50;
+    const offset = args.offset;
+    const limit = max - offset;
+
+    const recentplays = await getRecentAkatsuki(userid, 0, limit);
+    if (recentplays.length == 0) {
+        throw new Error("NORECENTPLAYS");
+    }
+
+    // Apply filter
+    const filterFoundIndex = filterRecent(recentplays, args);
+    if (filterFoundIndex == -1) {
+        throw new Error("NOPLAYFOUND");
+    }
+
+    const recentplay = recentplays[filterFoundIndex];
+
+    await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
+    const retries = calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods);
+
+    const common = await getCommonDataAkatsuki(recentplay);
+    const performance = await getPerformance(recentplay);
+
+    const recentScore: RecentScore = new RecentScore();
+
+    recentScore.retry_count = retries;
+    recentScore.score = recentplay;
+    recentScore.beatmap = common.beatmap;
+    recentScore.user = common.user;
+    recentScore.leaderboard = common.leaderboard;
+    recentScore.best = common.best;
+    recentScore.performance = performance;
+    recentScore.server = args.server;
+
+    return recentScore;
+}
+
 async function getCommonData(score: OsuScore) {
 
     const common: CommonData = new CommonData();
@@ -337,6 +394,43 @@ async function getCommonData(score: OsuScore) {
                 switch (index) {
                     case 0:
                         common.beatmap = outcome.value as OsuBeatmap;
+                        break;
+                    case 1:
+                        common.user = outcome.value as OsuUser;
+                        break;
+                    case 2:
+                        common.leaderboard = outcome.value as LeaderboardPosition;
+                        break;
+                    case 3:
+                        common.best = outcome.value as TopPosition;
+                }
+            }
+        });
+    })
+
+    return common;
+
+}
+
+async function getCommonDataAkatsuki(score: OsuScore) {
+
+    const common: CommonData = new CommonData();
+
+    const isunranked = score.pp === null ? true : false;
+
+    const user = getAkatsukiUserById(score.user_id);
+    const leaderboard = getLeaderBoardPositionByScore(score.beatmap.id, score.mode as Gamemode, score);
+    const best = getTopPositionForUser(score, score.mode as Gamemode, isunranked);
+
+    await Promise.allSettled([undefined, user, leaderboard, best]).then((result: PromiseSettledResult<CommonDataReturnTypes>[]) => {
+        result.forEach((outcome, index) => {
+            if (outcome.status === 'rejected') {
+                const err = new Error(`Promise ${index} was rejected with reason: ${outcome.reason}`)
+                sentryError(err);
+            } else {
+                switch (index) {
+                    case 0:
+                        common.beatmap = score.beatmap as OsuBeatmap;
                         break;
                     case 1:
                         common.user = outcome.value as OsuUser;
@@ -383,10 +477,12 @@ async function getPerformance(score: OsuScore) {
                         performance.difficulty = outcome.value as difficulty;
                         break;
                     case 1:
-                    case 2:
-                    case 3:
                         performance.accSS = outcome.value as number;
+                        break;
+                    case 2:
                         performance.simulated = outcome.value as number;
+                        break;
+                    case 3:
                         performance.simulatedFc = outcome.value as number;
                         break;
                 }
@@ -424,5 +520,86 @@ export async function getRecentBancho(
     } catch {
         throw new Error("NOSERVER");
     }
+}
+
+export async function getRecentAkatsuki(
+    userid: string | number,
+    relax: 0 | 1 | 2,
+    limit: number
+) {
+    try {
+        await login();
+
+        const data: AkatsukiScore[] = await (await axios.get(`${process.env.AKATSUKI_API}/get_user_recent?rx=${relax}&u=${userid}`)).data
+
+        if (data.hasOwnProperty("error")) {
+            throw new Error("NOTFOUNDID");
+        }
+
+        const beatmapids: string[] = data.map(d => d.beatmap_id);
+
+        const beatmaps: Beatmap[] = await beatmap.find({ mapid: { $in: beatmapids } });
+        const beatmap_map: Map<string, OsuBeatmap> = new Map<string, OsuBeatmap>();
+
+        beatmaps.forEach(b => {
+            beatmap_map.set(b.id.toString(), b.beatmap as OsuBeatmap);
+        })
+
+        const mapped = await Promise.all(data.map(async d => {
+            const foundBeatmap = beatmap_map.get(d.beatmap_id);
+
+            if (foundBeatmap === undefined) {
+                d.beatmap = await getBeatmapFromCache(+d.beatmap_id)
+            } else {
+                d.beatmap = foundBeatmap;
+            }
+
+            return convertToOsu(d);
+        }));
+
+        return mapped as OsuScore[];
+    } catch (error) {
+
+        console.log(error);
+
+        throw new Error("NOSERVER");
+    }
+}
+
+function convertToOsu(score: AkatsukiScore) {
+
+    const osuScore: OsuScore = {
+        accuracy: 0,
+        beatmap: score.beatmap,
+        beatmapset: score.beatmap.beatmapset,
+        created_at: score.date,
+        id: 0,
+        max_combo: +score.maxcombo,
+        max_pp: undefined,
+        mode: "osu",
+        mode_int: 0,
+        mods: decomposeMods(+score.enabled_mods),
+        passed: true,
+        pp: +score.pp,
+        replay: false,
+        score: +score.score,
+        perfect: undefined,
+        statistics: {
+            count_300: +score.count300,
+            count_100: +score.count100,
+            count_50: +score.count50,
+            count_geki: +score.countgeki,
+            count_katu: +score.countkatu,
+            count_miss: +score.countmiss
+        },
+        user_id: +score.user_id,
+        rank: score.rank
+    }
+
+    const total_objects = osuScore.beatmap.count_circles + osuScore.beatmap.count_sliders + osuScore.beatmap.count_spinners;
+    osuScore.accuracy = calculateAcc(osuScore, total_objects) / 100;
+
+    return osuScore;
+
 }
 

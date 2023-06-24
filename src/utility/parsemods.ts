@@ -90,6 +90,18 @@ const modsFullRestricted: string[][] = [
 
 const mods_restricted: string[] = ['NM', 'EZ', 'HR', 'HD', 'DT', 'HT', 'FL']
 
+export function decomposeMods(modNumber: number) {
+    let mods = [];
+    for (const key in binaries) {
+        const binaryKey = parseInt(key, 10);
+        // If the bit for this mod is set in modNumber, add the short name to mods.
+        if ((modNumber & binaryKey) === binaryKey) {
+            mods.push(binaries[binaryKey][1]);
+        }
+    }
+    return mods;
+}
+
 
 export function parseModString(input: string | null) {
 

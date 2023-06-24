@@ -110,3 +110,23 @@ export function calculateFcAcc(score: OsuScore, total_objects: number) {
 
     return fc_acc;
 }
+
+export function calculateAcc(score: OsuScore, total_objects: number) {
+    let fc_acc = 100;
+
+    switch (score.mode) {
+        case "osu":
+            fc_acc = (100 * (6 * (score.statistics.count_300) + 2 * score.statistics.count_100 + score.statistics.count_50) / (6 * total_objects));
+            break;
+        case "mania":
+            break;
+        case "taiko":
+            fc_acc = 100 * ((2 * (score.statistics.count_300) + score.statistics.count_100) / (2 * (score.statistics.count_300 + score.statistics.count_100 + score.statistics.count_miss)))
+            break;
+        case "fruits":
+            fc_acc = 100 * ((score.statistics.count_300 + score.statistics.count_100 + score.statistics.count_50) / (score.statistics.count_300 + score.statistics.count_100 + score.statistics.count_50 + score.statistics.count_katu))
+            break;
+    }
+
+    return fc_acc;
+}

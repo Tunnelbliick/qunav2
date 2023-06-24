@@ -91,7 +91,7 @@ export function ctbCompact(param: RecentEmbedParameters, embed: EmbedBuilder) {
     embed.setFields(
         {
             name: `**${rankEmote} ${progress} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(score.score)}    (${replaceDots((score.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-            value: `**${round(performacne.simulated)}**/${performacne.simulatedFc}pp  [**${score.max_combo}x**/${map.max_combo}x]  {${score.statistics.count_300}/${score.statistics.count_100}/${score.statistics.count_50}/${score.statistics.count_miss}}`,
+            value: `**${round(performacne.simulated)}**/${performacne.accSS}pp  [**${score.max_combo}x**/${map.max_combo}x]  {${score.statistics.count_300}/${score.statistics.count_100}/${score.statistics.count_50}/${score.statistics.count_miss}}`,
             inline: true
         });
 

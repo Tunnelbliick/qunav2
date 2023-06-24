@@ -45,7 +45,7 @@ export async function getBeatmapFromCache(mapid: number, checksum?: string) {
 
     let beatmapObject = await Beatmap.findOne({ mapid: mapid });
 
-    if (beatmapObject == undefined || beatmapObject.checksum != checksum || beatmapObject.beatmap == undefined) {
+    if (beatmapObject == undefined || beatmapObject.beatmap == undefined || (checksum !== undefined && beatmapObject.checksum != checksum)) {
 
         const result = getBeatmapBancho(mapid);
 
