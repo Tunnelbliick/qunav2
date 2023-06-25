@@ -7,6 +7,8 @@ import { stdCompact, stdFields } from "./mode/osu";
 import { maniaCompact, maniaFields } from "./mode/mania";
 import { taikoCompact, taikoFields } from "./mode/taiko";
 import { ctbCompact, ctbFields } from "./mode/ctb";
+import { Server } from "../interfaces/enum/server";
+import { capitalize } from "../utility/capitilize";
 
 export interface RecentEmbedParameters {
     progress: string,
@@ -18,6 +20,7 @@ export interface RecentEmbedParameters {
 
 export function generateRecentEmbed(score: RecentScore, stored?: boolean) {
 
+    const server = score.server!;
     const user = score.user!;
     const map = score.beatmap!;
     const play = score.score!;
@@ -66,15 +69,29 @@ export function generateRecentEmbed(score: RecentScore, stored?: boolean) {
         score: score
     }
 
+    let profileurl = "";
+    let description: string = "";
+    let serverDescription = "";
+
+    switch (server) {
+        case Server.AKATSUKI:
+            profileurl = `https://akatsuki.gg/u/${user.id}?mode=${play.mode_int}&rx=0`;
+            description = "**Set on Akatsuki**";
+            serverDescription = "Set on Akatsuki";
+            break;
+        default:
+            profileurl = `https://osu.ppy.sh/u/${user.id}`;
+            serverDescription = "Set on Bancho"
+            break;
+    }
+
     let fullsize = new EmbedBuilder()
-        .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
+        .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: profileurl })
         .setColor(color)
         .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}]`)
         .setURL(`${map.url}`)
         .setImage(`${map.beatmapset.covers.cover}`) // the @2x version does not work sadge
-        .setFooter({ text: `${map.status} by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
-
-    let description: string = "";
+        .setFooter({ text: `${capitalize(map.status)} by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved! " : ""}| ${serverDescription}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
     if (leaderboard !== undefined && leaderboard.index !== undefined && leaderboard.type !== undefined) {
         description += `**Global Top #${leaderboard.index + 1}** `;
@@ -109,6 +126,7 @@ export function generateRecentEmbed(score: RecentScore, stored?: boolean) {
 
 export function generateRecentEmbedCompact(score: RecentScore, stored?: boolean) {
 
+    const server = score.server!;
     const user = score.user!;
     const map = score.beatmap!;
     const play = score.score!;
@@ -157,15 +175,29 @@ export function generateRecentEmbedCompact(score: RecentScore, stored?: boolean)
         score: score
     }
 
+    let profileurl: string = "";
+    let description: string = "";
+    let serverDescription: string = "";
+
+    switch (server) {
+        case Server.AKATSUKI:
+            profileurl = `https://akatsuki.gg/u/${user.id}?mode=${play.mode_int}&rx=0`;
+            description = "**Set on Akatsuki**";
+            serverDescription = "Set on Akatsuki"
+            break;
+        default:
+            profileurl = `https://osu.ppy.sh/u/${user.id}`;
+            serverDescription = "Set on Bancho"
+            break;
+    }
+
     let compact = new EmbedBuilder()
         .setThumbnail(`${map.beatmapset.covers.list}`)
-        .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
+        .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: profileurl })
         .setColor(color)
         .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}]`)
         .setURL(`${map.url}`)
-        .setFooter({ text: `${map.status} by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
-
-    let description: string = "";
+        .setFooter({ text: `${capitalize(map.status)} by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved! " : ""}| ${serverDescription}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
     if (leaderboard !== undefined && leaderboard.index !== undefined && leaderboard.type !== undefined) {
         description += `**Global Top #${leaderboard.index + 1}** `;

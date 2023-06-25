@@ -17,8 +17,6 @@ export async function login() {
             auth.re_login().then(() => {
 
                 expireTime = timeInSeconds + expires_in;
-
-                console.log("refreshed token");
                 return resolve(true);           
             });
         }
@@ -30,8 +28,6 @@ export async function login() {
 
                 expires_in = result.expires_in;
                 expireTime = timeInSeconds + result.expires_in;
-
-                console.log("refreshed token");
                 return resolve(true);           
             });
         } else {

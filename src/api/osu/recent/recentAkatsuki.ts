@@ -20,7 +20,7 @@ import beatmap from "../../../mongodb/beatmap";
 export async function getRecentAkatsuki(
     userid: string | number,
     relax: 0 | 1 | 2,
-    mode: Gamemode,
+    mode: Gamemode | undefined,
 ) {
     try {
 
@@ -77,7 +77,7 @@ export async function getRecentAkatsuki(
     }
 }
 
-export async function getRecentPlaysForUserAkatsuki(userid: number, args: RecentPlayArguments, mode: Gamemode) {
+export async function getRecentPlaysForUserAkatsuki(userid: number, args: RecentPlayArguments, mode: Gamemode | undefined) {
 
     // Get recent plays
     const max = 50;
@@ -100,7 +100,7 @@ export async function getRecentPlaysForUserAkatsuki(userid: number, args: Recent
     await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
     const retries = calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods);
 
-    const common = await getCommonDataAkatsuki(recentplay);
+    const common = await getCommonDataAkatsuki(recentplay, mode);
     const performance = await getPerformance(recentplay);
 
     const recentScore: RecentScore = new RecentScore();
@@ -117,11 +117,11 @@ export async function getRecentPlaysForUserAkatsuki(userid: number, args: Recent
     return recentScore;
 }
 
-async function getCommonDataAkatsuki(score: OsuScore) {
+async function getCommonDataAkatsuki(score: OsuScore, mode: Gamemode | undefined) {
 
     const common: CommonData = new CommonData();
 
-    const user = getAkatsukiUserById(score.user_id);
+    const user = getAkatsukiUserById(score.user_id, mode);
     const leaderboard = new LeaderboardPosition();
     const best = new TopPosition();
 
@@ -155,6 +155,8 @@ async function getCommonDataAkatsuki(score: OsuScore) {
 
 function convertToOsu(score: AkatsukiScore) {
 
+    console.log(score);
+
     const osuScore: OsuScore = {
         accuracy: 0,
         beatmap: score.beatmap,
@@ -163,8 +165,8 @@ function convertToOsu(score: AkatsukiScore) {
         id: 0,
         max_combo: +score.maxcombo,
         max_pp: undefined,
-        mode: "osu",
-        mode_int: 0,
+        mode: score.beatmap.mode,
+        mode_int: score.beatmap.mode_int,
         mods: decomposeMods(+score.enabled_mods),
         passed: true,
         pp: +score.pp,

@@ -75,7 +75,7 @@ function handleInteractionOptions(interaction: ChatInputCommandInteraction, defa
     recentPlayArguments.userid = options.getString("userid", false) === null ? undefined : options.getString("userid", false)!;
     recentPlayArguments.discordid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")!.toString();
     recentPlayArguments.mode = (options.getString("mode", false) === null ? default_mode : options.getString("mode", false)!) as Gamemode;
-    recentPlayArguments.server = (options.getString("server", false) === null ? Server.BANCHO : options.getString("server", false)!) as Server;
+    recentPlayArguments.server = (options.getString("server", false) === null ? Server.BANCHO : options.getString("server", false)!.toUpperCase()) as Server;
     recentPlayArguments.mods = options.getString("mods") === null ? [] : parseModString(options.getString("mods"));
     recentPlayArguments.search = options.getString("query") === null ? "" : options.getString("query")!.toLowerCase()!;
     recentPlayArguments.offset = options.getNumber("index") === null ? 0 : options.getNumber("index")! - 1;

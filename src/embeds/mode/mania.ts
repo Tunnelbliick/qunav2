@@ -1,8 +1,8 @@
 import { EmbedBuilder } from "discord.js";
 import { replaceDots, round } from "../../api/utility/comma";
 import { RecentEmbedParameters } from "../recent";
-import { calculateFcAcc } from "../../api/utility/stats";
 import { buildBeatmapStats } from "../../api/utility/beatmap";
+import { rank_icons } from "../../utility/icons";
 
 export function maniaFields(param: RecentEmbedParameters, embed: EmbedBuilder) {
 

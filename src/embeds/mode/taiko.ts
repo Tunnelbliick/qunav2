@@ -3,6 +3,7 @@ import { buildBeatmapStats } from "../../api/utility/beatmap";
 import { replaceDots, round } from "../../api/utility/comma";
 import { calculateFcAcc } from "../../api/utility/stats";
 import { RecentEmbedParameters } from "../recent";
+import { rank_icons } from "../../utility/icons";
 
 export function taikoFields(param: RecentEmbedParameters, embed: EmbedBuilder) {
 

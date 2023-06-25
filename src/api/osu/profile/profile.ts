@@ -38,7 +38,6 @@ export async function profile(channel: TextChannel, user: User, message: Message
                 if (userObject === null) {
                     throw new Error("NOTLINKED");
                 } else {
-                    console.log(profileArguments);
                     switch (profileArguments.server) {
                         case Server.AKATSUKI:
                             profileArguments.userid = userObject.akatsuki;
@@ -52,15 +51,12 @@ export async function profile(channel: TextChannel, user: User, message: Message
 
         }
 
-        console.log(profileArguments);
-
         if (profileArguments.userid || profileArguments.username) {
 
             if (profileArguments.userid) {
                 switch (profileArguments.server) {
                     case Server.AKATSUKI:
                         await getAkatsukiUserById(+profileArguments.userid, profileArguments.mode).then((data: OsuUser) => {
-                            console.log(data);
                             userData = data;
                         })
                         break;
@@ -135,7 +131,7 @@ function handleInteractionOptions(interaction: ChatInputCommandInteraction, defa
     profileArguments.discordid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")!.toString();
     profileArguments.check_skills = options.getBoolean("skills") === null ? false : options.getBoolean("skills", false)!;
     profileArguments.mode = (options.getString("mode", false) === null ? default_mode : options.getString("mode", false)!) as Gamemode;
-    profileArguments.server = (options.getString("server", false) === null ? Server.BANCHO : options.getString("server", false)!) as Server;
+    profileArguments.server = (options.getString("server", false) === null ? Server.BANCHO : options.getString("server", false)!.toUpperCase()) as Server;
 
     if (profileArguments.discordid) {
         profileArguments.discordid = profileArguments.discordid.replace("<@", "").replace(">", "");
@@ -238,7 +234,7 @@ export async function getBanchoUserByUsername(username: string, mode?: Gamemode)
     });
 }
 
-export async function getAkatsukiUserById(userid: number, mode?: Gamemode): Promise<OsuUser> {
+export async function getAkatsukiUserById(userid: number, mode: Gamemode | undefined): Promise<OsuUser> {
     let mode_int = 0;
 
     switch (mode) {
@@ -262,9 +258,6 @@ export async function getAkatsukiUserById(userid: number, mode?: Gamemode): Prom
         const info: AkatsukiUserInfo = (await axios.get(`${process.env.AKATSUKI_API}users?id=${userid}&mode=${mode_int}`)).data;
         const rank: AkatsukiUserRank = (await axios.get(`${process.env.AKATSUKI_API}profile-history/rank?user_id=${userid}&mode=${mode_int}`)).data.data;
 
-        console.log(info);
-        console.log(rank);
-
         return akatsukiToOsu(user, info, rank);
 
     } catch (err) {
@@ -276,8 +269,6 @@ export async function getAkatsukiUserById(userid: number, mode?: Gamemode): Prom
 }
 
 function akatsukiToOsu(user: AkatsukiUser, info: AkatsukiUserInfo, rank: AkatsukiUserRank) {
-
-    console.log(user);
 
     const osuUser: OsuUser = {
         avatar_url: `https://a.akatsuki.gg/${user.user_id}`,
