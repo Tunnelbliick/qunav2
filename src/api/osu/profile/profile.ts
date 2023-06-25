@@ -38,19 +38,38 @@ export async function profile(channel: TextChannel, user: User, message: Message
                 if (userObject === null) {
                     throw new Error("NOTLINKED");
                 } else {
-                    profileArguments.userid = userObject.userid;
+                    console.log(profileArguments);
+                    switch (profileArguments.server) {
+                        case Server.AKATSUKI:
+                            profileArguments.userid = userObject.akatsuki;
+                            break;
+                        default:
+                            profileArguments.userid = userObject.userid;
+                            break;
+                    }
                 }
             })
 
         }
 
+        console.log(profileArguments);
 
         if (profileArguments.userid || profileArguments.username) {
 
             if (profileArguments.userid) {
-                await getBanchoUserById(+profileArguments.userid, profileArguments.mode).then((data: OsuUser) => {
-                    userData = data;
-                })
+                switch (profileArguments.server) {
+                    case Server.AKATSUKI:
+                        await getAkatsukiUserById(+profileArguments.userid, profileArguments.mode).then((data: OsuUser) => {
+                            console.log(data);
+                            userData = data;
+                        })
+                        break;
+                    default:
+                        await getBanchoUserById(+profileArguments.userid, profileArguments.mode).then((data: OsuUser) => {
+                            userData = data;
+                        })
+                        break;
+                }
             } else {
                 await getBanchoUserByUsername(profileArguments.username!, profileArguments.mode).then((data: OsuUser) => {
                     userData = data;
@@ -164,6 +183,11 @@ function handleLegacyArguments(user: User, args: string[], default_mode: Gamemod
         }
 
     }
+
+    if (profileArguments.userid === undefined && profileArguments.username === undefined) {
+        profileArguments.discordid = user.id;
+    }
+
     return profileArguments;
 
 }
@@ -253,7 +277,9 @@ export async function getAkatsukiUserById(userid: number, mode?: Gamemode): Prom
 
 function akatsukiToOsu(user: AkatsukiUser, info: AkatsukiUserInfo, rank: AkatsukiUserRank) {
 
-    let osuUser: OsuUser = {
+    console.log(user);
+
+    const osuUser: OsuUser = {
         avatar_url: `https://a.akatsuki.gg/${user.user_id}`,
         country_code: info.country,
         default_group: "",
@@ -330,7 +356,7 @@ function akatsukiToOsu(user: AkatsukiUser, info: AkatsukiUserInfo, rank: Akatsuk
             global_rank: +user.pp_rank,
             pp: +user.pp_raw,
             ranked_score: +user.ranked_score,
-            hit_accuracy: 0,
+            hit_accuracy: +user.accuracy,
             play_count: +user.playcount,
             play_time: 0,
             total_score: +user.total_score,

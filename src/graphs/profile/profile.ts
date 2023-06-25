@@ -4,7 +4,11 @@ const { Canvas, loadImage } = require('skia-canvas');
 const { ChartJSNodeCanvas } = require('chartjs-node-canvas');
 
 export async function generateProfileChart(data: OsuUser) {
-    const background = await loadImage(data.cover_url);
+
+    let background = undefined;
+
+    if (data.cover_url !== undefined && data.cover_url !== "")
+        background = await loadImage(data.cover_url);
 
     const dataset: number[] = [];
     const label: number[] = [];
@@ -67,9 +71,11 @@ export async function generateProfileChart(data: OsuUser) {
     const canvas = new Canvas(width, height)
     const ctx = canvas.getContext('2d')
 
-    ctx.filter = 'blur(10px) brightness(33%)';
-    ctx.drawImage(background, 0, 0, width, height);
-    ctx.filter = 'none';
+    if (background) {
+        ctx.filter = 'blur(10px) brightness(33%)';
+        ctx.drawImage(background, 0, 0, width, height);
+        ctx.filter = 'none';
+    }
     ctx.drawImage(chart, 0, 0, width, height);
 
     return canvas.toBuffer();

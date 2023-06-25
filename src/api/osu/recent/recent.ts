@@ -30,6 +30,9 @@ import axios from "axios";
 import beatmap from "../../../mongodb/beatmap";
 import { Beatmap } from "../../../interfaces/osu/beatmap/beatmap";
 import { calculateAcc } from "../../utility/stats";
+import { handleRecentParameters } from "./handleRecentParameters";
+import { getRecentPlaysForUserAkatsuki } from "./recentAkatsuki";
+import { getRecentPlaysForUserBancho } from "./recentBancho";
 
 export class RecentPlayArguments extends Arguments {
     search: string = "";
@@ -41,16 +44,7 @@ export class RecentPlayArguments extends Arguments {
     server: Server | undefined;
 }
 
-enum LegacyMode {
-    None,
-    Gamemode,
-    Fail,
-    Search,
-    Mods,
-    Rank,
-}
-
-class Performance {
+export class Performance {
     difficulty: difficulty | undefined;
     accSS: number | undefined;
     simulated: number | undefined;
@@ -59,14 +53,14 @@ class Performance {
 
 type PerformanceReturnTypes = difficulty | number;
 
-class CommonData {
+export class CommonData {
     user: OsuUser | undefined;
     beatmap: OsuBeatmap | undefined;
     leaderboard: LeaderboardPosition | undefined;
     best: TopPosition | undefined;
 }
 
-type CommonDataReturnTypes = OsuUser | OsuBeatmap | TopPosition | LeaderboardPosition | undefined;
+export type CommonDataReturnTypes = OsuUser | OsuBeatmap | TopPosition | LeaderboardPosition | undefined;
 
 export class RecentScore {
     retry_count: number | undefined;
@@ -78,34 +72,6 @@ export class RecentScore {
     server: Server | undefined;
     performance: Performance | undefined;
 }
-
-type CommandGroup = {
-    commands: string[],
-    handler: () => LegacyMode,
-};
-
-const commandGroups: CommandGroup[] = [
-    {
-        commands: ["-g", "-gamemode", "g", "gamemode", "mode", "-mode"],
-        handler: () => { return LegacyMode.Gamemode },
-    },
-    {
-        commands: ["-f", "-fail", "f", "fail"],
-        handler: () => { return LegacyMode.Fail },
-    },
-    {
-        commands: ["-s", "-search", "s", "search"],
-        handler: () => { return LegacyMode.Search },
-    },
-    {
-        commands: ["-m", "-mods", "m", "mods"],
-        handler: () => { return LegacyMode.Mods },
-    },
-    {
-        commands: ["-r", "-rank", "r", "rank"],
-        handler: () => { return LegacyMode.Rank },
-    },
-];
 
 export async function recent(channel: TextChannel, user: User, message: Message, interaction: ChatInputCommandInteraction, args: string[], mode: Gamemode) {
 
@@ -175,281 +141,7 @@ async function updateMessage(msg: Message | InteractionResponse, data: RecentSco
     return msg.edit({ embeds: [compact] });
 }
 
-
-function handleRecentParameters(user: User, args: string[], interaction: ChatInputCommandInteraction, default_mode: Gamemode) {
-
-    let recentPlayArguments: RecentPlayArguments = new RecentPlayArguments;
-
-    if (interaction)
-        recentPlayArguments = handleInteractionOptions(interaction, default_mode);
-    else
-        recentPlayArguments = handleLegacyArguments(user, args, default_mode);
-
-    return recentPlayArguments;
-}
-
-function handleInteractionOptions(interaction: ChatInputCommandInteraction, default_mode: Gamemode) {
-
-    const recentPlayArguments: RecentPlayArguments = new RecentPlayArguments;
-
-    const options = interaction.options;
-
-    recentPlayArguments.username = options.getString("username", false) === null ? undefined : options.getString("username", false)!;
-    recentPlayArguments.userid = options.getString("userid", false) === null ? undefined : options.getString("userid", false)!;
-    recentPlayArguments.discordid = options.getMember("discord") === null ? interaction.user.id : options.getMember("discord")!.toString();
-    recentPlayArguments.mode = (options.getString("mode", false) === null ? default_mode : options.getString("mode", false)!) as Gamemode;
-    recentPlayArguments.server = (options.getString("server", false) === null ? Server.BANCHO : options.getString("server", false)!) as Server;
-    recentPlayArguments.mods = options.getString("mods") === null ? [] : parseModString(options.getString("mods"));
-    recentPlayArguments.search = options.getString("query") === null ? "" : options.getString("query")!.toLowerCase()!;
-    recentPlayArguments.offset = options.getNumber("index") === null ? 0 : options.getNumber("index")! - 1;
-    recentPlayArguments.rank = options.getString("rank") === null ? undefined : options.getString("rank")!.toLowerCase()!;
-    recentPlayArguments.include_fails = options.getBoolean("fails") === null ? false : options.getBoolean("fails")!;
-
-    if (recentPlayArguments.discordid) {
-        recentPlayArguments.discordid = recentPlayArguments.discordid.replace("<@", "").replace(">", "");
-    }
-
-    return recentPlayArguments;
-
-}
-
-function handleLegacyArguments(user: User, args: string[], default_mode: Gamemode): RecentPlayArguments {
-    const recentPlayArguments: RecentPlayArguments = new RecentPlayArguments;
-    recentPlayArguments.mode = default_mode;
-    recentPlayArguments.discordid = user.id;
-
-    const handlers = buildHandlers();
-    let mode: LegacyMode = LegacyMode.None;
-
-    const usernameargs: string[] = [];
-
-    args
-        .map(arg => arg.toLowerCase())
-        .forEach(arg => {
-            if (handlers[arg]) {
-                mode = handlers[arg]();
-            } else {
-                handleArgsByMode(recentPlayArguments, mode, arg, usernameargs);
-            }
-        });
-
-    const username = buildUsernameOfArgs(usernameargs);
-    handleUsername(recentPlayArguments, username);
-
-    return recentPlayArguments;
-}
-
-function buildHandlers(): { [command: string]: () => LegacyMode } {
-    const handlers: { [command: string]: () => LegacyMode } = {};
-    for (const group of commandGroups) {
-        for (const command of group.commands) {
-            handlers[command] = group.handler;
-        }
-    }
-    return handlers;
-}
-
-function handleArgsByMode(recentPlayArguments: RecentPlayArguments, mode: LegacyMode, arg: string, usernameargs: string[]): void {
-    switch (mode) {
-        case LegacyMode.None:
-            handleModeNone(recentPlayArguments, arg, usernameargs);
-            break;
-        case LegacyMode.Fail:
-            recentPlayArguments.include_fails = arg === "true" ? true : arg === "false" ? false : recentPlayArguments.include_fails;
-            break;
-        case LegacyMode.Gamemode:
-            recentPlayArguments.mode = arg as Gamemode;
-            break;
-        case LegacyMode.Search:
-            recentPlayArguments.search += arg;
-            break;
-        case LegacyMode.Mods:
-            recentPlayArguments.mods.push(arg);
-            break;
-        case LegacyMode.Rank:
-            recentPlayArguments.rank += arg;
-            break;
-    }
-}
-
-function handleModeNone(recentPlayArguments: RecentPlayArguments, arg: string, usernameargs: string[]): void {
-    if (!isNaN(+arg) && +arg <= 50) {
-        recentPlayArguments.offset = +arg;
-    } else if (arg.startsWith("<@")) {
-        recentPlayArguments.discordid = arg.replace("<@", "").replace(">", "");
-    } else {
-        usernameargs.push(arg);
-    }
-}
-
-function handleUsername(recentPlayArguments: RecentPlayArguments, username: string): void {
-
-    if (username === undefined || username === "") {
-        return;
-    }
-
-    if (isNaN(+username)) {
-        recentPlayArguments.username = username;
-    } else {
-        recentPlayArguments.userid = username;
-    }
-}
-
-export async function getRecentPlaysForUserBancho(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
-
-    // Get recent plays
-    const max = 50;
-    const offset = args.offset;
-    const limit = max - offset;
-
-
-    const recentplays = await getRecentBancho(userid, args.include_fails, limit.toString(), mode, offset.toString());
-    if (recentplays.length == 0) {
-        throw new Error("NORECENTPLAYS");
-    }
-
-    // Apply filter
-    const filterFoundIndex = filterRecent(recentplays, args);
-    if (filterFoundIndex == -1) {
-        throw new Error("NOPLAYFOUND");
-    }
-
-    const recentplay = recentplays[filterFoundIndex];
-    await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
-    const retries = calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods);
-
-    const common = await getCommonData(recentplay);
-    const performance = await getPerformance(recentplay);
-
-    const recentScore: RecentScore = new RecentScore();
-
-    recentScore.retry_count = retries;
-    recentScore.score = recentplay;
-    recentScore.beatmap = common.beatmap;
-    recentScore.user = common.user;
-    recentScore.leaderboard = common.leaderboard;
-    recentScore.best = common.best;
-    recentScore.performance = performance;
-
-    return recentScore;
-}
-
-export async function getRecentPlaysForUserAkatsuki(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
-
-    // Get recent plays
-    const max = 50;
-    const offset = args.offset;
-    const limit = max - offset;
-
-    const recentplays = await getRecentAkatsuki(userid, 0, limit);
-    if (recentplays.length == 0) {
-        throw new Error("NORECENTPLAYS");
-    }
-
-    // Apply filter
-    const filterFoundIndex = filterRecent(recentplays, args);
-    if (filterFoundIndex == -1) {
-        throw new Error("NOPLAYFOUND");
-    }
-
-    const recentplay = recentplays[filterFoundIndex];
-
-    await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${recentplay.beatmap.id}_${recentplay.beatmap.checksum}.osu`, recentplay.beatmap.id);
-    const retries = calcRetries(recentplays, recentplay.beatmap.id, recentplay.mods);
-
-    const common = await getCommonDataAkatsuki(recentplay);
-    const performance = await getPerformance(recentplay);
-
-    const recentScore: RecentScore = new RecentScore();
-
-    recentScore.retry_count = retries;
-    recentScore.score = recentplay;
-    recentScore.beatmap = common.beatmap;
-    recentScore.user = common.user;
-    recentScore.leaderboard = common.leaderboard;
-    recentScore.best = common.best;
-    recentScore.performance = performance;
-    recentScore.server = args.server;
-
-    return recentScore;
-}
-
-async function getCommonData(score: OsuScore) {
-
-    const common: CommonData = new CommonData();
-
-    const isunranked = score.pp === null ? true : false;
-
-    const beatmap = getBeatmapFromCache(score.beatmap.id, score.beatmap.checksum);
-    const user = getBanchoUserById(score.user_id);
-    const leaderboard = getLeaderBoardPositionByScore(score.beatmap.id, score.mode as Gamemode, score);
-    const best = getTopPositionForUser(score, score.mode as Gamemode, isunranked);
-
-    await Promise.allSettled([beatmap, user, leaderboard, best]).then((result: PromiseSettledResult<CommonDataReturnTypes>[]) => {
-        result.forEach((outcome, index) => {
-            if (outcome.status === 'rejected') {
-                const err = new Error(`Promise ${index} was rejected with reason: ${outcome.reason}`)
-                sentryError(err);
-            } else {
-                switch (index) {
-                    case 0:
-                        common.beatmap = outcome.value as OsuBeatmap;
-                        break;
-                    case 1:
-                        common.user = outcome.value as OsuUser;
-                        break;
-                    case 2:
-                        common.leaderboard = outcome.value as LeaderboardPosition;
-                        break;
-                    case 3:
-                        common.best = outcome.value as TopPosition;
-                }
-            }
-        });
-    })
-
-    return common;
-
-}
-
-async function getCommonDataAkatsuki(score: OsuScore) {
-
-    const common: CommonData = new CommonData();
-
-    const isunranked = score.pp === null ? true : false;
-
-    const user = getAkatsukiUserById(score.user_id);
-    const leaderboard = getLeaderBoardPositionByScore(score.beatmap.id, score.mode as Gamemode, score);
-    const best = getTopPositionForUser(score, score.mode as Gamemode, isunranked);
-
-    await Promise.allSettled([undefined, user, leaderboard, best]).then((result: PromiseSettledResult<CommonDataReturnTypes>[]) => {
-        result.forEach((outcome, index) => {
-            if (outcome.status === 'rejected') {
-                const err = new Error(`Promise ${index} was rejected with reason: ${outcome.reason}`)
-                sentryError(err);
-            } else {
-                switch (index) {
-                    case 0:
-                        common.beatmap = score.beatmap as OsuBeatmap;
-                        break;
-                    case 1:
-                        common.user = outcome.value as OsuUser;
-                        break;
-                    case 2:
-                        common.leaderboard = outcome.value as LeaderboardPosition;
-                        break;
-                    case 3:
-                        common.best = outcome.value as TopPosition;
-                }
-            }
-        });
-    })
-
-    return common;
-
-}
-
-async function getPerformance(score: OsuScore) {
+export async function getPerformance(score: OsuScore) {
 
     const performance: Performance = new Performance();
 
@@ -492,114 +184,3 @@ async function getPerformance(score: OsuScore) {
 
     return performance;
 }
-
-export async function getRecentBancho(
-    userid: number,
-    include_fails?: boolean,
-    limit?: string,
-    mode?: Gamemode,
-    offset?: string
-) {
-    try {
-        await login();
-
-        const params: BanchoParams = {
-            include_fails,
-            limit,
-            mode,
-            offset
-        };
-
-        const data: object = await v2.scores.user.category(userid, "recent", params);
-
-        if (data.hasOwnProperty("error")) {
-            throw new Error("NOTFOUNDID");
-        }
-
-        return data as OsuScore[];
-    } catch {
-        throw new Error("NOSERVER");
-    }
-}
-
-export async function getRecentAkatsuki(
-    userid: string | number,
-    relax: 0 | 1 | 2,
-    limit: number
-) {
-    try {
-        await login();
-
-        const data: AkatsukiScore[] = await (await axios.get(`${process.env.AKATSUKI_API}/get_user_recent?rx=${relax}&u=${userid}`)).data
-
-        if (data.hasOwnProperty("error")) {
-            throw new Error("NOTFOUNDID");
-        }
-
-        const beatmapids: string[] = data.map(d => d.beatmap_id);
-
-        const beatmaps: Beatmap[] = await beatmap.find({ mapid: { $in: beatmapids } });
-        const beatmap_map: Map<string, OsuBeatmap> = new Map<string, OsuBeatmap>();
-
-        beatmaps.forEach(b => {
-            beatmap_map.set(b.id.toString(), b.beatmap as OsuBeatmap);
-        })
-
-        const mapped = await Promise.all(data.map(async d => {
-            const foundBeatmap = beatmap_map.get(d.beatmap_id);
-
-            if (foundBeatmap === undefined) {
-                d.beatmap = await getBeatmapFromCache(+d.beatmap_id)
-            } else {
-                d.beatmap = foundBeatmap;
-            }
-
-            return convertToOsu(d);
-        }));
-
-        return mapped as OsuScore[];
-    } catch (error) {
-
-        console.log(error);
-
-        throw new Error("NOSERVER");
-    }
-}
-
-function convertToOsu(score: AkatsukiScore) {
-
-    const osuScore: OsuScore = {
-        accuracy: 0,
-        beatmap: score.beatmap,
-        beatmapset: score.beatmap.beatmapset,
-        created_at: score.date,
-        id: 0,
-        max_combo: +score.maxcombo,
-        max_pp: undefined,
-        mode: "osu",
-        mode_int: 0,
-        mods: decomposeMods(+score.enabled_mods),
-        passed: true,
-        pp: +score.pp,
-        replay: false,
-        score: +score.score,
-        perfect: undefined,
-        statistics: {
-            count_300: +score.count300,
-            count_100: +score.count100,
-            count_50: +score.count50,
-            count_geki: +score.countgeki,
-            count_katu: +score.countkatu,
-            count_miss: +score.countmiss
-        },
-        user_id: +score.user_id,
-        rank: score.rank
-    }
-
-    const total_objects = osuScore.beatmap.count_circles + osuScore.beatmap.count_sliders + osuScore.beatmap.count_spinners;
-    osuScore.accuracy = calculateAcc(osuScore, total_objects) / 100;
-
-    return osuScore;
-
-}
-
