@@ -20,11 +20,28 @@ import beatmap from "../../../mongodb/beatmap";
 export async function getRecentAkatsuki(
     userid: string | number,
     relax: 0 | 1 | 2,
-    limit: number
+    mode: Gamemode,
 ) {
     try {
 
-        const data: AkatsukiScore[] = await (await axios.get(`${process.env.AKATSUKI_API}/get_user_recent?rx=${relax}&u=${userid}`)).data
+        let mode_int = 0;
+
+        switch (mode) {
+            case Gamemode.OSU:
+                mode_int = 0;
+                break;
+            case Gamemode.TAIKO:
+                mode_int = 1;
+                break;
+            case Gamemode.FRUITS:
+                mode_int = 2;
+                break;
+            case Gamemode.MANIA:
+                mode_int = 3;
+                break;
+        }
+
+        const data: AkatsukiScore[] = await (await axios.get(`${process.env.AKATSUKI_API}/get_user_recent?rx=${relax}&u=${userid}&m=${mode_int}`)).data
 
         if (data.hasOwnProperty("error")) {
             throw new Error("NOTFOUNDID");
@@ -60,14 +77,14 @@ export async function getRecentAkatsuki(
     }
 }
 
-export async function getRecentPlaysForUserAkatsuki(userid: number, args: RecentPlayArguments, mode?: Gamemode) {
+export async function getRecentPlaysForUserAkatsuki(userid: number, args: RecentPlayArguments, mode: Gamemode) {
 
     // Get recent plays
     const max = 50;
     const offset = args.offset;
     const limit = max - offset;
 
-    const recentplays = await getRecentAkatsuki(userid, 0, limit);
+    const recentplays = await getRecentAkatsuki(userid, 0, mode);
     if (recentplays.length == 0) {
         throw new Error("NORECENTPLAYS");
     }
