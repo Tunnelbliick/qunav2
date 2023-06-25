@@ -1,5 +1,5 @@
 import { OsuScore } from "../../interfaces/osu/score/osuScore";
-import { RecentPlayArguments } from "../osu/recent/recent";
+import { RecentPlayArguments } from "../osu/recent/recentHandler";
 
 export function calcRetries(plays: OsuScore[], mapid: number, mods: string[]) {
     const trys = plays.filter(r => (r.beatmap.id == mapid && arrayEquals(r.mods, mods)))

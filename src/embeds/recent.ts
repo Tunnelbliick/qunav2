@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { BeatmapStats, calcualteStatsforMods } from "../api/utility/stats";
-import { RecentScore } from "../api/osu/recent/recent";
+import { RecentScore } from "../api/osu/recent/recentHandler";
 import { replaceFirstDots } from "../api/utility/comma";
 import { getDifficultyColor } from "../api/utility/gradiant";
 import { stdCompact, stdFields } from "./mode/osu";

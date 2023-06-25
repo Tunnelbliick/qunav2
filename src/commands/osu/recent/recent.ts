@@ -2,7 +2,7 @@ import { ApplicationCommandOptionType, ChatInputCommandInteraction, Message, Tex
 import { CommandObject, CommandType } from "wokcommands";
 import { profile } from "../../../api/osu/profile/profile";
 import { Gamemode } from "../../../interfaces/enum/gamemodes";
-import { recent } from "../../../api/osu/recent/recent";
+import { recent } from "../../../api/osu/recent/recentHandler";
 
 
 type CallbackParams = {

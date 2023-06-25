@@ -14,7 +14,7 @@ import { getBeatmapFromCache } from "../beatmap/beatmap";
 import { LeaderboardPosition } from "../leaderboard/leaderboard";
 import { getAkatsukiUserById } from "../profile/profile";
 import { TopPosition } from "../top/top";
-import { CommonData, CommonDataReturnTypes, RecentPlayArguments, RecentScore, getPerformance } from "./recent";
+import { CommonData, CommonDataReturnTypes, RecentPlayArguments, RecentScore, getPerformance } from "./recentHandler";
 import beatmap from "../../../mongodb/beatmap";
 
 export async function getRecentAkatsuki(

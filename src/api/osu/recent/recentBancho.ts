@@ -5,7 +5,7 @@ import { OsuScore } from "../../../interfaces/osu/score/osuScore";
 import { login } from "../../utility/banchoLogin";
 import { downloadBeatmap } from "../../utility/downloadbeatmap";
 import { calcRetries, filterRecent } from "../../utility/recentUtility";
-import { CommonData, CommonDataReturnTypes, RecentPlayArguments, RecentScore, getPerformance } from "./recent";
+import { CommonData, CommonDataReturnTypes, RecentPlayArguments, RecentScore, getPerformance } from "./recentHandler";
 import { getBeatmapFromCache } from "../beatmap/beatmap";
 import { getBanchoUserById } from "../profile/profile";
 import { LeaderboardPosition, getLeaderBoardPositionByScore } from "../leaderboard/leaderboard";

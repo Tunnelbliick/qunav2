@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction, User } from "discord.js";
 import { Gamemode } from "../../../interfaces/enum/gamemodes";
-import { RecentPlayArguments } from "./recent";
+import { RecentPlayArguments } from "./recentHandler";
 import { parseModString } from "../../../utility/parsemods";
 import { Server } from "../../../interfaces/enum/server";
 import { buildUsernameOfArgs } from "../../utility/buildusernames";
