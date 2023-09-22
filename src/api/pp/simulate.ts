@@ -56,7 +56,7 @@ export async function simulateRecentPlayFC(recentplay: any, beatmap: any) {
     const mehs = recentplay.statistics.count_50;
     const goods = recentplay.statistics.count_100;
     const great = 0;
-    const combo = beatmap.max_combo;
+    const combo = beatmap.max_combo != null ? beatmap.max_combo : 999999;
     const score = recentplay.score;
     const mode = recentplay.mode;
     const mods = recentplay.mods

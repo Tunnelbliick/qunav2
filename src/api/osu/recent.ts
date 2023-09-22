@@ -65,11 +65,14 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
         const user: any = getUser(userid, recentplay.mode);
         const beatmap: any = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
         const acc100: any = loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode);
-        const raiting: any = difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods);
+        const raiting: any = await difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods);
+
+        if(beatmap.max_combo == null) {
+            beatmap.max_combo = raiting.max_combo;
+        }
 
         // is ranked
         if (recentplay.pp === null) {
-
             const ppOfPlay: any = simulateRecentPlay(recentplay);
             const ppIffc: any = simulateRecentPlayFC(recentplay, beatmap);
 

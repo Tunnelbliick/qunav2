@@ -55,6 +55,10 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
         background = result[1].value;
     });
 
+    if(data.max_combo == null) {
+        data.max_combo = map_stats.max_combo;
+    }
+
     if (map_stats != undefined) {
         difficulty = map_stats.difficulty;
         graph = map_stats.graph;
@@ -118,7 +122,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
             },
             {
                 name: `Download`,
-                value: `[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
+                value: `[Direct](http://tnnlb.dev/quna/osudirect?direct=b/${data.id})\n[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
                 inline: true
             },
             {
@@ -138,7 +142,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
             },
             {
                 name: `Download`,
-                value: `[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
+                value: `[Direct](http://tnnlb.dev/quna/osudirect?direct=b/${data.id})\n[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
                 inline: true
             },
             {
@@ -237,7 +241,7 @@ export async function buildMapEmbedMoreLikeThis(mods: string, data: any, index: 
             },
             {
                 name: `Download`,
-                value: `[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
+                value: `[Direct](http://tnnlb.dev/quna/osudirect?direct=b/${data.id})\n[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
                 inline: true
             },
             {
@@ -257,7 +261,7 @@ export async function buildMapEmbedMoreLikeThis(mods: string, data: any, index: 
             },
             {
                 name: `Download`,
-                value: `[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
+                value: `[Direct](http://tnnlb.dev/quna/osudirect?direct=b/${data.id})\n[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
                 inline: true
             },
             {
@@ -387,7 +391,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
             },
             {
                 name: `Download`,
-                value: `[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
+                value: `[Direct](http://tnnlb.dev/quna/osudirect?direct=b/${data.id})\n[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
                 inline: true
             },
             {
@@ -407,7 +411,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
             },
             {
                 name: `Download`,
-                value: `[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
+                value: `[Direct](http://tnnlb.dev/quna/osudirect?direct=b/${data.id})\n[osu-web](https://osu.ppy.sh/beatmapsets/${data.beatmapset_id}/download)\n[Beatconnect](https://beatconnect.io/b/${data.beatmapset_id})`,
                 inline: true
             },
             {
