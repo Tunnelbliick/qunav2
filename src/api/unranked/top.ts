@@ -41,6 +41,10 @@ export async function loadUnrankedTop(user_id: any, mode: any) {
         top.beatmap = beatmap
         top.beatmapset = beatmap.beatmapset;
 
+        if(top.pp == null) {
+            top.pp = 0;
+        }
+        
         returnArray.push(top);
 
     })

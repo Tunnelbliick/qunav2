@@ -9,7 +9,7 @@ export function generateTopChart(top100: any) {
 
     for (const top of top100.slice().reverse()) {
 
-        labels.push((top.position + 1).toString());
+        labels.push(top.position + 1);
         dataset.push(top.value.pp.toString());
     }
 
