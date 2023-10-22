@@ -26,7 +26,7 @@ export async function noPickEm(message: any, interaction: any) {
     let third_score = 0;
     let third: string[] = [];
 
-    const file = await imageToBase64(`assets/pickem/pickem_osu_2022.png`);
+    const file = await imageToBase64(`assets/pickem/pickem23.png`);
     const uri = "data:image/png;base64," + file
 
     top_20.forEach((top: any) => {
