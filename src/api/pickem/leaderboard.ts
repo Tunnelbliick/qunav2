@@ -104,7 +104,7 @@ export async function leaderboard(message: any, interaction: any) {
         .setDescription(description)
         .setImage("attachment://pickem.png");
 
-    const file = await imageToBase64(`assets/pickem/pickem_osu_2022.png`);
+    const file = await imageToBase64(`assets/pickem/pickem23.png`);
     const uri = "data:image/png;base64," + file;
 
     if (interaction) {
