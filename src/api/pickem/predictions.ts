@@ -81,7 +81,7 @@ export async function predictions(message: any, interaction: any, args: any) {
         const embed = new MessageEmbed()
             .setColor("#4b67ba")
             .setTitle("Not registered")
-            .setDescription("You are **not registered** for the Quna 2022 Pick'em\nPlease register before you can enter any predictions!")
+            .setDescription("You are **not registered** for the Quna 2023 Pick'em\nPlease register before you can enter any predictions!")
 
         if (interaction)
             await interaction.editReply({ embeds: [embed] });
