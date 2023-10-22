@@ -29,6 +29,7 @@ export async function loadTournaments() {
         "OWC_2020",
         "OWC_2021",
         "OWC22",
+        "owc_23",
 
         // Catch
         "cwc_2012",

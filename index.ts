@@ -35,8 +35,8 @@ client.on('ready', async () => {
         console.log(err);
     }
 
-    //await loadTournaments();
-    //ongoingWorldCup();
+    await loadTournaments();
+    ongoingWorldCup();
 })
 
 process.on('unhandledRejection', err => {

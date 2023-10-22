@@ -9,8 +9,8 @@ import { encrypt } from "../../utility/encrypt";
 const imageToBase64 = require('image-to-base64');
 const DataImageAttachment = require("dataimageattachment");
 
-export const current_tournament = null;
-export const last_tournament = "OWC22";
+export const current_tournament = "owc_23";
+export const last_tournament = null;
 
 export async function pickem(message: any, interaction: any, args: any) {
 
@@ -29,7 +29,7 @@ export async function pickem(message: any, interaction: any, args: any) {
         return;
     }
 
-    const file = await imageToBase64(`assets/pickem/pickem_osu_2022.png`);
+    const file = await imageToBase64(`assets/pickem/pickem23.png`);
     const uri = "data:image/png;base64," + file
 
     const register = new MessageButton()
@@ -55,12 +55,12 @@ export async function pickem(message: any, interaction: any, args: any) {
     const row = new MessageActionRow().addComponents([register, predict, predictions, leaderboard]);
 
     const embed = new MessageEmbed()
-        .setTitle("Quna OWC 2022 Pick'em Challenge")
+        .setTitle("Quna OWC 2023 Pick'em Challenge")
         .setColor("#4b67ba")
         .setDescription(
             "Welcome to the Pick'em Challenge.\n\n" +
             "**__Rewards__**\n" +
-            "<:gold:1028355775350964328> **12 months supporter** + **custom card title**\n" +
+            "<:gold:1028355775350964328> **12 months supporter** + **custom Quna card title**\n" +
             "<:silver:1028355773660676146> **6 months supporter**\n" +
             "<:bronze:1028355772079407188> **4 months supporter**\n\n" +
             `**Please register with the button below.**`)
