@@ -196,8 +196,8 @@ export async function predictions(message: any, interaction: any, args: any) {
 
 async function buildEmbed(owc: Owc, registration: PickemRegistration, rounds: string[]) {
 
-    const predictionMap: Map<ObjectId, PickemPrediction> = new Map<ObjectId, PickemPrediction>();
-    const statisticMap: Map<ObjectId, PickemStatistics> = new Map<ObjectId, PickemStatistics>();
+    const predictionMap: Map<String, PickemPrediction> = new Map<String, PickemPrediction>();
+    const statisticMap: Map<String, PickemStatistics> = new Map<String, PickemStatistics>();
     const matches: OwcGame[] = await owcgame.find({ owc: owc.id, round: { $in: rounds } });
     const unlocked: OwcGame[] = matches.sort((a: OwcGame, b: OwcGame) => b.round - a.round);
     const matchids: ObjectId[] = unlocked.map((match: OwcGame) => match.id);
@@ -205,11 +205,11 @@ async function buildEmbed(owc: Owc, registration: PickemRegistration, rounds: st
     const statistic: PickemStatistics[] = await pickemstatistic.find({ match: { $in: matchids } });
 
     predictions.forEach((prediction: PickemPrediction) => {
-        predictionMap.set(prediction.match, prediction);
+        predictionMap.set(prediction.match.toString(), prediction);
     });
 
     statistic.forEach((statistic: PickemStatistics) => {
-        statisticMap.set(statistic.match, statistic);
+        statisticMap.set(statistic.match.toString(), statistic);
     });
 
     let winners = "";
@@ -234,7 +234,7 @@ async function buildEmbed(owc: Owc, registration: PickemRegistration, rounds: st
 
         if (+match.round > 0) {
 
-            const prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id.toString());
 
             if (prediction != null) {
                 index++;
@@ -242,7 +242,7 @@ async function buildEmbed(owc: Owc, registration: PickemRegistration, rounds: st
                 let statistic = undefined;
 
                 if (owc.locked_round.includes(match.round)) {
-                    statistic = statisticMap.get(match.id);
+                    statistic = statisticMap.get(match.id.toString());
                 }
 
 
@@ -259,7 +259,7 @@ async function buildEmbed(owc: Owc, registration: PickemRegistration, rounds: st
 
         } else {
 
-            const prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id.toString());
 
             if (prediction != null) {
                 index++;
@@ -271,7 +271,7 @@ async function buildEmbed(owc: Owc, registration: PickemRegistration, rounds: st
                 let statistic = undefined;
 
                 if (owc.locked_round.includes(match.round)) {
-                    statistic = statisticMap.get(match.id);
+                    statistic = statisticMap.get(match.id.toString());
                 }
 
 

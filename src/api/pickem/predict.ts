@@ -27,7 +27,7 @@ let locked_matches: number[] = [];
 export async function predict(interaction: any, client?: any) {
 
     let match_index: number = -1;
-    let predictionMap: Map<ObjectId, PickemPrediction> = new Map<ObjectId, PickemPrediction>();
+    let predictionMap: Map<String, PickemPrediction> = new Map<String, PickemPrediction>();
 
     const owc_year: Owc | null = await owc.findOne({ url: current_tournament })
 
@@ -75,7 +75,7 @@ export async function predict(interaction: any, client?: any) {
     const predictions: PickemPrediction[] = await pickemPrediction.find({ registration: registration?.id, match: { $in: matchids } });
 
     predictions.forEach((prediction: PickemPrediction) => {
-        predictionMap.set(prediction.match, prediction);
+        predictionMap.set(prediction.match.toString(), prediction);
     });
 
     const embed_parameters: embed_parameters = buildInitialPredictions(unlocked, predictionMap, match_map);
@@ -236,7 +236,7 @@ function buildSelect(firstTo: number, prediction?: PickemPrediction) {
 
 }
 
-async function predictMatch(interaction: ButtonInteraction | SelectMenuInteraction, registration: PickemRegistration | null, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: string, match_map: Map<number, OwcGame>) {
+async function predictMatch(interaction: ButtonInteraction | SelectMenuInteraction, registration: PickemRegistration | null, unlocked: OwcGame[], predictionMap: Map<String, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: string, match_map: Map<number, OwcGame>) {
 
     if (value == null || value == undefined || registration == null) {
         return predictionMap;
@@ -244,7 +244,7 @@ async function predictMatch(interaction: ButtonInteraction | SelectMenuInteracti
 
     const current_match = unlocked[match_index];
 
-    let prediction = predictionMap.get(current_match.id);
+    let prediction = predictionMap.get(current_match.id.toString());
 
     const score = value.split("-");
 
@@ -270,22 +270,26 @@ async function predictMatch(interaction: ButtonInteraction | SelectMenuInteracti
         prediction.winner_index = winner_index;
     }
 
-    const model = new pickemPrediction();
+    // Use Mongoose's findOneAndUpdate to either find and update an existing record or create a new one
+    const updatedPrediction = await pickemPrediction.findOneAndUpdate({
+        registration: registration.id,
+        match: current_match.id
+    }, prediction, {
+        new: true,        // This option ensures the method returns the updated document
+        upsert: true      // This option creates a new document if no documents match the condition
+    });
 
-    model.set(prediction);
-
-    await model.save();
-
-    predictionMap.set(current_match.id, prediction);
+    // You can now update the predictionMap if necessary
+    predictionMap.set(current_match.id.toString(), updatedPrediction);
 
     await buildMatchPreditionEmbed(interaction, unlocked, predictionMap, match_index, button_row, match_map);
     return predictionMap;
 
 }
 
-async function buildMatchPreditionEmbed(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, match_map: Map<number, OwcGame>) {
+async function buildMatchPreditionEmbed(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<String, PickemPrediction>, match_index: number, button_row: MessageActionRow, match_map: Map<number, OwcGame>) {
     const current_match = unlocked[match_index];
-    const current_prediction = predictionMap.get(current_match.id);
+    const current_prediction = predictionMap.get(current_match.id.toString());
 
     let description = ""
 
@@ -339,7 +343,7 @@ async function buildMatchPreditionEmbed(interaction: ButtonInteraction | SelectM
     await interaction.editReply({ embeds: [embed], components: components });
 }
 
-async function selectPage(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: string, match_map: Map<number, OwcGame>) {
+async function selectPage(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<String, PickemPrediction>, match_index: number, button_row: MessageActionRow, value: string, match_map: Map<number, OwcGame>) {
 
     match_index = parseInt(value);
 
@@ -348,7 +352,7 @@ async function selectPage(interaction: ButtonInteraction | SelectMenuInteraction
     return match_index;
 }
 
-async function nextPage(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
+async function nextPage(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<String, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
 
     if (match_index === -1) {
         match_index = 0;
@@ -368,7 +372,7 @@ async function nextPage(interaction: ButtonInteraction | SelectMenuInteraction, 
     return match_index;
 }
 
-async function priorPage(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
+async function priorPage(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<String, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
     if (match_index === -1) {
         match_index = unlocked.length - 1;
     } else if (match_index > 0) {
@@ -387,7 +391,7 @@ async function priorPage(interaction: ButtonInteraction | SelectMenuInteraction,
     return match_index;
 }
 
-async function overview(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
+async function overview(interaction: ButtonInteraction | SelectMenuInteraction, unlocked: OwcGame[], predictionMap: Map<String, PickemPrediction>, match_index: number, button_row: MessageActionRow, select_row: MessageActionRow, match_map: Map<number, OwcGame>) {
 
     match_index = -1;
 
@@ -405,7 +409,7 @@ async function overview(interaction: ButtonInteraction | SelectMenuInteraction, 
                 winners = "__**Winners Bracket**__\n";
             }
 
-            const prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id.toString());
 
             if (prediction != null) {
                 winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
@@ -424,7 +428,7 @@ async function overview(interaction: ButtonInteraction | SelectMenuInteraction, 
                 losers = "__**Losers Bracket**__\n";
             }
 
-            const prediction = predictionMap.get(match.id);
+            const prediction = predictionMap.get(match.id.toString());
 
             if (prediction != null) {
                 losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;

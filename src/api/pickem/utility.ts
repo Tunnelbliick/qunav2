@@ -49,7 +49,7 @@ export function selectRoundByIndex(index: number): string[] {
     return select;
 }
 
-export function buildInitialPredictions(unlocked: OwcGame[], predictionMap: Map<ObjectId, PickemPrediction>, match_map: Map<number, OwcGame>): embed_parameters {
+export function buildInitialPredictions(unlocked: OwcGame[], predictionMap: Map<String, PickemPrediction>, match_map: Map<number, OwcGame>): embed_parameters {
 
     let winners = "";
     let losers = "";
@@ -101,7 +101,7 @@ export function buildInitialPredictions(unlocked: OwcGame[], predictionMap: Map<
     return embed_parameters;
 }
 
-function buildLosers(losers: string, code1: string, code2: string, index: number, options: option[], predictionMap: Map<ObjectId, PickemPrediction>, match: OwcGame, match_map: Map<number, OwcGame>, split_index: number) {
+function buildLosers(losers: string, code1: string, code2: string, index: number, options: option[], predictionMap: Map<String, PickemPrediction>, match: OwcGame, match_map: Map<number, OwcGame>, split_index: number) {
     if (losers === "") {
         losers = "__**Losers Bracket**__\n";
     }
@@ -113,7 +113,7 @@ function buildLosers(losers: string, code1: string, code2: string, index: number
 
     options.push(option);
 
-    const prediction = predictionMap.get(match.id);
+    const prediction = predictionMap.get(match.id.toString());
 
     if (prediction != null) {
         losers += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
@@ -128,7 +128,7 @@ function buildLosers(losers: string, code1: string, code2: string, index: number
     return { losers, split_index };
 }
 
-function buildWinners(winners: string, code1: string, code2: string, index: number, options: option[], predictionMap: Map<ObjectId, PickemPrediction>, match: OwcGame, match_map: Map<number, OwcGame>, split_index: number) {
+function buildWinners(winners: string, code1: string, code2: string, index: number, options: option[], predictionMap: Map<String, PickemPrediction>, match: OwcGame, match_map: Map<number, OwcGame>, split_index: number) {
     if (winners === "") {
         winners = "__**Winners Bracket**__\n";
     }
@@ -140,7 +140,7 @@ function buildWinners(winners: string, code1: string, code2: string, index: numb
 
     options.push(option);
 
-    const prediction = predictionMap.get(match.id);
+    const prediction = predictionMap.get(match.id.toString());
 
     if (prediction != null) {
         winners += `${buildmatch(match, prediction.team1_score, prediction.team2_score, match_map)}`;
