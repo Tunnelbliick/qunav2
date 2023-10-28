@@ -146,16 +146,16 @@ async function calculateScores() {
     const prediction_save_list: any[] = [];
     const registrationList = await pickemRegistration.find({ owc: current.id });
 
-    const registrationMap: Map<ObjectId, PickemRegistration> = new Map<ObjectId, PickemRegistration>();
-    const predictionMap: Map<ObjectId, PickemPrediction[]> = new Map<ObjectId, PickemPrediction[]>();
+    const registrationMap: Map<String, PickemRegistration> = new Map<String, PickemRegistration>();
+    const predictionMap: Map<String, PickemPrediction[]> = new Map<String, PickemPrediction[]>();
 
     registrationList.forEach((registration: PickemRegistration) => {
-        registrationMap.set(registration.id, registration);
+        registrationMap.set(registration.id.toString(), registration);
     })
 
     predictionList.forEach((prediction: PickemPrediction) => {
 
-        let predctions = predictionMap.get(prediction.match);
+        let predctions = predictionMap.get(prediction.match.toString());
 
         if (predctions == null) {
             predctions = [];
@@ -163,12 +163,12 @@ async function calculateScores() {
 
         predctions.push(prediction);
 
-        predictionMap.set(prediction.match, predctions);
+        predictionMap.set(prediction.match.toString(), predctions);
     })
 
     matches.forEach((match: OwcGame) => {
 
-        const predictions = predictionMap.get(match.id);
+        const predictions = predictionMap.get(match.id.toString());
 
         if (predictions === undefined) {
             return;
@@ -176,7 +176,7 @@ async function calculateScores() {
 
         predictions.forEach((prediction: PickemPrediction) => {
 
-            const registration = registrationMap.get(prediction.registration);
+            const registration = registrationMap.get(prediction.registration.toString());
 
             if (registration) {
 
@@ -192,7 +192,7 @@ async function calculateScores() {
 
                 prediction.calculated = true;
 
-                registrationMap.set(registration.id, registration);
+                registrationMap.set(registration.id.toString(), registration);
                 prediction_save_list.push(prediction);
             }
 
@@ -202,7 +202,7 @@ async function calculateScores() {
 
     const registstration_map: any[] = []
 
-    registrationMap.forEach((value: PickemRegistration, key: ObjectId) => {
+    registrationMap.forEach((value: PickemRegistration, key: String) => {
         registstration_map.push(value);
     })
 

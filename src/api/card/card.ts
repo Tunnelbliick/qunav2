@@ -79,7 +79,7 @@ export async function generateCard(user: any, skills: skill_type[], title: Title
     const backgroundProm = loadImage(`assets/card/pattern.png`);
     const qunaProm = loadImage(`assets/quna.png`);
     const gamemodeProm = loadImage(`assets/mode/${user.playmode}.png`)
-    const countryFlagProm = loadImage(`https://www.countryflagicons.com/FLAT/64/${user.country_code}.png`)
+    const countryFlagProm = loadImage(`https://flagsapi.com/${user.country_code}/flat/64.png`)
     const overlayProm = loadImage(overlaySrc);
     const userimgProm = loadImage(userimgSrc);
     const chartProm = loadImage(chartsrc);
