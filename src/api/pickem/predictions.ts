@@ -445,6 +445,8 @@ export function getPointsForCorrectWinner(match: OwcGame): number {
             break;
         case 3:
         case 4:
+        case 5:
+        case 6:
         case -3:
         case -4:
         case -5:
@@ -452,7 +454,7 @@ export function getPointsForCorrectWinner(match: OwcGame): number {
             points = 2;
             break
         default:
-            points = 2;
+            points = 4;
             break;
     }
 
@@ -474,14 +476,18 @@ export function getPointsForCorrectScore(match: OwcGame): number {
             points = 3;
             break;
         case 3:
-        case 4:
+        case 4:        
         case -3:
         case -4:
         case -5:
             points = 4;
-            break
-        default:
+            break;
+        case 5:
+        case 6:
             points = 6;
+            break;
+        default:
+            points = 8;
             break;
     }
 
