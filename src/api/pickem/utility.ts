@@ -66,6 +66,14 @@ export function buildInitialPredictions(unlocked: OwcGame[], predictionMap: Map<
         let code1: string = getCode(match.team1_name === undefined ? "" : match.team1_name);
         let code2: string = getCode(match.team2_name === undefined ? "" : match.team2_name);
 
+        if(match.round == 6 && code1 === undefined) {
+            code1 = getWinnerForRematchShort(match_map.get(match.data.player1_prereq_match_id)!);
+        }
+
+        if(match.round == 6 && code2 === undefined) {
+            code2 = getLooserForRematchShort(match_map.get(match.data.player2_prereq_match_id)!);
+        }
+
         if (code1 === undefined) {
             code1 = "TBD";
         }
@@ -203,14 +211,18 @@ export function buildWinnerOf(match: OwcGame, match_map: Map<number, OwcGame>, s
     let prio_match_1 = match.team1_name;
     let prio_match_2 = match.team2_name;
 
-    if (prio_match_1 === undefined) {
+    if(prio_match_1 === undefined && match.round == 6) {
+        prio_match_1 = getWinnerForRematch(match_map.get(match.data.player1_prereq_match_id)!);
+    } else if (prio_match_1 === undefined) {
         prio_match_1 = buildWinnerOfFlag(match_map.get(match.data.player1_prereq_match_id)!);
     } else {
         const code1: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
         prio_match_1 = `:flag_${code1.toLocaleLowerCase()}: ${match.team1_name}`;
     }
 
-    if (prio_match_2 === undefined) {
+    if(prio_match_2 === undefined && match.round == 6) {
+        prio_match_2 = getLooserForRematch((match_map.get(match.data.player2_prereq_match_id)!));
+    }else if (prio_match_2 === undefined) {
         prio_match_2 = buildWinnerOfFlag(match_map.get(match.data.player2_prereq_match_id)!);
     } else {
         const code1: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
@@ -245,6 +257,59 @@ export function buildWinnerOfName(match: OwcGame) {
     }
 
     return `${code1.toLocaleLowerCase()}**or**${code2.toLocaleLowerCase()}`
+
+}
+
+export function getLooserForRematch(match: OwcGame) {
+
+    let code: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
+
+    if (code === undefined) {
+        code = "AQ";
+        match.team1_name = "TBD";
+    }
+
+        return `${match.team1_name} :flag_${code.toLocaleLowerCase()}:`;
+
+}
+
+export function getLooserForRematchShort(match: OwcGame) {
+
+    let code: string = getCode(match.team1_name == undefined ? "" : match.team1_name)
+
+    if (code === undefined) {
+        code = "AQ";
+        match.team1_name = "TBD";
+    }
+
+        return `${code.toLocaleLowerCase()}`;
+
+}
+
+
+export function getWinnerForRematch(match: OwcGame) {
+
+    let code: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
+
+    if (code === undefined) {
+        code = "AQ";
+        match.team2_name = "TBD";
+    }
+
+        return `:flag_${code.toLocaleLowerCase()}: ${match.team2_name}`;
+
+}
+
+export function getWinnerForRematchShort(match: OwcGame) {
+
+    let code: string = getCode(match.team2_name == undefined ? "" : match.team2_name)
+
+    if (code === undefined) {
+        code = "AQ";
+        match.team2_name = "TBD";
+    }
+
+        return `Bracket Reset ${code.toLocaleLowerCase()}`;
 
 }
 

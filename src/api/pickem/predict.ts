@@ -16,7 +16,7 @@ import pickemRegistration from "../../models/pickemRegistration";
 import User from "../../models/User";
 import { encrypt } from "../../utility/encrypt";
 import { current_tournament } from "./pickem";
-import { buildInitialPredictions, option, embed_parameters, selectRound, buildmatch, getFirstTo, buildWinnerOfName } from "./utility";
+import { buildInitialPredictions, option, embed_parameters, selectRound, buildmatch, getFirstTo, buildWinnerOfName, getWinnerForRematch, getLooserForRematch, getWinnerForRematchShort, getLooserForRematchShort } from "./utility";
 const { getCode } = require('country-list');
 
 country_overwrite();
@@ -311,13 +311,21 @@ async function buildMatchPreditionEmbed(interaction: ButtonInteraction | SelectM
     let code1: string = getCode(current_match.team1_name == undefined ? "" : current_match.team1_name)
     let code2: string = getCode(current_match.team2_name == undefined ? "" : current_match.team2_name)
 
+    if(code1 === undefined && current_match.round == 6) {
+        code1 = getWinnerForRematchShort((match_map.get(current_match.data.player1_prereq_match_id)!));
+    }
+
+    if(code2 === undefined && current_match.round == 6) {
+        code2 = getLooserForRematchShort((match_map.get(current_match.data.player2_prereq_match_id)!));
+    }
+
     if (code1 === undefined) {
         code1 = buildWinnerOfName(match_map.get(current_match.data.player1_prereq_match_id)!);
     }
 
     if (code2 === undefined) {
         code2 = buildWinnerOfName(match_map.get(current_match.data.player2_prereq_match_id)!);
-    }
+    } 
 
     code1 = code1.toLocaleLowerCase();
     code2 = code2.toLocaleLowerCase();
