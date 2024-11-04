@@ -9,6 +9,7 @@ import UserHash from "../../models/UserHash";
 import { Top } from "../../interfaces/top";
 import { TopData } from "../../interfaces/topData";
 import CacheTop from "../../models/cacheTop";
+import { modeIntToMode } from "./utility/utility";
 const hash = require("hash-sum")
 
 export async function getTop(userid: any, offset?: any, limit?: any, mode?: any): Promise<object[]> {
@@ -105,8 +106,8 @@ export async function getTopForUser(userid: any, offset?: number, limit?: number
 
             bestplays.forEach((play: any, index: any) => {
 
-                if (play.mode !== mode) {
-                    mode = play.mode
+                if (modeIntToMode(play.ruleset_id) !== mode) {
+                    mode = modeIntToMode(play.ruleset_id);
                 }
 
                 const data: TopData = {
@@ -114,7 +115,7 @@ export async function getTopForUser(userid: any, offset?: number, limit?: number
                     scoreid: play.id,
                     pp: play.pp,
                     score: play.score,
-                    mode: play.mode,
+                    mode: modeIntToMode(play.ruleset_id),
                     mods: play.mods,
                     beatmapid: play.beatmap.id,
                 };

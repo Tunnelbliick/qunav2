@@ -6,7 +6,7 @@ import { getUser, getUserByUsername } from "./user";
 import { simulateRecentPlay, simulateRecentPlayFC } from "../pp/simulate"
 import { downloadBeatmap } from "../beatmaps/downloadbeatmap";
 import { loadacc100WithoutBeatMapDownload } from "../pp/db/load100";
-import { calcRetries, filterRecent } from "./utility/utility";
+import { calcRetries, filterRecent, modeIntToMode } from "./utility/utility";
 
 import { v2 } from "osu-api-extended";
 import { getTopForUser } from "./top";
@@ -62,7 +62,7 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
 
     return new Promise(async (resolve, reject) => {
 
-        const user: any = getUser(userid, recentplay.mode);
+        const user: any = getUser(userid, modeIntToMode(recentplay.ruleset_id));
         const beatmap: any = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
         const acc100: any = loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode);
         const raiting: any = await difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods);
@@ -94,8 +94,8 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
         } else {
 
             const ppIffc = simulateRecentPlayFC(recentplay, beatmap);
-            const top100: any = getTopForUser(userid, undefined, undefined, recentplay.mode);
-            const leaderboard: any = getLeaderBoard(recentplay.beatmap.id, recentplay.mode);
+            const top100: any = getTopForUser(userid, undefined, undefined, modeIntToMode(recentplay.ruleset_id));
+            const leaderboard: any = getLeaderBoard(recentplay.beatmap.id, modeIntToMode(recentplay.ruleset_id));
 
             Promise.allSettled([user, beatmap, acc100, ppIffc, raiting, top100, leaderboard]).then((result: any) => {
 
@@ -181,7 +181,7 @@ export async function getRecentPlaysForUserName(username: string, filter: Recent
         } else {
 
             const ppIffc = simulateRecentPlayFC(recentplay, beatmap);
-            const top100: any = getTopForUser(user.id, 0, 100, recentplay.mode);
+            const top100: any = getTopForUser(user.id, 0, 100, modeIntToMode(recentplay.ruleset_id));
             const leaderboard: any = getLeaderBoard(recentplay.beatmap.id, recentplay.mods);
 
             Promise.allSettled([user, beatmap, acc100, ppIffc, raiting, top100, leaderboard]).then((result: any) => {

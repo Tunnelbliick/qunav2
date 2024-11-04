@@ -3,6 +3,7 @@ import { BeatmapStats, calcualteStatsforMods } from "../../../api/beatmaps/stats
 import { getMaxForCurrentNoChockeArray } from "../../../api/osu/top";
 import { replaceFirstDots } from "../../../utility/comma";
 import { rank_icons } from "../../../utility/icons";
+import { modeIntToMode } from "../../../api/osu/utility/utility";
 
 export interface TopEmbedParameters {
     play: any,
@@ -107,7 +108,7 @@ function genereateField(play: any) {
 
 function getGrade(play: any) {
 
-    switch (play.mode) {
+    switch (modeIntToMode(play.ruleset_id)) {
         case "osu": {
             const total_objects = play.beatmap.count_circles + play.beatmap.count_sliders + play.beatmap.count_spinners;
             const n300_percent = 100 / total_objects * (total_objects - play.statistics.count_100 - play.statistics.count_50);
@@ -226,7 +227,7 @@ function calculateAcc(play: any) {
 
     const total_objects = play.beatmap.count_circles + play.beatmap.count_sliders + play.beatmap.count_spinners;
 
-    switch (play.mode) {
+    switch (modeIntToMode(play.ruleset_id)) {
         case "osu":
             return (100 * (6 * (total_objects - play.statistics.count_100 - play.statistics.count_50) + 2 * play.statistics.count_100 + play.statistics.count_50) / (6 * total_objects));
         case "taiko":

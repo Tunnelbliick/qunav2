@@ -32,3 +32,20 @@ export function filterRecent(recentplays: any, filter: any) {
         return filterresults.includes(false) == false;
     });
 }
+
+export function modeIntToMode(mode_int: number): string {
+    let mode = "osu";
+
+    switch(mode_int) {
+        case 0:
+            return "osu";
+        case 1:
+            return "taiko";
+        case 2:
+            return "mania";
+        case 3:
+            return "fruits";
+    }
+
+    return mode;
+}

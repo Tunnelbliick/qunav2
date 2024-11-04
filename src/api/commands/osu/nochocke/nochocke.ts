@@ -13,6 +13,7 @@ import { getNoChockeForUser, getTopForUser } from "../../../osu/top";
 import { getUser, getUserByUsername } from "../../../osu/user";
 import { simulateArgs, simulateFC } from "../../../pp/simulate";
 import { buildFilter } from "./filter"
+import { modeIntToMode } from "../../../osu/utility/utility";
 
 const DataImageAttachment = require("dataimageattachment");
 
@@ -315,7 +316,7 @@ async function getUnchockedForTop100(top100: any[]) {
                     great: play.statistics.count_300,
                     combo: max_combo,
                     score: play.score,
-                    mode: play.mode,
+                    mode: modeIntToMode(play.ruleset_id),
                     mods: play.mods
                 }
 

@@ -8,6 +8,7 @@ import { ctbFields } from "./mode/ctb";
 import { maniaFields } from "./mode/mania";
 import { stdFields } from "./mode/osu";
 import { taikoFields } from "./mode/taiko";
+import { modeIntToMode } from "../../../api/osu/utility/utility";
 
 export interface RecentEmbedParameters {
     play: any,
@@ -98,7 +99,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     let fc_acc = 100;
 
-    switch (play.mode) {
+    switch (modeIntToMode(play.ruleset_id)) {
         case "osu":
             fc_acc = (100 * (6 * (total_object - play.statistics.count_100 - play.statistics.count_50) + 2 * play.statistics.count_100 + play.statistics.count_50) / (6 * total_object));
             break;
@@ -133,7 +134,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
         .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}]`)
         .setURL(`${map.url}`)
         .setImage(`${map.beatmapset.covers.cover}`) // the @2x version does not work sadge
-        .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!": ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+        .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
     let description: string = "";
 
@@ -149,7 +150,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
         fullsize.setDescription(description);
     }
 
-    switch (play.mode) {
+    switch (modeIntToMode(play.ruleset_id)) {
         case "osu":
             fullsize = stdFields(param, fullsize);
             break;
@@ -174,13 +175,13 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 .setColor(color)
                 .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
                 .setURL(`${map.url}`)
-                .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!": ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+                .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
             if (description !== undefined) {
                 compact.setDescription(description);
             }
 
-            switch (play.mode) {
+            switch (modeIntToMode(play.ruleset_id)) {
                 case "osu":
                     compact.addFields([
                         {
@@ -230,13 +231,13 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 .setColor(color)
                 .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
                 .setURL(`${map.url}`)
-                .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!": ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+                .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
             if (description !== undefined) {
                 compact.setDescription(description);
             }
 
-            switch (play.mode) {
+            switch (modeIntToMode(play.ruleset_id)) {
                 case "osu":
                     compact.addFields([
                         {

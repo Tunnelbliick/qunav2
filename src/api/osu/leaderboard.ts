@@ -30,7 +30,7 @@ export async function getLeaderBoard(mapid: any, mode: any) {
         return undefined;
     }
 
-    leaderboard.scores.forEach((play: any, index: any) => {
+    leaderboard.forEach((play: any, index: any) => {
         leaderboardArray.push({ position: index, value: play });
     })
 

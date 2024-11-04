@@ -31,7 +31,7 @@ export function stdFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: `Score`,
-            value: `${replaceDots(play.score)}`,
+            value: `${replaceDots(play.total_score)}`,
             inline: true
         },
         {
@@ -51,7 +51,7 @@ export function stdFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+            value: `{${play.statistics.great == undefined ? 0 : play.statistics.great}/${play.statistics.ok == undefined ? 0 : play.statistics.ok}/${play.statistics.meh == undefined ? 0 : play.statistics.meh}/${play.statistics.miss == undefined ? 0 : play.statistics.miss}}`,
             inline: true
         },
         {
@@ -66,7 +66,7 @@ export function stdFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${total_objects - play.statistics.count_100 - play.statistics.count_50}/${play.statistics.count_100}/${play.statistics.count_50}/${0}}`,
+            value: `{${total_objects - (play.statistics.ok == undefined ? 0 : play.statistics.ok) - (play.statistics.meh == undefined ? 0 : play.statistics.meh)}/${play.statistics.ok == undefined ? 0 : play.statistics.ok}/${play.statistics.meh == undefined ? 0 : play.statistics.meh}/${0}}`,
             inline: true
         },
         {

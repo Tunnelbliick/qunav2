@@ -1,4 +1,5 @@
 import { arraytoBinary } from "../osu/utility/parsemods";
+import { modeIntToMode } from "../osu/utility/utility";
 
 const ppcalc = require('quna-pp');
 
@@ -20,13 +21,13 @@ export async function simulateRecentPlay(recentplay: any) {
 
     const mapid = recentplay.beatmap.id;
     const checksum = recentplay.beatmap.checksum;
-    const misses = recentplay.statistics.count_miss;
-    const mehs = recentplay.statistics.count_50;
-    const goods = recentplay.statistics.count_100;
-    const great = recentplay.statistics.count_300;
+    const misses = recentplay.statistics.miss == undefined ? 0 : recentplay.statistics.miss;
+    const mehs = recentplay.statistics.meh == undefined ? 0 : recentplay.statistics.meh;
+    const goods = recentplay.statistics.ok == undefined ? 0 : recentplay.statistics.ok;
+    const great = recentplay.statistics.great == undefined ? 0 : recentplay.statistics.great;
     const combo = recentplay.max_combo;
-    const score = recentplay.score;
-    const mode = recentplay.mode;
+    const score = recentplay.classic_total_score;
+    const mode = modeIntToMode(recentplay.ruleset_id);
     const mods = recentplay.mods
 
     const modbinary = arraytoBinary(mods);
@@ -41,7 +42,7 @@ export async function simulateRecentPlay(recentplay: any) {
             break;
     }
 
-    if(map_pp === Infinity) {
+    if (map_pp === Infinity) {
         map_pp = 0;
     }
 
@@ -53,12 +54,12 @@ export async function simulateRecentPlayFC(recentplay: any, beatmap: any) {
     const mapid = recentplay.beatmap.id;
     const checksum = recentplay.beatmap.checksum;
     const misses = 0;
-    const mehs = recentplay.statistics.count_50;
-    const goods = recentplay.statistics.count_100;
+    const mehs = recentplay.statistics.meh == undefined ? 0 : recentplay.statistics.meh;
+    const goods = recentplay.statistics.ok == undefined ? 0 : recentplay.statistics.ok;
     const great = 0;
     const combo = beatmap.max_combo != null ? beatmap.max_combo : 999999;
-    const score = recentplay.score;
-    const mode = recentplay.mode;
+    const score = recentplay.classic_total_score;
+    const mode = modeIntToMode(recentplay.ruleset_id);
     const mods = recentplay.mods
 
     const modbinary = arraytoBinary(mods);
