@@ -15,18 +15,19 @@ export async function getTop(userid: any, offset?: any, limit?: any, mode?: any)
     await login();
     const params: any = {};
     params.limit = 100;
+    params.offset = 0;
+    params.mode = 0;
     if (limit != undefined)
         params.limit = limit;
     if (offset != undefined)
         params.offset = offset;
-    params.mode = 0;
     if (mode != undefined) {
         if (mode == "catch")
             mode = "fruits"
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.scores.category(userid, "best", params).then((data: any) => {
+        v2.scores.list({ user_id: userid, type: "user_best", mode: params.mode }).then((data: any) => {
             return resolve(data)
         });
     });
@@ -46,7 +47,7 @@ export async function getPinned(userid: any, offset?: any, limit?: any, mode?: a
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.scores.category(userid, "pinned", params).then((data: any) => {
+        v2.scores.list({ user_id: userid, type: "user_pinned", limit: params.limit, offset: params.offset, mode: params.mode }).then((data: any) => {
             return resolve(data)
         });
     });
@@ -66,7 +67,7 @@ export async function getFavorite(userid: any, offset?: any, limit?: any, mode?:
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.beatmaps.category(userid, "favourite", params).then((data: any) => {
+        v2.scores.list({ user_id: userid, type: "user_pinned", limit: params.limit, offset: params.offset, mode: params.mode }).then((data: any) => {
             return resolve(data)
         });
     });
@@ -104,7 +105,7 @@ export async function getTopForUser(userid: any, offset?: number, limit?: number
 
             bestplays.forEach((play: any, index: any) => {
 
-                if(play.mode !== mode) {
+                if (play.mode !== mode) {
                     mode = play.mode
                 }
 

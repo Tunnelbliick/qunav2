@@ -55,19 +55,14 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
         background = result[1].value;
     });
 
-    if(data.max_combo == null) {
+    if (data.max_combo == null) {
         data.max_combo = map_stats.max_combo;
     }
 
     if (map_stats != undefined) {
         difficulty = map_stats.difficulty;
         graph = map_stats.graph;
-        const acc100 = map_stats.pp[100].toFixed(1);
-        const acc99 = map_stats.pp[99].toFixed(1);
-        const acc97 = map_stats.pp[97].toFixed(1);
-        const acc95 = map_stats.pp[95].toFixed(1);
-
-        ppString = buildpp(acc100, acc99, acc97, acc95, data.mode);
+        ppString = buildpp(map_stats.pp, data.mode);
     } else {
         ppString = "Could not load PP values";
     }
@@ -181,12 +176,8 @@ export async function buildMapEmbedMoreLikeThis(mods: string, data: any, index: 
     if (map_stats != undefined) {
         difficulty = map_stats.difficulty;
         graph = map_stats.graph;
-        const acc100 = map_stats.pp[100].toFixed(1);
-        const acc99 = map_stats.pp[99].toFixed(1);
-        const acc97 = map_stats.pp[97].toFixed(1);
-        const acc95 = map_stats.pp[95].toFixed(1);
 
-        ppString = buildpp(acc100, acc99, acc97, acc95, data.mode);
+        ppString = buildpp(map_stats.pp, data.mode);
     } else {
         ppString = "Could not load PP values";
     }
@@ -292,7 +283,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
         currentTime.setMinutes(30, 0, 0)
     } else {
 
-        currentTime.setHours(+currentTime.getHours() + 1, 0, 0 ,0);
+        currentTime.setHours(+currentTime.getHours() + 1, 0, 0, 0);
 
     }
 
@@ -332,12 +323,8 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
     if (map_stats != undefined) {
         difficulty = map_stats.difficulty;
         graph = map_stats.graph;
-        const acc100 = map_stats.pp[100].toFixed(1);
-        const acc99 = map_stats.pp[99].toFixed(1);
-        const acc97 = map_stats.pp[97].toFixed(1);
-        const acc95 = map_stats.pp[95].toFixed(1);
 
-        ppString = buildpp(acc100, acc99, acc97, acc95, data.mode);
+        ppString = buildpp(map_stats.pp, data.mode);
     } else {
         ppString = "Could not load PP values";
     }
@@ -436,7 +423,49 @@ function center(text: string, length: number): string {
 
 }
 
-function buildpp(acc100: any, acc99: any, acc97: any, acc95: any, mode: any): string {
+function buildpp(pp_values: { [key: string]: { [accuracy: string]: number } }, mode: string): string {
+
+    if (pp_values[100] != undefined) {
+        return build_old(pp_values[100], pp_values[99], pp_values[97], pp_values[95], mode);
+    }
+
+    if (mode !== "osu") {
+        return build_old(pp_values[0][100], pp_values[0][99], pp_values[0][97], pp_values[0][95], mode);
+    }
+
+    const separator = "─";
+    const columnWidth = 5; // Define a fixed width for each column
+
+    // Helper function to pad strings to a fixed width
+    function pad(text: string, length: number): string {
+        return text.padStart(Math.floor((length + text.length) / 2)).padEnd(length);
+    }
+
+    // Default headers and prefix
+    let a95 = pad("95%", columnWidth);
+    let a97 = pad("97%", columnWidth);
+    let a99 = pad("99%", columnWidth);
+    let a100 = pad("100%", columnWidth);
+    let pre = pad(" Miss", 2);
+
+    // Build the header and separator lines
+    let results = `${pre} │ ${a95} │ ${a97} │ ${a99} │ ${a100}\n`;
+    results += `──────┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth)}\n`;
+
+    // Iterate through each miss value and format the pp values
+    for (const miss in pp_values) {
+        const acc95 = pad(pp_values[miss]["95"].toFixed(1), columnWidth);
+        const acc97 = pad(pp_values[miss]["97"].toFixed(1), columnWidth);
+        const acc99 = pad(pp_values[miss]["99"].toFixed(1), columnWidth);
+        const acc100 = pad(pp_values[miss]["100"].toFixed(1), columnWidth);
+
+        results += ` ${pad(miss + "x", 4)} │ ${acc95} │ ${acc97} │ ${acc99} │ ${acc100}\n`;
+    }
+
+    return results;
+}
+
+function build_old(acc100: any, acc99: any, acc97: any, acc95: any, mode: any): string {
 
     const seper = "─";
 
@@ -453,19 +482,24 @@ function buildpp(acc100: any, acc99: any, acc97: any, acc95: any, mode: any): st
         a99 = " 940.000 ";
         a100 = "1.000.000 ";
         pre = "   "
-        acc95 = center(acc95.toString(), a95.length - 2);
-        acc97 = center(acc97.toString(), a97.length - 2);
-        acc99 = center(acc99.toString(), a99.length - 2);
-        acc100 = center(acc100.toString(), a100.length - 2);
+        acc95 = center(acc95.toFixed(1), a95.length - 2);
+        acc97 = center(acc97.toFixed(1), a97.length - 2);
+        acc99 = center(acc99.toFixed(1), a99.length - 2);
+        acc100 = center(acc100.toFixed(1), a100.length - 2);
     } else {
-        a95 = center(a95, acc95.toString().length + 2);
-        a97 = center(a97, acc97.toString().length + 2);
-        a99 = center(a99, acc99.toString().length + 2);
+        a95 = center(a95, acc95.toFixed(1).length + 2);
+        a97 = center(a97, acc97.toFixed(1).length + 2);
+        a99 = center(a99, acc99.toFixed(1).length + 2);
+
+        acc95 = acc95.toFixed(1);
+        acc97 = acc97.toFixed(1);
+        acc99 = acc99.toFixed(1);
+        acc100 = acc100.toFixed(1);
     }
 
     const fill = `────┼${seper.repeat(a95.length)}┼${seper.repeat(a97.length)}┼${seper.repeat(a99.length)}┼`
 
-    const total_length = fill.length + acc100.toString().length + 2
+    const total_length = fill.length + acc100.length + 2
 
     const buildString = `${pre} │${a95}│${a97}│${a99}│ ${a100}\n${fill}${seper.repeat(total_length - fill.length)}\nPP  │ ${acc95} │ ${acc97} │ ${acc99} │ ${acc100}`;
 

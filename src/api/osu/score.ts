@@ -24,11 +24,11 @@ export async function getBeatmapScore(beatmap: any, userid: any, mode?: any) {
     await login();
     return new Promise((resolve, reject) => {
         if (mode === undefined) {
-            v2.user.scores.beatmap.all(beatmap, userid).then((data: any) => {
+            v2.scores.list({ type: "user_beatmap_all", beatmap_id: beatmap, user_id: userid }).then((data: any) => {
                 return resolve(data);
             });
         } else {
-            v2.user.scores.beatmap.all(beatmap, userid, mode).then((data: any) => {
+            v2.scores.list({ type: "user_beatmap_all", beatmap_id: beatmap, user_id: userid, mode: mode }).then((data: any) => {
                 return resolve(data);
             });
         }
@@ -170,7 +170,7 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
         top = result[2].value;
         lb = result[3].value;
 
-        if(beatmap !== undefined && ["loved","ranked","qualified"].includes(beatmap.status) === false) {
+        if (beatmap !== undefined && ["loved", "ranked", "qualified"].includes(beatmap.status) === false) {
             scores = await loadUnrankedScore(userid, beatmap.id, beatmap.mode_int)
         }
 

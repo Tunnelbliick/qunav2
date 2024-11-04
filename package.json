@@ -34,7 +34,7 @@
     "nodemon": "^2.0.20",
     "openai": "^3.2.1",
     "openapi": "^1.0.1",
-    "osu-api-extended": "^2.5.12",
+    "osu-api-extended": "^3.0.05",
     "prando": "^6.0.1",
     "sagiri": "^3.2.4",
     "skia-canvas": "^0.9.30",

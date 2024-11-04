@@ -1,5 +1,4 @@
 import { Client, Permissions } from "discord.js"
-import { mods } from "osu-api-extended"
 import { getBeatmap, getBeatmapSet } from "../../api/osu/beatmap"
 import { buildMapEmbed } from "../../embeds/osu/beatmap/beatmap"
 const { v2 } = require("osu-api-extended")

@@ -6,7 +6,7 @@ import { login } from "./login";
 async function loadLeaderBoard(mapid: any, mode: any) {
     await login();
     return new Promise((resolve, reject) => {
-        const result = v2.beatmap.leaderboard(mapid, { mode: mode })
+        const result = v2.scores.list({ type: "leaderboard", beatmap_id: mapid, mode: mode })
 
         result.then((data: any) => {
             resolve(data);
@@ -59,7 +59,7 @@ export async function getLeaderBoardPosition(mapid: any, mode: any, scoreid: any
     let leaderboard_position = undefined;
 
     if (leaderboard_found !== undefined)
-    leaderboard_position = leaderboard_found.position;
+        leaderboard_position = leaderboard_found.position;
 
     return leaderboard_position;
 }
