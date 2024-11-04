@@ -150,9 +150,12 @@ export function arraytoBinary(mods?: Array<any>) {
     let val = 0;
 
     if (mods != undefined)
-        for (const mod of mods) {
+        for (const modRaw of mods) {
+
+            const mod = modRaw.acronym;
+
             for (const [key, values] of Object.entries(binaries))
-                for (const arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
+                for (const arg of values) if (arg != undefined && arg != null && arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
 
                     if (mod.trim().toLowerCase() == "td") {
                         continue;

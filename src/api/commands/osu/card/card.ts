@@ -81,6 +81,12 @@ export async function card(message: any, args: any) {
                 colors: ["#ac6a9b", "#e9d497"]
             }
             break;
+    case 7206818:
+            secondaryTitle = {
+                title: "2nd Pick'em Winner",
+                colors: ["#ac6a9b", "#e9d497"]
+            }
+            break;
         default:
             secondaryTitle = undefined;
     }

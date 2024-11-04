@@ -10,7 +10,7 @@ export default (client: Client) => {
     ]
     const updateStatus = () => {
         Math
-        client.user?.setActivity(statusOptions[getRandomInt(statusOptions.length)], {type: 2})
+        client.user?.setActivity(statusOptions[getRandomInt(statusOptions.length)], {type: "PLAYING"})
         setTimeout(updateStatus, 1000 * 60 * 10)
     }
     updateStatus()

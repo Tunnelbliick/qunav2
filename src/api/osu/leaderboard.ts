@@ -6,7 +6,7 @@ import { login } from "./login";
 async function loadLeaderBoard(mapid: any, mode: any) {
     await login();
     return new Promise((resolve, reject) => {
-        const result = v2.beatmap.leaderboard(mapid, { mode: mode })
+        const result = v2.scores.beatmap(mapid, { mode: mode, type: "global" })
 
         result.then((data: any) => {
             resolve(data);

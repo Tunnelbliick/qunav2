@@ -2,6 +2,7 @@ import { login } from "./login";
 
 import { v2 } from "osu-api-extended";
 import { OsuUser } from "../../interfaces/OsuUser";
+import { id } from "osu-api-extended/dist/utility/mods";
 
 export async function getUser(userid: any, mode?: any) {
     await login();
@@ -11,7 +12,7 @@ export async function getUser(userid: any, mode?: any) {
     }
     
     return new Promise((resolve, reject) => {
-        const user = v2.user.details(userid, mode, "id")
+        const user = v2.user.details({myself: false, user: userid, mode: mode, key: "id"})
 
         user.then((data: any) => {
             return resolve(data);
@@ -23,13 +24,13 @@ export async function getUser(userid: any, mode?: any) {
     });
 }
 
-export async function getUserByUsername(username: string, mode?: any): Promise<OsuUser> {
+export async function getUserByUsername(username: any, mode?: any): Promise<OsuUser> {
     await login();
     if (mode == undefined) {
         mode = "osu"
     }
     return new Promise((resolve, reject) => {
-        const user = v2.user.details(username, mode, "username")
+        const user = v2.user.details({myself: false, user: username, mode: mode, key: "username"})
 
         user.then((data: any) => {
             return resolve(data);

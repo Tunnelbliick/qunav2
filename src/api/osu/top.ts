@@ -11,7 +11,7 @@ import { TopData } from "../../interfaces/topData";
 import CacheTop from "../../models/cacheTop";
 const hash = require("hash-sum")
 
-export async function getTop(userid: any, offset?: any, limit?: any, mode?: any): Promise<object[]> {
+export async function getTop(userid: number, offset?: any, limit?: any, mode?: any): Promise<object[]> {
     await login();
     const params: any = {};
     params.limit = 100;
@@ -26,7 +26,7 @@ export async function getTop(userid: any, offset?: any, limit?: any, mode?: any)
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.scores.category(userid, "best", params).then((data: any) => {
+        v2.scores.user.list(userid, "best", params).then((data: any) => {
             return resolve(data)
         });
     });
@@ -46,13 +46,13 @@ export async function getPinned(userid: any, offset?: any, limit?: any, mode?: a
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.scores.category(userid, "pinned", params).then((data: any) => {
+        v2.scores.user.list(userid, "pinned", params).then((data: any) => {
             return resolve(data)
         });
     });
 }
 
-export async function getFavorite(userid: any, offset?: any, limit?: any, mode?: any): Promise<object[]> {
+/*export async function getFavorite(userid: any, offset?: any, limit?: any, mode?: any): Promise<object[]> {
     await login();
     const params: any = {};
     if (limit != undefined)
@@ -66,11 +66,11 @@ export async function getFavorite(userid: any, offset?: any, limit?: any, mode?:
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.beatmaps.category(userid, "favourite", params).then((data: any) => {
+        v2.scores.user.(userid, "favourite", params).then((data: any) => {
             return resolve(data)
         });
     });
-}
+}*/
 
 export async function getTopForUser(userid: any, offset?: number, limit?: number, mode?: any, unranked?: boolean) {
 
@@ -170,7 +170,7 @@ export async function getTopForUser(userid: any, offset?: number, limit?: number
 
 export async function getNoChockeForUser(userid: string, offset?: number, limit?: number, mode?: any) {
 
-    const bestplays: any = await getTop(userid, offset, limit, mode);
+    const bestplays: any = await getTop(+userid, offset, limit, mode);
 
     if (bestplays.hasOwnProperty("error")) {
         return "osuapierr";

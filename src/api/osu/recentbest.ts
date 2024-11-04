@@ -13,7 +13,7 @@ export async function getRecentBest(userid: any, offset?: any, mode?: any) {
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.scores.category(userid, "best", params).then((data: any) => {
+        v2.scores.user.category(userid, "best", params).then((data: any) => {
             return resolve(data)
         });
     });

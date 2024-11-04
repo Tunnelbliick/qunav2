@@ -94,7 +94,7 @@ export interface beatmap {
 export async function getBeatmap(mapid: any): Promise<beatmap> {
     await login();
     return new Promise((resolve, reject) => {
-        const result = v2.beatmap.lookup.diff({id: mapid})
+        const result = v2.beatmaps.lookup({type: "difficulty",id: mapid, checksum: "", filename: ""})
 
         result.then(async (data: any) => {
 
@@ -114,7 +114,7 @@ export async function getBeatmap(mapid: any): Promise<beatmap> {
 export async function getBeatmapSet(setid: number) {
     await login();
     return new Promise((resolve, reject) => {
-        const result = v2.beatmap.set(setid);
+        const result = v2.beatmaps.lookup({type:"set", id:setid});
 
         result.then((data: any) => {
             return resolve(data);
@@ -130,7 +130,7 @@ export async function getBeatmapFromCache(mapid: any, checksum?: any) {
         await login();
         return new Promise((resolve, reject) => {
 
-            const result = v2.beatmap.lookup.diff({id: mapid})
+            const result = v2.beatmaps.lookup({type:"difficulty", id: mapid, checksum: "", filename: ""})
 
             result.then(async (data: any) => {
 

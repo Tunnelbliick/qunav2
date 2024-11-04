@@ -14,7 +14,7 @@ import { loadUnrankedScore } from "../unranked/scoreLoading";
 export async function getScore(mode: any, scoreid: any) {
     await login();
     return new Promise((resolve, reject) => {
-        v2.scores.details(scoreid, mode).then((data: any) => {
+        v2.scores.details(scoreid).then((data: any) => {
             return resolve(data);
         });
     });
@@ -24,11 +24,11 @@ export async function getBeatmapScore(beatmap: any, userid: any, mode?: any) {
     await login();
     return new Promise((resolve, reject) => {
         if (mode === undefined) {
-            v2.user.scores.beatmap.all(beatmap, userid).then((data: any) => {
+            v2.scores.user.beatmap(beatmap, userid).then((data: any) => {
                 return resolve(data);
             });
         } else {
-            v2.user.scores.beatmap.all(beatmap, userid, mode).then((data: any) => {
+            v2.scores.user.beatmap(beatmap, userid, mode).then((data: any) => {
                 return resolve(data);
             });
         }

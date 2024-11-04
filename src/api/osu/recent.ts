@@ -28,7 +28,7 @@ export async function getRecent(userid: any, include_fails?: number, limit?: num
         params.offset = offset;
 
     return new Promise((resolve, reject) => {
-        const result = v2.user.scores.category(userid, "recent", params);
+        const result = v2.scores.user.category(userid, "recent", params);
 
         result.then((data: any) => {
             return resolve(data);

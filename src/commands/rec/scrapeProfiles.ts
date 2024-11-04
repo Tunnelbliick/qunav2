@@ -2,7 +2,7 @@ import asyncBatch from "async-batch";
 import { MessageEmbed } from "discord.js";
 import { trusted } from "mongoose";
 import { ICommand } from "wokcommands";
-import { getFavorite, getPinned, getTopForUser } from "../../api/osu/top";
+import { getPinned, getTopForUser } from "../../api/osu/top";
 import { getUserByUsername } from "../../api/osu/user";
 import { parseModString, parseModRestricted } from "../../api/osu/utility/parsemods";
 import { getDailyTop, getOsuTop10000 } from "../../api/osudaily/dailytop";
@@ -12,7 +12,6 @@ import RecLike from "../../models/RecLike";
 import User from "../../models/User";
 import UserHash from "../../models/UserHash";
 const hash = require("hash-sum")
-const tabletojson = require('tabletojson').Tabletojson;
 const { getCodeList } = require('country-list');
 
 
@@ -54,6 +53,8 @@ export default {
                 console.log(`Country ${code}`);
 
                 do {
+                    return;
+/*
                     await getOsuTop10000(offset, code).then(async (daily) => {
                         // Do something with the result
 
@@ -180,7 +181,7 @@ export default {
                                                      userHash.favoriteHash = hash(hashList);
                                                      changed = true;
                                                      RecLike.bulkSave(userLikes);
-                                                 }*/
+                                                 }
 
                                                 if (changed && (userHash.osuid != null || userHash.osuid != undefined)) {
                                                     try {
@@ -212,7 +213,7 @@ export default {
                         .catch((error) => {
                             console.error('Error encountered while fetching data:', error);
                             offset++;
-                        });
+                        });*/
 
                 } while (offset < 200);
 

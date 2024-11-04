@@ -1,4 +1,6 @@
+import { ScoresDetails } from "osu-api-extended/dist/types/scores_details";
 import { arraytoBinary } from "../osu/utility/parsemods";
+import { Beatmap } from "osu-api-extended/dist/types/v2/beamaps_details_set";
 
 const ppcalc = require('quna-pp');
 
@@ -16,24 +18,24 @@ export interface simulateArgs {
 
 }
 
-export async function simulateRecentPlay(recentplay: any) {
+export async function simulateRecentPlay(recentplay: ScoresDetails) {
 
     const mapid = recentplay.beatmap.id;
     const checksum = recentplay.beatmap.checksum;
-    const misses = recentplay.statistics.count_miss;
-    const mehs = recentplay.statistics.count_50;
-    const goods = recentplay.statistics.count_100;
-    const great = recentplay.statistics.count_300;
+    const misses = recentplay.statistics.miss;
+    const mehs = recentplay.statistics.meh;
+    const goods = recentplay.statistics.ok;
+    const great = recentplay.statistics.great;
     const combo = recentplay.max_combo;
-    const score = recentplay.score;
-    const mode = recentplay.mode;
+    const score = recentplay.total_score;
+    const mode = recentplay.ruleset_id;
     const mods = recentplay.mods
 
     const modbinary = arraytoBinary(mods);
 
     let map_pp = null;
     switch (mode) {
-        case "mania":
+        case 3:
             map_pp = await ppcalc.simulatemania(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary, score);
             break;
         default:
@@ -48,24 +50,24 @@ export async function simulateRecentPlay(recentplay: any) {
     return map_pp
 }
 
-export async function simulateRecentPlayFC(recentplay: any, beatmap: any) {
+export async function simulateRecentPlayFC(recentplay: ScoresDetails, beatmap: Beatmap) {
 
     const mapid = recentplay.beatmap.id;
     const checksum = recentplay.beatmap.checksum;
     const misses = 0;
-    const mehs = recentplay.statistics.count_50;
-    const goods = recentplay.statistics.count_100;
+    const mehs = recentplay.statistics.meh;
+    const goods = recentplay.statistics.ok;
     const great = 0;
     const combo = beatmap.max_combo != null ? beatmap.max_combo : 999999;
-    const score = recentplay.score;
-    const mode = recentplay.mode;
+    const score = recentplay.total_score;
+    const mode = recentplay.ruleset_id;
     const mods = recentplay.mods
 
     const modbinary = arraytoBinary(mods);
 
     let map_pp = null;
     switch (mode) {
-        case "mania":
+        case 0:
             map_pp = await ppcalc.simulatemania(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary, score);
             break;
         default:
