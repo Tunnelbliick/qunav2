@@ -177,9 +177,9 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
         user = await getUser(userid, beatmap.mode);
     })
 
-    if (scores.scores == undefined) {
+    if (!scores) {
 
-        return { scores: scores.scores, user: user, beatmap: beatmap };
+        return { scores: [], user: user, beatmap: beatmap };
 
     }
 
@@ -189,7 +189,7 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
 
         const promises: Array<Promise<any>> = []
 
-        scores.scores.forEach(async (score: any) => {
+        scores.slice(0, 5).forEach(async (score: any) => {
 
             const top100 = top.find((t: any) => t.value.id === score.best_id);
 

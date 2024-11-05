@@ -15,9 +15,10 @@ const hash = require("hash-sum")
 export async function getTop(userid: any, offset?: any, limit?: any, mode?: any): Promise<object[]> {
     await login();
     const params: any = {};
+    params.user_id = userid,
+    params.type = "user_best"
     params.limit = 100;
     params.offset = 0;
-    params.mode = 0;
     if (limit != undefined)
         params.limit = limit;
     if (offset != undefined)
@@ -28,7 +29,7 @@ export async function getTop(userid: any, offset?: any, limit?: any, mode?: any)
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.scores.list({ user_id: userid, type: "user_best", mode: params.mode }).then((data: any) => {
+        v2.scores.list(params).then((data: any) => {
             return resolve(data)
         });
     });
@@ -48,7 +49,7 @@ export async function getPinned(userid: any, offset?: any, limit?: any, mode?: a
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.scores.list({ user_id: userid, type: "user_pinned", limit: params.limit, offset: params.offset, mode: params.mode }).then((data: any) => {
+        v2.scores.list({ user_id: userid, type: "user_pinned", mode: params.mode }).then((data: any) => {
             return resolve(data)
         });
     });
@@ -68,7 +69,7 @@ export async function getFavorite(userid: any, offset?: any, limit?: any, mode?:
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.scores.list({ user_id: userid, type: "user_pinned", limit: params.limit, offset: params.offset, mode: params.mode }).then((data: any) => {
+        v2.scores.list({ user_id: userid, type: "user_pinned", mode: params.mode }).then((data: any) => {
             return resolve(data)
         });
     });

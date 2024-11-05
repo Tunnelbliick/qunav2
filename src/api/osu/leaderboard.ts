@@ -1,12 +1,19 @@
 import { AnyComponentBuilder } from "@discordjs/builders"
-import { v2 } from "osu-api-extended"
+import { IDefaultParams, v2 } from "osu-api-extended"
 import { login } from "./login";
 
 
 async function loadLeaderBoard(mapid: any, mode: any) {
     await login();
     return new Promise((resolve, reject) => {
-        const result = v2.scores.list({ type: "leaderboard", beatmap_id: mapid, mode: mode })
+
+        let param: any = { type: "leaderboard", beatmap_id: mapid };
+
+        if (mode != undefined) {
+            param.mode = mode;
+        }
+
+        const result = v2.scores.list(param)
 
         result.then((data: any) => {
             resolve(data);
