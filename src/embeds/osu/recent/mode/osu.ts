@@ -31,7 +31,7 @@ export function stdFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: `Score`,
-            value: `${replaceDots(play.total_score)}`,
+            value: `${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}`,
             inline: true
         },
         {

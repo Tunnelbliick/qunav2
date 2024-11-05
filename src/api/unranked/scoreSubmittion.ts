@@ -25,7 +25,7 @@ export async function saveScore(unranked: any, pp: any, max_pp: any) {
         saved_score.accuracy = unranked.accuracy;
         saved_score.max_combo = unranked.max_combo;
         saved_score.statistics = unranked.statistics;
-        saved_score.created_at = unranked.created_at;
+        saved_score.ended_at = unranked.ended_at;
         saved_score.mode = unranked.mode;
         saved_score.mode_int = unranked.mode_int;
         saved_score.max_pp = max_pp;
@@ -44,7 +44,7 @@ export async function saveScore(unranked: any, pp: any, max_pp: any) {
                 accuracy: unranked.accuracy,
                 max_combo: unranked.max_combo,
                 statistics: unranked.statistics,
-                created_at: unranked.created_at,
+                ended_at: unranked.ended_at,
 
             })
 

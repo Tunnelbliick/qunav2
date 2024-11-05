@@ -68,9 +68,9 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     // @ts-ignore 
     const rankEmote: any = rank_icons[rank];
 
-    const mods: Array<string> = play.mods;
+    const mods: Array<any> = play.mods;
     let appliedmods: any = "+";
-    mods.forEach(m => { appliedmods += m });
+    mods.forEach(m => { appliedmods += `${m.acronym}${m.settings != undefined && m.settings.speed_change != undefined ? "(" + m.settings.speed_change + "x)" : ""}` });
 
     let progressString: any = "";
 
@@ -99,17 +99,23 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     let fc_acc = 100;
 
+    let c300 = play.statistics.great == undefined ? 0 : play.statistics.great;
+    let c100 = play.statistics.ok == undefined ? 0 : play.statistics.ok;
+    let c50 = play.statistics.meh == undefined ? 0 : play.statistics.meh;
+    let cMiss = play.statistics.miss == undefined ? 0 : play.statistics.miss;
+
     switch (modeIntToMode(play.ruleset_id)) {
+
         case "osu":
-            fc_acc = (100 * (6 * (total_object - play.statistics.count_100 - play.statistics.count_50) + 2 * play.statistics.count_100 + play.statistics.count_50) / (6 * total_object));
+            fc_acc = (100 * (6 * (total_object - c100 - c50) + 2 * c100 + c50) / (6 * total_object));
             break;
         case "mania":
             break;
         case "taiko":
-            fc_acc = 100 * ((2 * (play.statistics.count_300 + play.statistics.count_miss) + play.statistics.count_100) / (2 * (play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_miss)))
+            fc_acc = 100 * ((2 * (c300 + cMiss) + c100) / (2 * (c300 + c100 + cMiss)))
             break;
         case "fruits":
-            fc_acc = 100 * ((play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_50) / (play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_50 + play.statistics.count_katu))
+            fc_acc = 100 * ((c300 + c100 + c50) / (c300 + c100 + c50 + 0))
             break;
     }
 
@@ -129,7 +135,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     }
 
     let fullsize = new MessageEmbed()
-        .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
+        .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)} pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url} `, url: `https://osu.ppy.sh/users/${user.id}` })
         .setColor(color)
         .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}]`)
         .setURL(`${map.url}`)
@@ -168,7 +174,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     if (interaction) {
         interaction.editReply({ content: `Try #${retries}`, embeds: [fullsize] }).then(() => setTimeout(function () {
-            const currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+            const currentTimeInSeconds = Math.floor(new Date(play.ended_at).getTime() / 1000)
             const compact = new MessageEmbed()
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
@@ -185,8 +191,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "osu":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${c50}/${cMiss}}`,
                             inline: true
                         },
                     ])
@@ -194,8 +200,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "mania":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${play.statistics.count_300}/${play.statistics.count_katu}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${c300}/${play.statistics.count_katu}/${c100}/${c50}/${cMiss}}`,
                             inline: true
                         },
                     ])
@@ -203,8 +209,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "taiko":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${cMiss}}`,
                             inline: true
                         },
                     ])
@@ -212,8 +218,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "fruits":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${c50}/${cMiss}}`,
                             inline: true
                         },
                     ])
@@ -224,7 +230,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
         }, 60000));
     } else {
         message.reply({ content: `Try #${retries}`, embeds: [fullsize] }).then((msg) => setTimeout(function () {
-            const currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+            const currentTimeInSeconds = Math.floor(new Date(play.ended_at).getTime() / 1000)
             const compact = new MessageEmbed()
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
@@ -241,8 +247,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "osu":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_total_score !== undefined ? play.legacy_total_score : play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${c50}/${cMiss}}`,
                             inline: true
                         },
                     ])
@@ -250,8 +256,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "mania":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${play.statistics.count_300}/${play.statistics.count_katu}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${c300}/${play.statistics.count_katu}/${c100}/${c50}/${cMiss}}`,
                             inline: true
                         },
                     ])
@@ -259,8 +265,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "taiko":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${cMiss}}`,
                             inline: true
                         },
                     ])
@@ -268,8 +274,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "fruits":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${c50}/${cMiss}}`,
                             inline: true
                         },
                     ])

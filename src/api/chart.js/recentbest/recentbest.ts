@@ -5,7 +5,7 @@ export function generateRecentBestChart(top100: any) {
 
     for (const top of top100.slice().reverse()) {
 
-        dataset.push({ x: top.value.created_at, y: top.value.pp.toString() });
+        dataset.push({ x: top.value.ended_at, y: top.value.pp.toString() });
     }
 
     // Generate the chart

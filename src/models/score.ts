@@ -16,7 +16,7 @@ const ScoreSchema = new mongoose.Schema({
     max_combo: Number,
     max_pp: Number,
     statistics: Object,
-    created_at: Date,
+    ended_at: Date,
     mode: String,
     mode_int: Number,
 });

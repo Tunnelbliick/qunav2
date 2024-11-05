@@ -13,7 +13,7 @@ export interface Score {
     max_combo: number,
     max_pp: number,
     statistics: Object,
-    created_at: Date,
+    ended_at: Date,
     mode: string,
     mode_int: number,
 }
