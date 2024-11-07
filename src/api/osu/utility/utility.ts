@@ -36,15 +36,15 @@ export function filterRecent(recentplays: any, filter: any) {
 export function modeIntToMode(mode_int: number): string {
     let mode = "osu";
 
-    switch(mode_int) {
+    switch (mode_int) {
         case 0:
             return "osu";
         case 1:
             return "taiko";
         case 2:
-            return "mania";
-        case 3:
             return "fruits";
+        case 3:
+            return "mania";
     }
 
     return mode;

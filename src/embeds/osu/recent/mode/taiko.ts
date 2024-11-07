@@ -1,5 +1,6 @@
 import { BeatmapStats } from "../../../../api/beatmaps/stats";
 import { replaceDots } from "../../../../utility/comma";
+import { buildScoreString, buildStatisticNoMissString, buildStatisticString } from "../../../../utility/score";
 import { RecentEmbedParameters } from "../recent";
 
 export function taikoFields(param: RecentEmbedParameters, embed: any) {
@@ -31,7 +32,7 @@ export function taikoFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: `Score`,
-            value: `${replaceDots(play.score)}`,
+            value: `${buildScoreString(play)}`,
             inline: true
         },
         {
@@ -51,7 +52,7 @@ export function taikoFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_miss}}`,
+            value: `${buildStatisticString(play)}`,
             inline: true
         },
         {
@@ -66,7 +67,7 @@ export function taikoFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${max_combo - play.statistics.count_100}/${play.statistics.count_100}/${0}}`,
+            value: `${buildStatisticNoMissString(play)}`,
             inline: true
         },
         {

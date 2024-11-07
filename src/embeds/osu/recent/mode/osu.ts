@@ -1,5 +1,6 @@
 import { BeatmapStats } from "../../../../api/beatmaps/stats";
 import { replaceDots } from "../../../../utility/comma";
+import { buildScoreString, buildStatisticNoMissString, buildStatisticString } from "../../../../utility/score";
 import { RecentEmbedParameters } from "../recent";
 
 export function stdFields(param: RecentEmbedParameters, embed: any) {
@@ -31,7 +32,7 @@ export function stdFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: `Score`,
-            value: `${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}`,
+            value: `${buildScoreString(play)}`,
             inline: true
         },
         {
@@ -51,7 +52,7 @@ export function stdFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${play.statistics.great == undefined ? 0 : play.statistics.great}/${play.statistics.ok == undefined ? 0 : play.statistics.ok}/${play.statistics.meh == undefined ? 0 : play.statistics.meh}/${play.statistics.miss == undefined ? 0 : play.statistics.miss}}`,
+            value: `{${buildStatisticString(play)}}`,
             inline: true
         },
         {
@@ -66,7 +67,7 @@ export function stdFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${total_objects - (play.statistics.ok == undefined ? 0 : play.statistics.ok) - (play.statistics.meh == undefined ? 0 : play.statistics.meh)}/${play.statistics.ok == undefined ? 0 : play.statistics.ok}/${play.statistics.meh == undefined ? 0 : play.statistics.meh}/${0}}`,
+            value: `${buildStatisticNoMissString(play)}`,
             inline: true
         },
         {

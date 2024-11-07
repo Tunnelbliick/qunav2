@@ -1,5 +1,6 @@
 import { MessageEmbed } from "discord.js";
 import { calcualteStatsFromSuggestion } from "../../../../api/beatmaps/stats";
+import { buildModString } from "../../../../utility/score";
 
 export interface show_suggestion_embed {
     suggestions: any,
@@ -22,8 +23,7 @@ export async function buildshowSuggestions(params: show_suggestion_embed) {
         const stats = calcualteStatsFromSuggestion(content);
 
         const mods: Array<string> = content.mods;
-        let appliedmods: any = "+";
-        mods.forEach(m => { appliedmods += m });
+        let appliedmods: any = buildModString(mods);
 
         const categories: Array<string> = content.type;
         let appliedcategories: any = "";

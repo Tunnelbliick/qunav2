@@ -9,6 +9,7 @@ import { v2 } from "osu-api-extended"
 import { getTopForUser } from "./top";
 import { getLeaderBoard } from "./leaderboard";
 import { loadUnrankedScore } from "../unranked/scoreLoading";
+import { modeIntToMode } from "./utility/utility";
 
 
 export async function getScore(mode: any, scoreid: any) {
@@ -98,12 +99,12 @@ export async function getScoresForUsernameForBeatMap(mapid: string, username: an
                     great: score.statistics.count_300,
                     combo: score.max_combo,
                     score: score.score,
-                    mode: score.mode,
+                    mode: modeIntToMode(score.ruleset_id),
                     mods: score.mods
                 };
 
-                const acc100: any = loadacc100(mapid, beatmap.checksum, score.mode, score.mods);
-                const raiting: any = difficulty(mapid, beatmap.checksum, score.mode, score.mods);
+                const acc100: any = loadacc100(mapid, beatmap.checksum, modeIntToMode(score.ruleset_id), score.mods);
+                const raiting: any = difficulty(mapid, beatmap.checksum, modeIntToMode(score.ruleset_id), score.mods);
 
                 if (score.pp == null) {
 
@@ -212,12 +213,12 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
                     great: score.statistics.count_300,
                     combo: score.max_combo,
                     score: score.score,
-                    mode: score.mode,
+                    mode: modeIntToMode(score.ruleset_id),
                     mods: score.mods
                 };
 
-                const acc100: any = loadacc100(mapid, beatmap.checksum, score.mode, score.mods);
-                const raiting: any = difficulty(mapid, beatmap.checksum, score.mode, score.mods);
+                const acc100: any = loadacc100(mapid, beatmap.checksum, modeIntToMode(score.ruleset_id), score.mods);
+                const raiting: any = difficulty(mapid, beatmap.checksum, modeIntToMode(score.ruleset_id), score.mods);
 
                 if (score.pp == null) {
 

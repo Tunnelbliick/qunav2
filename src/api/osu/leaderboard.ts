@@ -58,7 +58,7 @@ export async function getLeaderBoardPosition(mapid: any, mode: any, scoreid: any
         return null;
     }
 
-    leaderboard.scores.forEach((play: any, index: any) => {
+    leaderboard.forEach((play: any, index: any) => {
         leaderboardArray.push({ position: index, value: play });
     })
 

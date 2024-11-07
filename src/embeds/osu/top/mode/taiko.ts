@@ -1,4 +1,5 @@
 import { replaceDots } from "../../../../utility/comma";
+import { buildScoreString, buildStatisticString } from "../../../../utility/score";
 import { TopEmbedParameters } from "../top";
 
 
@@ -28,7 +29,7 @@ export function taikoFields(param: TopEmbedParameters, embed: any) {
         },
         {
             name: `Score`,
-            value: `${replaceDots(play.score)}`,
+            value: `${buildScoreString(play)}`,
             inline: true
         },
         {
@@ -48,7 +49,7 @@ export function taikoFields(param: TopEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+            value: `${buildStatisticString(play)}`,
             inline: true
         },
         {

@@ -4,6 +4,7 @@ import { getMaxForCurrentNoChockeArray } from "../../../api/osu/top";
 import { replaceFirstDots } from "../../../utility/comma";
 import { rank_icons } from "../../../utility/icons";
 import { modeIntToMode } from "../../../api/osu/utility/utility";
+import { buildModString } from "../../../utility/score";
 
 export interface TopEmbedParameters {
     play: any,
@@ -78,9 +79,7 @@ function genereateField(play: any) {
         return null;
     }
 
-    const mods: Array<string> = score.mods;
-    let appliedmods: any = "+";
-    mods.forEach(m => { appliedmods += m });
+    let appliedmods: any = buildModString(score);
 
     // @ts-ignore 
     const rankEmote: any = getGrade(score);
@@ -88,7 +87,7 @@ function genereateField(play: any) {
 
     let scoreField = ""
 
-    switch (score.mode) {
+    switch (modeIntToMode(score.ruleset_id)) {
         case "mania":
             scoreField =
                 `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +

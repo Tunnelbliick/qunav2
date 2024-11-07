@@ -9,6 +9,7 @@ import { maniaFields } from "./mode/mania";
 import { stdFields } from "./mode/osu";
 import { taikoFields } from "./mode/taiko";
 import { modeIntToMode } from "../../../api/osu/utility/utility";
+import { buildModString, buildScoreString, buildStatisticString } from "../../../utility/score";
 
 export interface RecentEmbedParameters {
     play: any,
@@ -69,8 +70,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     const rankEmote: any = rank_icons[rank];
 
     const mods: Array<any> = play.mods;
-    let appliedmods: any = "+";
-    mods.forEach(m => { appliedmods += `${m.acronym}${m.settings != undefined && m.settings.speed_change != undefined ? "(" + m.settings.speed_change + "x)" : ""}` });
+    let appliedmods: any = buildModString(play);
 
     let progressString: any = "";
 
@@ -191,8 +191,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "osu":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${c50}/${cMiss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -200,8 +200,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "mania":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${c300}/${play.statistics.count_katu}/${c100}/${c50}/${cMiss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -209,8 +209,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "taiko":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${cMiss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -218,8 +218,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "fruits":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${c50}/${cMiss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -247,8 +247,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "osu":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_total_score !== undefined ? play.legacy_total_score : play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${c50}/${cMiss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -256,8 +256,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "mania":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${c300}/${play.statistics.count_katu}/${c100}/${c50}/${cMiss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -265,8 +265,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "taiko":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${cMiss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -274,8 +274,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "fruits":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.legacy_score_id != undefined ? play.legacy_total_score : play.total_score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${c300}/${c100}/${c50}/${cMiss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])

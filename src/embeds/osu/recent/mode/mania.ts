@@ -1,5 +1,6 @@
 import { BeatmapStats } from "../../../../api/beatmaps/stats";
 import { replaceDots } from "../../../../utility/comma";
+import { buildScoreString, buildStatisticString } from "../../../../utility/score";
 import { RecentEmbedParameters } from "../recent";
 
 export function maniaFields(param: RecentEmbedParameters, embed: any) {
@@ -28,7 +29,7 @@ export function maniaFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: `Score`,
-            value: `${replaceDots(play.score)}`,
+            value: `${buildScoreString(play)}`,
             inline: true
         },
         {
@@ -48,7 +49,7 @@ export function maniaFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${play.statistics.count_geki}/${play.statistics.count_300}/${play.statistics.count_katu}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+            value: `${buildStatisticString(play)}`,
             inline: true
         },
         {
