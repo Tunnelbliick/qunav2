@@ -6,6 +6,7 @@ import { Score } from "../../../interfaces/Score";
 import score from "../../../models/score";
 import { replaceFirstDots } from "../../../utility/comma";
 import { rank_icons } from "../../../utility/icons";
+import { buildModString } from "../../../utility/score";
 
 export async function generateSkillsEmbed(skills: skill_type[], user: any, message: any) {
 
@@ -52,9 +53,7 @@ export async function generateSkillsEmbed(skills: skill_type[], user: any, messa
             const score = skill_score.score;
             // @ts-ignore 
             const rank = rank_icons[score.rank];
-            const mods: Array<string> = score.mods;
-            let appliedmods: any = "+";
-            mods.forEach(m => { appliedmods += m });
+            let appliedmods: any = buildModString(score)
             let value = skill_score.value
             if(skill.label !== "Star")
             value = normalise(skill_score.value);
@@ -104,7 +103,7 @@ export async function generateSkillsEmbed(skills: skill_type[], user: any, messa
         const skill = skills.find((skill: skill_type) => skill.label === para);
 
         if (skill) {
-            header = "**Top 20 aim skills:**\n";
+            header = `**Top 20 ${skill.label} skills:**\n`;
             if (skill.label === "Star") {
                 symbol = "★";
             }
@@ -113,9 +112,7 @@ export async function generateSkillsEmbed(skills: skill_type[], user: any, messa
                 const score: OsuScore = skill_score.score;
                 // @ts-ignore 
                 const rank = rank_icons[score.rank];
-                const mods: Array<string> = score.mods;
-                let appliedmods: any = "+";
-                mods.forEach(m => { appliedmods += m });
+                let appliedmods: any = buildModString(score)
                 if (skill.label === "Star") {
                     const value = skill_score.value;
                     const map = `\`${value.toFixed(2)}★\` ${rank} [${score.beatmapset.title} [${score.beatmap.version}]](${score.beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"}\n`

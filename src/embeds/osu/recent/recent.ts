@@ -46,7 +46,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     const user = result.user;
     const map = result.beatmap;
     const play = result.recentplay;
-    const acc100 = play.ruleset_id === 0 ? result.acc100.pp[0][100] : result.acc100.pp[100];
+    const acc100 = play.ruleset_id === 0 && result.acc100.pp[0] !== undefined ? result.acc100.pp[0][100] : result.acc100.pp[100];
     const ppIffc = result.ppIffc;
     const top100 = result.top100;
     const leaderboard = result.leaderboard;

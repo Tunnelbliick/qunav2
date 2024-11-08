@@ -1,7 +1,5 @@
-import { arraytoBinary } from "../osu/utility/parsemods";
 import * as rosu from "@kotrikd/rosu-pp";
 import * as fs from "fs";
-import { difficulty } from "./difficulty";
 
 const missArray: number[] = [0, 1, 5, 10, 20];
 const AccArray: number[] = [100.0, 99.0, 97.0, 95.0];
@@ -15,7 +13,7 @@ export async function calculate(mapid: any, checksum: any, mode: number, mods?: 
 
     map.convert(mode);
 
-    let values: any = { difficulty: undefined, pp: undefined };
+    let values: any = { difficulty: undefined, pp: undefined, graph: [] };
     let map_pp: any = {};
 
     const maxAttrs = new rosu.Performance({ mods: mods }).calculate(map);
@@ -42,7 +40,21 @@ export async function calculate(mapid: any, checksum: any, mode: number, mods?: 
     values.difficulty = maxAttrs.difficulty.toJSON();
     values.pp = map_pp;
 
-    maxAttrs.difficulty.free();
+    // Gradually calculating *difficulty* attributes
+    const strains = new rosu.Difficulty(values.difficulty).strains(map);
+
+    let graph = {
+        aim: strains.aim,
+        speed: strains.speed,
+        flashlight: strains.flashlight,
+        color: strains.color,
+        rythm: strains.rhythm,
+        stamina: strains.stamina
+    }
+
+    values.graph = graph;
+
+    maxAttrs.free();
     map.free();
 
     return values;

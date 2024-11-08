@@ -40,5 +40,5 @@ export async function simulateFull(args: simulateArgs) {
 
     map.free();
 
-    return currAttrs.pp;
+    return currAttrs.toJSON();
 }

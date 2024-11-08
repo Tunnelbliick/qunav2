@@ -68,8 +68,8 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
         ppString = "Could not load PP values";
     }
 
-    const chartURL = null; //await generateBeatmapChart(graph);
-    const chart = null; // await loadImage(chartURL);
+    const chartURL = await generateBeatmapChart(graph);
+    const chart = await loadImage(chartURL);
 
     const canvas = new Canvas(background.width, background.height);
     const ctx = canvas.getContext('2d');
@@ -77,7 +77,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
     ctx.filter = 'blur(7px) brightness(33%)';
     ctx.drawImage(background, 0, 0);
     ctx.filter = 'none';
-    //ctx.drawImage(chart, 0, 0);
+    ctx.drawImage(chart, 0, 0);
 
     const result = canvas.toDataURLSync();
 
@@ -489,14 +489,14 @@ export function buildppIfLessMiss(original_pp: number, pp_values: number[], orig
 
     results += `${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}\n`;
 
-    results += pad(`${original_pp.toFixed(1).slice(0, columnWidth)}`, columnWidth + 2);
+    results += pad(`${original_pp.toFixed(1).slice(0, columnWidth + 1)}`, columnWidth + 2);
 
     for (let miss of pp_values) {
 
         if (miss == undefined)
             continue;
 
-        let missString = pad(`${miss.toFixed(1).slice(0, columnWidth)}`, columnWidth + 2);
+        let missString = pad(`${miss.toFixed(1).slice(0, columnWidth + 1)}`, columnWidth + 2);
         results += `│${missString}`;
     }
 

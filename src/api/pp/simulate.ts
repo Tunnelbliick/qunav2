@@ -16,7 +16,7 @@ export interface simulateArgs {
     combo: number;
     score: number;
     mode: number;
-    mods: string[];
+    mods: any[];
 
 }
 
