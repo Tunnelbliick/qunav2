@@ -149,58 +149,70 @@ export function parseModRestricted(input: string[] | null) {
 export function arraytoBinary(mods?: Array<any>) {
     let val = 0;
 
-    if (mods != undefined)
+    if (mods !== undefined) {
         for (const mod of mods) {
-            for (const [key, values] of Object.entries(binaries))
-                for (const arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
+            for (const [key, values] of Object.entries(binaries)) {
+                for (const arg of values) {
+                    if (arg.trim().toLowerCase() === mod.acronym.trim().toLowerCase()) {
 
-                    if (mod.trim().toLowerCase() == "td") {
-                        continue;
-                    }
+                        // Handle specific cases
+                        if (mod.acronym.trim().toLowerCase() === "td") {
+                            continue;
+                        }
 
-                    if (mod.trim().toLowerCase() == "nc") {
-                        val += 64;
-                    } else if (mod.trim().toLowerCase() == "pf") {
-                        val += 16384;
+                        if (mod.acronym.trim().toLowerCase() === "nc") {
+                            val += 64;
+                        } else if (mod.acronym.trim().toLowerCase() === "pf") {
+                            val += 16384;
+                        }
+
+                        // Additional logic can be added for handling settings if necessary
+                        val += parseInt(key);
                     }
-                    val += parseInt(key);
                 }
+            }
         }
+    }
+
     return val;
 }
-
-export function arraytoBinaryFix(mods?: Array<any>) {
+export function arraytoBinaryFix(mods: Array<any>) {
     let val = 0;
 
-    if (mods != undefined)
+    if (mods !== undefined) {
         for (const mod of mods) {
-            for (const [key, values] of Object.entries(binaries))
-                for (const arg of values) if (arg.trim().toLowerCase() == mod.trim().toLowerCase()) {
+            for (const [key, values] of Object.entries(binaries)) {
+                for (const arg of values) {
+                    if (arg.trim().toLowerCase() === mod.acronym.trim().toLowerCase()) {
 
-                    switch (mod.trim().toLowerCase()) {
-                        case "nm":
-                            val += 0;
-                            break;
-                        case "ez":
-                            val += 2;
-                            break;
-                        case "hd":
-                            val += 8;
-                            break;
-                        case "hr":
-                            val += 16;
-                            break;
-                        case "dt":
-                            val += 64;
-                            break;
-                        case "nc":
-                            val += 64;
-                            break;
-                        case "ht":
-                            val += 256;
+                        // Switch cases for specific mods
+                        switch (mod.acronym.trim().toLowerCase()) {
+                            case "nm":
+                                val += 0;
+                                break;
+                            case "ez":
+                                val += 2;
+                                break;
+                            case "hd":
+                                val += 8;
+                                break;
+                            case "hr":
+                                val += 16;
+                                break;
+                            case "dt":
+                            case "nc":
+                                val += 64;
+                                break;
+                            case "ht":
+                                val += 256;
+                                break;
+                        }
                     }
                 }
+            }
         }
+    }
+
     return val;
 }
 

@@ -1,4 +1,5 @@
 import { replaceDots } from "../../../../utility/comma";
+import { buildScoreString, buildStatisticString } from "../../../../utility/score";
 import { RecentBestEmbedParameters } from "../recentbest";
 
 export function maniaFields(param: RecentBestEmbedParameters, embed: any) {
@@ -26,7 +27,7 @@ export function maniaFields(param: RecentBestEmbedParameters, embed: any) {
         },
         {
             name: `Score`,
-            value: `${replaceDots(play.score)}`,
+            value: `${buildScoreString(play)}`,
             inline: true
         },
         {
@@ -46,13 +47,13 @@ export function maniaFields(param: RecentBestEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${play.statistics.count_geki}/${play.statistics.count_300}/${play.statistics.count_katu}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+            value: `${buildStatisticString(play)}`,
             inline: true
         },
         {
             name: `Map Info`,
             value: `Length: \`${min}:${strSec}\` (\`${dmin}:${strDsec}\`) BPM: \`${bpm}\` Objects: \`${total_objects}\`\n` +
-                `CS:\`${cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${hp.toFixed(2).replace(/[.,]00$/, "")}\` Stars: \`${difficulty.star.toFixed(2)}★\``,
+                `CS:\`${cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${hp.toFixed(2).replace(/[.,]00$/, "")}\` Stars: \`${difficulty.stars.toFixed(2)}★\``,
             inline: true
         },
     ])

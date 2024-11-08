@@ -29,7 +29,8 @@ client.on('ready', async () => {
             disabledDefaultCommands: [
                 "help"
             ],
-            testServers: ['940446029436821514']
+            testServers: ['940446029436821514'],
+            botOwners: ['203932549746130944']
         });
     } catch (err) {
         console.log(err);

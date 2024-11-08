@@ -1,5 +1,7 @@
 import { BeatmapStats } from "../../../../api/beatmaps/stats";
 import { replaceDots } from "../../../../utility/comma";
+import { buildScoreString, buildStatisticNoMissString, buildStatisticString } from "../../../../utility/score";
+import { buildppIfLessMiss } from "../../beatmap/beatmap";
 import { RecentEmbedParameters } from "../recent";
 
 export function stdFields(param: RecentEmbedParameters, embed: any) {
@@ -31,7 +33,7 @@ export function stdFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: `Score`,
-            value: `${replaceDots(play.score)}`,
+            value: `${buildScoreString(play)}`,
             inline: true
         },
         {
@@ -51,29 +53,17 @@ export function stdFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: 'Hits',
-            value: `{${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+            value: `${buildStatisticString(play)}`,
             inline: true
         },
         {
-            name: 'PP if FC',
-            value: `**${ppiffc.toFixed(2)}**/${acc100.toFixed(2)}PP`,
-            inline: true
-        },
-        {
-            name: 'Acc',
-            value: `${replaceDots(fc_acc.toFixed(2))}%`,
-            inline: true
-        },
-        {
-            name: 'Hits',
-            value: `{${total_objects - play.statistics.count_100 - play.statistics.count_50}/${play.statistics.count_100}/${play.statistics.count_50}/${0}}`,
-            inline: true
+            name: 'Possible PP Values',
+            value: `\`\`\`${buildppIfLessMiss(ppofplay, ppiffc, (play.statistics.miss ?? 0))}\`\`\``,
         },
         {
             name: `Map Info`,
             value: `Length: \`${min}:${strSec}\` (\`${dmin}:${strDsec}\`) BPM: \`${bpm}\` Objects: \`${total_objects}\`\n` +
-                `CS:\`${cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${hp.toFixed(2).replace(/[.,]00$/, "")}\` Stars: \`${difficulty.star.toFixed(2)}★\``,
-            inline: true
+                `CS:\`${cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${hp.toFixed(2).replace(/[.,]00$/, "")}\` Stars: \`${difficulty.stars.toFixed(2)}★\``,
         },
     ]);
 

@@ -1,10 +1,9 @@
 import { MessageEmbed } from "discord.js";
-import { desc } from "osu-api-extended/dist/utility/mods";
 import { owc_year } from "../../../api/owc/owc";
 import { owc_rank_icons } from "../../../utility/icons";
 import { country_overwrite } from "./country_overwrites";
 import { bo16, bo32, bo8 } from "./owc";
-const { overwrite, getCode } = require('country-list');
+const { getCode } = require('country-list');
 
 country_overwrite();
 

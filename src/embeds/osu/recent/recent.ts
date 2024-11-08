@@ -8,6 +8,8 @@ import { ctbFields } from "./mode/ctb";
 import { maniaFields } from "./mode/mania";
 import { stdFields } from "./mode/osu";
 import { taikoFields } from "./mode/taiko";
+import { modeIntToMode } from "../../../api/osu/utility/utility";
+import { buildModString, buildScoreString, buildStatisticString } from "../../../utility/score";
 
 export interface RecentEmbedParameters {
     play: any,
@@ -44,7 +46,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     const user = result.user;
     const map = result.beatmap;
     const play = result.recentplay;
-    const acc100 = result.acc100.pp[100];
+    const acc100 = play.ruleset_id === 0 && result.acc100.pp[0] !== undefined ? result.acc100.pp[0][100] : result.acc100.pp[100];
     const ppIffc = result.ppIffc;
     const top100 = result.top100;
     const leaderboard = result.leaderboard;
@@ -67,9 +69,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     // @ts-ignore 
     const rankEmote: any = rank_icons[rank];
 
-    const mods: Array<string> = play.mods;
-    let appliedmods: any = "+";
-    mods.forEach(m => { appliedmods += m });
+    const mods: Array<any> = play.mods;
+    let appliedmods: any = buildModString(play);
 
     let progressString: any = "";
 
@@ -90,7 +91,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     const difficulty = result.difficulty;
 
-    const color = getDifficultyColor(difficulty.star.toFixed(2));
+    const color = getDifficultyColor(difficulty.stars.toFixed(2));
 
     stats = calcualteStatsforMods(stats, mods);
 
@@ -98,17 +99,23 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     let fc_acc = 100;
 
-    switch (play.mode) {
+    let c300 = play.statistics.great ?? 0;
+    let c100 = play.statistics.ok ?? 0;
+    let c50 = play.statistics.meh ?? 0;
+    let cMiss = play.statistics.miss ?? 0;
+
+    switch (modeIntToMode(play.ruleset_id)) {
+
         case "osu":
-            fc_acc = (100 * (6 * (total_object - play.statistics.count_100 - play.statistics.count_50) + 2 * play.statistics.count_100 + play.statistics.count_50) / (6 * total_object));
+            fc_acc = (100 * (6 * (total_object - c100 - c50) + 2 * c100 + c50) / (6 * total_object));
             break;
         case "mania":
             break;
         case "taiko":
-            fc_acc = 100 * ((2 * (play.statistics.count_300 + play.statistics.count_miss) + play.statistics.count_100) / (2 * (play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_miss)))
+            fc_acc = 100 * ((2 * (c300 + cMiss) + c100) / (2 * (c300 + c100 + cMiss)))
             break;
         case "fruits":
-            fc_acc = 100 * ((play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_50) / (play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_50 + play.statistics.count_katu))
+            fc_acc = 100 * ((c300 + c100 + c50) / (c300 + c100 + c50 + 0))
             break;
     }
 
@@ -128,12 +135,12 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     }
 
     let fullsize = new MessageEmbed()
-        .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
+        .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)} pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url} `, url: `https://osu.ppy.sh/users/${user.id}` })
         .setColor(color)
         .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}]`)
         .setURL(`${map.url}`)
         .setImage(`${map.beatmapset.covers.cover}`) // the @2x version does not work sadge
-        .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!": ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+        .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
     let description: string = "";
 
@@ -149,7 +156,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
         fullsize.setDescription(description);
     }
 
-    switch (play.mode) {
+    switch (modeIntToMode(play.ruleset_id)) {
         case "osu":
             fullsize = stdFields(param, fullsize);
             break;
@@ -167,25 +174,25 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     if (interaction) {
         interaction.editReply({ content: `Try #${retries}`, embeds: [fullsize] }).then(() => setTimeout(function () {
-            const currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+            const currentTimeInSeconds = Math.floor(new Date(play.ended_at).getTime() / 1000)
             const compact = new MessageEmbed()
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
                 .setColor(color)
-                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
+                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.stars.toFixed(2)}★]`)
                 .setURL(`${map.url}`)
-                .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!": ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+                .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
             if (description !== undefined) {
                 compact.setDescription(description);
             }
 
-            switch (play.mode) {
+            switch (modeIntToMode(play.ruleset_id)) {
                 case "osu":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -193,8 +200,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "mania":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${play.statistics.count_300}/${play.statistics.count_katu}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -202,8 +209,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "taiko":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -211,8 +218,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "fruits":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -223,25 +230,25 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
         }, 60000));
     } else {
         message.reply({ content: `Try #${retries}`, embeds: [fullsize] }).then((msg) => setTimeout(function () {
-            const currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+            const currentTimeInSeconds = Math.floor(new Date(play.ended_at).getTime() / 1000)
             const compact = new MessageEmbed()
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
                 .setColor(color)
-                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
+                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.stars.toFixed(2)}★]`)
                 .setURL(`${map.url}`)
-                .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!": ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
+                .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
             if (description !== undefined) {
                 compact.setDescription(description);
             }
 
-            switch (play.mode) {
+            switch (modeIntToMode(play.ruleset_id)) {
                 case "osu":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -249,8 +256,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "mania":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]  {${play.statistics.count_geki}/${play.statistics.count_300}/${play.statistics.count_katu}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [ **${play.max_combo}x** ]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -258,8 +265,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "taiko":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])
@@ -267,8 +274,8 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 case "fruits":
                     compact.addFields([
                         {
-                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${replaceDots(play.score)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
-                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}}`,
+                            name: `**${rankEmote} ${progressString} ${appliedmods == "+" ? "" : appliedmods}**    ${buildScoreString(play)}    (${replaceDots((play.accuracy * 100).toFixed(2))}%)\nMap attempted <t:${currentTimeInSeconds}:R>`,
+                            value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}pp  [**${play.max_combo}x**/${map.max_combo}x]   ${buildStatisticString(play)}`,
                             inline: true
                         },
                     ])

@@ -9,24 +9,27 @@ import UserHash from "../../models/UserHash";
 import { Top } from "../../interfaces/top";
 import { TopData } from "../../interfaces/topData";
 import CacheTop from "../../models/cacheTop";
+import { modeIntToMode } from "./utility/utility";
 const hash = require("hash-sum")
 
 export async function getTop(userid: any, offset?: any, limit?: any, mode?: any): Promise<object[]> {
     await login();
     const params: any = {};
+    params.user_id = userid,
+    params.type = "user_best"
     params.limit = 100;
+    params.offset = 0;
     if (limit != undefined)
         params.limit = limit;
     if (offset != undefined)
         params.offset = offset;
-    params.mode = 0;
     if (mode != undefined) {
         if (mode == "catch")
             mode = "fruits"
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.scores.category(userid, "best", params).then((data: any) => {
+        v2.scores.list(params).then((data: any) => {
             return resolve(data)
         });
     });
@@ -46,7 +49,7 @@ export async function getPinned(userid: any, offset?: any, limit?: any, mode?: a
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.scores.category(userid, "pinned", params).then((data: any) => {
+        v2.scores.list({ user_id: userid, type: "user_pinned", mode: params.mode }).then((data: any) => {
             return resolve(data)
         });
     });
@@ -66,7 +69,7 @@ export async function getFavorite(userid: any, offset?: any, limit?: any, mode?:
         params.mode = mode;
     }
     return new Promise((resolve, rejcet) => {
-        v2.user.beatmaps.category(userid, "favourite", params).then((data: any) => {
+        v2.scores.list({ user_id: userid, type: "user_pinned", mode: params.mode }).then((data: any) => {
             return resolve(data)
         });
     });
@@ -104,8 +107,8 @@ export async function getTopForUser(userid: any, offset?: number, limit?: number
 
             bestplays.forEach((play: any, index: any) => {
 
-                if(play.mode !== mode) {
-                    mode = play.mode
+                if (modeIntToMode(play.ruleset_id) !== mode) {
+                    mode = modeIntToMode(play.ruleset_id);
                 }
 
                 const data: TopData = {
@@ -113,7 +116,7 @@ export async function getTopForUser(userid: any, offset?: number, limit?: number
                     scoreid: play.id,
                     pp: play.pp,
                     score: play.score,
-                    mode: play.mode,
+                    mode: modeIntToMode(play.ruleset_id),
                     mods: play.mods,
                     beatmapid: play.beatmap.id,
                 };

@@ -5,7 +5,7 @@ export interface PerformancePoints {
     id: ObjectId,
     mapid: string,
     checksum: string,
-    mode: string,
+    mode: number,
     mods: Array<string>,
     pp: pp,
     difficulty: Object,

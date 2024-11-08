@@ -3,6 +3,8 @@ import { OsuScore } from "../../interfaces/OsuScore";
 import { downloadAndOverrideBeatmap } from "../beatmaps/downloadbeatmap";
 import { simulateArgs } from "../pp/simulate";
 import { simulateFull } from "../pp/simulatefull";
+import { scores_list_solo_scores_response } from "osu-api-extended/dist/types/v2/scores_list_solo_scores";
+import { PerformanceAttributes } from "@kotrikd/rosu-pp";
 
 export interface skills {
     aim: number;
@@ -12,7 +14,7 @@ export interface skills {
 
 export interface skill_score {
     value: number,
-    score: OsuScore,
+    score: any,
 }
 
 export interface skill_type {
@@ -23,7 +25,7 @@ export interface skill_type {
 
 export interface top100 {
     position: number,
-    value: OsuScore
+    value: any
 }
 
 export async function getAllSkills(top_100: top100[]) {
@@ -65,47 +67,51 @@ export async function getAllSkills(top_100: top100[]) {
             async (resolve) => {
                 if (task.value != null && task.value.beatmap != null) {
 
+                    let play = task.value;
+
                     const sim: simulateArgs = {
-                        mode: task.value.mode,
-                        checksum: task.value.beatmap.checksum,
-                        mapid: task.value.beatmap.id.toString(),
-                        mods: task.value.mods,
-                        combo: task.value.max_combo,
-                        great: task.value.statistics.count_300,
-                        goods: task.value.statistics.count_100,
-                        mehs: task.value.statistics.count_50,
-                        misses: task.value.statistics.count_miss,
-                        score: task.value.score
+                        mode: play.ruleset_id,
+                        checksum: play.beatmap.checksum,
+                        mapid: play.beatmap.id,
+                        mods: play.mods,
+                        combo: play.max_combo,
+                        perfect: play.statistics.perfect ?? 0,
+                        great: play.statistics.great ?? 0,
+                        ok: play.statistics.ok ?? 0,
+                        goods: play.statistics.good ?? 0,
+                        mehs: play.statistics.meh ?? 0,
+                        misses: play.statistics.miss ?? 0,
+                        score: play.total_score
                     };
 
                     simulateFull(sim).then((value: any) => {
 
-                        switch (task.value.mode) {
+                        switch (play.ruleset_id) {
 
-                            case "osu": {
+                            case 0: {
 
                                 const ACC_NERF: number = 1.4;
                                 const AIM_NERF: number = 2.6;
                                 const SPEED_NERF: number = 2.4;
 
-                                aim.push({ value: value.pp_aim / AIM_NERF, score: task.value });
-                                acc.push({ value: value.pp_acc / ACC_NERF, score: task.value });
-                                speed.push({ value: value.pp_speed / SPEED_NERF, score: task.value });
-                                star.push({ value: value.star, score: task.value });
+                                aim.push({ value: (value.ppAim ?? 0) / AIM_NERF, score: task.value });
+                                acc.push({ value: (value.ppAccuracy ?? 0) / ACC_NERF, score: task.value });
+                                speed.push({ value: (value.ppSpeed ?? 0) / SPEED_NERF, score: task.value });
+                                star.push({ value: (value.difficulty.stars ?? 0), score: task.value });
                                 break;
                             }
-                            case "taiko": {
+                            case 1: {
 
                                 const ACC_NERF: number = 1.15;
                                 const DIFFICULTY_NERF: number = 2.8;
 
-                                acc.push({ value: value.pp_acc / ACC_NERF, score: task.value });
-                                difficulty.push({ value: value.pp_strain / DIFFICULTY_NERF, score: task.value });
-                                star.push({ value: value.star, score: task.value });
+                                acc.push({ value: (value.ppAccuracy ?? 0) / ACC_NERF, score: task.value });
+                                difficulty.push({ value: (value.ppDifficulty ?? 0) / DIFFICULTY_NERF, score: task.value });
+                                star.push({ value: (value.difficulty.stars ?? 0), score: task.value });
                                 break;
 
                             }
-                            case "mania": {
+                            case 3: {
 
                                 const ACC_BUFF: number = 1.95;
                                 const DIFFICULTY_NERF: number = 0.75;
@@ -119,19 +125,19 @@ export async function getAllSkills(top_100: top100[]) {
 
                                 const acc_: number = Math.pow(y / 60.0, 1.5);
 
-                                const acc_val = Math.pow(value.star, acc_)
+                                const acc_val = Math.pow((value.difficulty.stars ?? 0), acc_)
                                     * Math.pow(task.value.beatmap.accuracy / 7.0, 0.25)
                                     * Math.pow(task.value.max_combo / 2000.0, 0.15)
                                     * ACC_BUFF;
 
                                 // Restrict output to not reach above 100!
                                 acc.push({ value: acc_val, score: task.value });
-                                difficulty.push({ value: value.pp_strain / DIFFICULTY_NERF, score: task.value });
-                                star.push({ value: value.star, score: task.value });
+                                difficulty.push({ value: (value.ppDifficulty ?? 0) / DIFFICULTY_NERF, score: task.value });
+                                star.push({ value: (value.difficulty.stars ?? 0), score: task.value });
                                 break;
 
                             }
-                            case "fruits": {
+                            case 2: {
 
                                 const ACC_BUFF: number = 1.95;
                                 const DIFFICULTY_NERF: number = 0.75;
@@ -145,15 +151,15 @@ export async function getAllSkills(top_100: top100[]) {
 
                                 const acc_: number = Math.pow(y / 60.0, 1.5);
 
-                                const acc_val = Math.pow(value.star, acc_)
+                                const acc_val = Math.pow((value.difficulty.stars ?? 0), acc_)
                                     * Math.pow(task.value.beatmap.accuracy / 7.0, 0.25)
                                     * Math.pow(task.value.max_combo / 2000.0, 0.15)
                                     * ACC_BUFF;
 
                                 // Restrict output to not reach above 100!
                                 acc.push({ value: acc_val, score: task.value });
-                                difficulty.push({ value: value.pp_strain / DIFFICULTY_NERF, score: task.value });
-                                star.push({ value: value.star, score: task.value });
+                                difficulty.push({ value: (value.ppDifficulty ?? 0) / DIFFICULTY_NERF, score: task.value });
+                                star.push({ value: (value.difficulty.stars ?? 0), score: task.value });
                             }
 
                         }
@@ -191,7 +197,7 @@ export function normalise(value: number): number {
 
     factor = Math.pow(factor, 10)
 
-    const res = -101.0 * factor + 101.0;
+    const res = -100.0 * factor + 100.0;
 
     return res;
 }

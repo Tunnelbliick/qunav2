@@ -9,9 +9,9 @@ export async function getUser(userid: any, mode?: any) {
     if (mode == undefined) {
         mode = "osu"
     }
-    
+
     return new Promise((resolve, reject) => {
-        const user = v2.user.details(userid, mode, "id")
+        const user = v2.users.details({ user: userid, mode: mode, key: "id" })
 
         user.then((data: any) => {
             return resolve(data);
@@ -29,7 +29,7 @@ export async function getUserByUsername(username: string, mode?: any): Promise<O
         mode = "osu"
     }
     return new Promise((resolve, reject) => {
-        const user = v2.user.details(username, mode, "username")
+        const user = v2.users.details({ user: username, mode: mode, key: "username" })
 
         user.then((data: any) => {
             return resolve(data);

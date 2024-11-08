@@ -1,12 +1,19 @@
 import { AnyComponentBuilder } from "@discordjs/builders"
-import { v2 } from "osu-api-extended"
+import { IDefaultParams, v2 } from "osu-api-extended"
 import { login } from "./login";
 
 
 async function loadLeaderBoard(mapid: any, mode: any) {
     await login();
     return new Promise((resolve, reject) => {
-        const result = v2.beatmap.leaderboard(mapid, { mode: mode })
+
+        let param: any = { type: "leaderboard", beatmap_id: mapid };
+
+        if (mode != undefined) {
+            param.mode = mode;
+        }
+
+        const result = v2.scores.list(param)
 
         result.then((data: any) => {
             resolve(data);
@@ -30,7 +37,7 @@ export async function getLeaderBoard(mapid: any, mode: any) {
         return undefined;
     }
 
-    leaderboard.scores.forEach((play: any, index: any) => {
+    leaderboard.forEach((play: any, index: any) => {
         leaderboardArray.push({ position: index, value: play });
     })
 
@@ -51,7 +58,7 @@ export async function getLeaderBoardPosition(mapid: any, mode: any, scoreid: any
         return null;
     }
 
-    leaderboard.scores.forEach((play: any, index: any) => {
+    leaderboard.forEach((play: any, index: any) => {
         leaderboardArray.push({ position: index, value: play });
     })
 
@@ -59,7 +66,7 @@ export async function getLeaderBoardPosition(mapid: any, mode: any, scoreid: any
     let leaderboard_position = undefined;
 
     if (leaderboard_found !== undefined)
-    leaderboard_position = leaderboard_found.position;
+        leaderboard_position = leaderboard_found.position;
 
     return leaderboard_position;
 }

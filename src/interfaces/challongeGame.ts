@@ -11,7 +11,7 @@ export interface challongeGame {
     winner_id: number,
     loser_id: number,
     started_at: string,
-    created_at: string,
+    ended_at: string,
     updated_at: string,
     identifier: string,
     has_attachment: boolean,

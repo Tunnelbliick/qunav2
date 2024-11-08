@@ -2,6 +2,7 @@ import { Message, MessageEmbed } from "discord.js";
 import { replaceDots, replaceFirstDots } from "../../../utility/comma";
 import { getDifficultyColor } from "../../../utility/gradiant";
 import { rank_icons } from "../../../utility/icons";
+import { buildModString, buildScoreString, buildStatisticString } from "../../../utility/score";
 
 export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>, top100: any, leaderboard: any, message: Message, interaction: any) {
 
@@ -14,7 +15,7 @@ export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>,
 
         const acc100 = play.acc100.pp[100];
         const max_combo = map.max_combo;
-        const difficulty = play.difficulty.star.toFixed(2);
+        const difficulty = play.difficulty.stars.toFixed(2);
         let ppOfPlay = play.score.pp;
         if (play.hasOwnProperty('ppOfPlay')) {
             ppOfPlay = play.ppOfPlay;
@@ -65,18 +66,16 @@ export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>,
 
 function genereateField(counter: any, play: any, acc100: any, difficulty: any, max_combo: any, ppOfPlay?: any) {
 
-    const currentTimeInSeconds = Math.floor(new Date(play.created_at).getTime() / 1000)
+    const currentTimeInSeconds = Math.floor(new Date(play.ended_at).getTime() / 1000)
 
-    const mods: Array<string> = play.mods;
-    let appliedmods: any = "+";
-    mods.forEach(m => { appliedmods += m });
+    const mods = buildModString(play);
 
     // @ts-ignore 
     const rankEmote: any = rank_icons[play.rank];
 
     const playField = {
-        name: `${counter}. ${rankEmote} ${appliedmods == "+" ? "" : appliedmods}  [${difficulty}★]  ${replaceDots(play.score)}  (${replaceDots((play.accuracy * 100).toFixed(2))}%)`,
-        value: `**${ppOfPlay.toFixed(2)}**/${acc100.toFixed(2)}PP  **${play.max_combo}x**/${max_combo}x  {${play.statistics.count_300}/${play.statistics.count_100}/${play.statistics.count_50}/${play.statistics.count_miss}} <t:${currentTimeInSeconds}:R>`,
+        name: `${counter}. ${rankEmote} ${mods == "+" ? "" : mods}  [${difficulty}★]  ${buildScoreString(play)}  (${replaceDots((play.accuracy * 100).toFixed(2))}%)`,
+        value: `**${ppOfPlay != undefined ? ppOfPlay.toFixed(2) : "0"}**/${acc100.toFixed(2)}PP  **${play.max_combo}x**/${max_combo}x  ${buildStatisticString(play)} <t:${currentTimeInSeconds}:R>`,
         inline: false
     }
 

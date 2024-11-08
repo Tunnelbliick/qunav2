@@ -23,6 +23,9 @@ export default {
              return;
          }
 
+         message.reply("Recommends have temporarily been disabled until pp rework changes are fully handeled");
+         return;
+
          bulldrecommends(message, args, prefix);
 
     }

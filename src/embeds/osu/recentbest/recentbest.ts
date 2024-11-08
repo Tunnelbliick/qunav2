@@ -9,6 +9,8 @@ import { ctbFields } from "./mode/ctb";
 import { maniaFields } from "./mode/mania";
 import { stdFields } from "./mode/osu";
 import { taikoFields } from "./mode/taiko";
+import { modeIntToMode } from "../../../api/osu/utility/utility";
+import { buildModString, buildScoreString, buildStatisticString } from "../../../utility/score";
 
 export interface RecentBestEmbedParameters {
     play: any,
@@ -75,16 +77,14 @@ export async function recentbestEmbed(data: any, user: any, index: number, max: 
         const score = plays[0].value;
         const beatmap = plays[0].beatmap.value;
         const maxpp = plays[0].maxpp.value.pp[100];
-        const diff = await difficulty(beatmap.id, beatmap.checksum, score.mode, score.mods);
-        const leaderboard = await getLeaderBoardPosition(beatmap.id, score.mode, score.id);
+        const diff = await difficulty(beatmap.id, beatmap.checksum, score.ruleset_id, score.mods);
+        const leaderboard = await getLeaderBoardPosition(beatmap.id, modeIntToMode(score.ruleset_id), score.id);
 
         if (score == null || beatmap == null || maxpp == null) {
             return null;
         }
 
-        const mods: Array<string> = score.mods;
-        let appliedmods: any = "+";
-        mods.forEach(m => { appliedmods += m });
+        let appliedmods: any = buildModString(score);
 
         // @ts-ignore 
         const rankEmote: any = rank_icons[score.rank];
@@ -133,7 +133,7 @@ export async function recentbestEmbed(data: any, user: any, index: number, max: 
         }
 
 
-        switch (score.mode) {
+        switch (modeIntToMode(score.ruleset_id)) {
             case "osu":
                 stdFields(param, fullsize);
                 break;
@@ -163,48 +163,46 @@ function genereateField(play: any) {
         return null;
     }
 
-    const currentTimeInSeconds = Math.floor(new Date(score.created_at).getTime() / 1000)
+    const currentTimeInSeconds = Math.floor(new Date(score.ended_at).getTime() / 1000)
 
-    const mods: Array<string> = score.mods;
-    let appliedmods: any = "+";
-    mods.forEach(m => { appliedmods += m });
+    let appliedmods: any = buildModString(score);
 
     // @ts-ignore 
     const rankEmote: any = rank_icons[score.rank];
 
     let scoreField = ""
 
-    switch (score.mode) {
+    switch (modeIntToMode(score.ruleset_id)) {
         case "osu":
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
-                `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${score.score.toLocaleString()}\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
+                `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
                 `[**${score.max_combo}x**/${difficulty.max_combo}x] ` +
-                `{${score.statistics.count_300}/${score.statistics.count_100}/${score.statistics.count_50}/${score.statistics.count_miss}}\n ` +
+                `${buildStatisticString(score)}\n ` +
                 `Score set <t:${currentTimeInSeconds}:R>\n`
             break;
         case "mania":
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
-                `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${score.score.toLocaleString()}\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
+                `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
                 `[**${score.max_combo}x**] ` +
-                `{${score.statistics.count_geki}/${score.statistics.count_300}/${score.statistics.count_katu}/${score.statistics.count_100}/${score.statistics.count_50}/${score.statistics.count_miss}}\n ` +
+                `${buildStatisticString(score)}\n ` +
                 `Score set <t:${currentTimeInSeconds}:R>\n`
             break;
         case "taiko":
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
-                `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${score.score.toLocaleString()}\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
+                `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
                 `[**${score.max_combo}x**/${difficulty.max_combo}x] ` +
-                `{${score.statistics.count_300}/${score.statistics.count_100}/${score.statistics.count_miss}}\n ` +
+                `${buildStatisticString(score)}\n ` +
                 `Score set <t:${currentTimeInSeconds}:R>\n`
             break;
         case "fruits":
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
-                `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${score.score.toLocaleString()}\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
+                `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
                 `[**${score.max_combo}x**/${difficulty.max_combo}x] ` +
-                `{${score.statistics.count_300}/${score.statistics.count_100}/${score.statistics.count_50}/${score.statistics.count_miss}}\n ` +
+                `${buildStatisticString(score)}\n ` +
                 `Score set <t:${currentTimeInSeconds}:R>\n`
             break;
     }

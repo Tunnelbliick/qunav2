@@ -3,6 +3,8 @@ import { BeatmapStats, calcualteStatsforMods } from "../../../api/beatmaps/stats
 import { getMaxForCurrentNoChockeArray } from "../../../api/osu/top";
 import { replaceFirstDots } from "../../../utility/comma";
 import { rank_icons } from "../../../utility/icons";
+import { modeIntToMode } from "../../../api/osu/utility/utility";
+import { buildModString } from "../../../utility/score";
 
 export interface TopEmbedParameters {
     play: any,
@@ -77,9 +79,7 @@ function genereateField(play: any) {
         return null;
     }
 
-    const mods: Array<string> = score.mods;
-    let appliedmods: any = "+";
-    mods.forEach(m => { appliedmods += m });
+    let appliedmods: any = buildModString(score);
 
     // @ts-ignore 
     const rankEmote: any = getGrade(score);
@@ -87,18 +87,18 @@ function genereateField(play: any) {
 
     let scoreField = ""
 
-    switch (score.mode) {
+    switch (modeIntToMode(score.ruleset_id)) {
         case "mania":
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} ${score.pp.toFixed(2)} → **${play.unchocked.toFixed(2)}pp** | ${(score.accuracy * 100).toFixed(2)}% → **${acc.toFixed(2)}%**\n` +
-                `[**${score.max_combo}x**] Removed ${score.statistics.count_miss == 1 ? "1 miss" : score.statistics.count_miss + " misses"}\n`
+                `[**${score.max_combo}x**] Removed ${(score.statistics.miss ?? 0) == 1 ? "1 miss" : (score.statistics.miss ?? 0) + " misses"}\n`
             break;
         default:
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} ${score.pp.toFixed(2)} → **${play.unchocked.toFixed(2)}pp** | ${(score.accuracy * 100).toFixed(2)}% → **${acc.toFixed(2)}%**\n` +
-                `[${score.max_combo}x → **${difficulty.max_combo}x**/${difficulty.max_combo}x] Removed ${score.statistics.count_miss == 1 ? "1 miss" : score.statistics.count_miss + " misses"}\n`
+                `[${score.max_combo}x → **${difficulty.max_combo}x**/${difficulty.max_combo}x] Removed ${(score.statistics.miss ?? 0) == 1 ? "1 miss" : (score.statistics.miss ?? 0) + " misses"}\n`
             break;
     }
     return scoreField;
@@ -107,11 +107,11 @@ function genereateField(play: any) {
 
 function getGrade(play: any) {
 
-    switch (play.mode) {
+    switch (modeIntToMode(play.ruleset_id)) {
         case "osu": {
             const total_objects = play.beatmap.count_circles + play.beatmap.count_sliders + play.beatmap.count_spinners;
-            const n300_percent = 100 / total_objects * (total_objects - play.statistics.count_100 - play.statistics.count_50);
-            const n50_percent = 100 / total_objects * play.statistics.count_50;
+            const n300_percent = 100 / total_objects * (total_objects - (play.statistics.ok ?? 0) - (play.statistics.meh ?? 0));
+            const n50_percent = 100 / total_objects * (play.statistics.meh ?? 0);
             const miss = 0;
 
             if (play.accuracy === 1) {
@@ -138,8 +138,8 @@ function getGrade(play: any) {
         }
         case "taiko": {
             const total_objects = play.beatmap.count_circles + play.beatmap.count_sliders + play.beatmap.count_spinners;
-            const n300_percent = 100 / total_objects * (total_objects - play.statistics.count_100 - play.statistics.count_50);
-            const n100 = play.statistics.count_100;
+            const n300_percent = 100 / total_objects * (total_objects - (play.statistics.ok ?? 0) - (play.statistics.meh ?? 0));
+            const n100 = (play.statistics.ok ?? 0);
 
             if (play.accuracy === 1) {
                 if (play.mods.includes("HD") || play.mods.includes("FL")) {
@@ -164,8 +164,8 @@ function getGrade(play: any) {
             }
         }
         case "fruits": {
-            const total_fruits = play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_50 + play.statistics.count_miss + play.statistics.count_katu;
-            const acc = 100 * ((play.statistics.count_300 + play.statistics.count_miss + play.statistics.count_100 + play.statistics.count_50) / (total_fruits))
+            const total_fruits = (play.statistics.great ?? 0) + (play.statistics.ok ?? 0) + (play.statistics.meh ?? 0) + (play.statistics.miss ?? 0) + (play.statistics.good ?? 0);
+            const acc = 100 * (((play.statistics.great ?? 0) + (play.statistics.miss ?? 0) + (play.statistics.ok ?? 0) + (play.statistics.meh ?? 0)) / (total_fruits))
 
             if (play.accuracy === 1) {
                 if (play.mods.includes("HD") || play.mods.includes("FL")) {
@@ -190,8 +190,8 @@ function getGrade(play: any) {
             }
         }
         case "mania": {
-            const top = (300 * (play.statistics.count_300 + play.statistics.count_geki + play.statistics.count_miss)) + (200 * play.statistics.count_katu) + (100 * play.statistics.count_100) + (50 * play.statistics.count_50)
-            const bottom = 300 * (play.statistics.count_300 + play.statistics.count_geki + play.statistics.count_katu + play.statistics.count_100 + play.statistics.count_50 + play.statistics.count_miss)
+            const top = (300 * ((play.statistics.great ?? 0) + (play.statistics.perfect ?? 0) + (play.statistics.miss ?? 0))) + (200 * (play.statistics.good ?? 0)) + (100 * (play.statistics.ok ?? 0)) + (50 * (play.statistics.meh ?? 0))
+            const bottom = 300 * ((play.statistics.great ?? 0) + (play.statistics.perfect ?? 0) + (play.statistics.good ?? 0) + (play.statistics.ok ?? 0) + (play.statistics.meh ?? 0) + (play.statistics.miss ?? 0))
             const acc = top / bottom;
 
             console.log(acc);
@@ -226,17 +226,17 @@ function calculateAcc(play: any) {
 
     const total_objects = play.beatmap.count_circles + play.beatmap.count_sliders + play.beatmap.count_spinners;
 
-    switch (play.mode) {
+    switch (modeIntToMode(play.ruleset_id)) {
         case "osu":
-            return (100 * (6 * (total_objects - play.statistics.count_100 - play.statistics.count_50) + 2 * play.statistics.count_100 + play.statistics.count_50) / (6 * total_objects));
+            return (100 * (6 * (total_objects - (play.statistics.ok ?? 0) - (play.statistics.meh ?? 0)) + 2 * (play.statistics.ok ?? 0) + (play.statistics.meh ?? 0)) / (6 * total_objects));
         case "taiko":
-            return 100 * ((play.statistics.count_300 + play.statistics.count_miss) + (0.5 * play.statistics.count_100)) / (play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_miss)
+            return 100 * (((play.statistics.great ?? 0) + (play.statistics.miss ?? 0)) + (0.5 * (play.statistics.ok ?? 0))) / ((play.statistics.great ?? 0) + (play.statistics.ok ?? 0) + (play.statistics.miss ?? 0))
         case "fruits":
-            const total_fruits = play.statistics.count_300 + play.statistics.count_100 + play.statistics.count_50 + play.statistics.count_miss + play.statistics.count_katu;
-            return 100 * ((play.statistics.count_300 + play.statistics.count_miss + play.statistics.count_100 + play.statistics.count_50) / (total_fruits))
+            const total_fruits = (play.statistics.great ?? 0) + (play.statistics.ok ?? 0) + (play.statistics.meh ?? 0) + (play.statistics.miss ?? 0) + (play.statistics.good ?? 0);
+            return 100 * (((play.statistics.great ?? 0) + (play.statistics.miss ?? 0) + (play.statistics.ok ?? 0) + (play.statistics.meh ?? 0)) / (total_fruits))
         case "mania":
-            const top = (300 * (play.statistics.count_300 + play.statistics.count_geki + play.statistics.count_miss)) + (200 * play.statistics.count_katu) + (100 * play.statistics.count_100) + (50 * play.statistics.count_50)
-            const bottom = 300 * (play.statistics.count_300 + play.statistics.count_geki + play.statistics.count_katu + play.statistics.count_100 + play.statistics.count_50 + play.statistics.count_miss)
+            const top = (300 * ((play.statistics.great ?? 0) + (play.statistics.perfect ?? 0) + (play.statistics.miss ?? 0))) + (200 * (play.statistics.good ?? 0)) + (100 * (play.statistics.ok ?? 0)) + (50 * (play.statistics.meh ?? 0))
+            const bottom = 300 * ((play.statistics.great ?? 0) + (play.statistics.perfect ?? 0) + (play.statistics.good ?? 0) + (play.statistics.ok ?? 0) + (play.statistics.meh ?? 0) + (play.statistics.miss ?? 0))
             return 100 * top / bottom;
 
     }

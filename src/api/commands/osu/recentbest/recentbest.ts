@@ -58,7 +58,7 @@ export async function recentbest(message: any, args: any, mode: any) {
     }
 
     let orderedtop100ByDate: Array<any> = top100.sort(function (a: any, b: any) {
-        return new Date(b.value.created_at).getTime() - new Date(a.value.created_at).getTime();
+        return new Date(b.value.ended_at).getTime() - new Date(a.value.ended_at).getTime();
     });
 
     orderedtop100ByDate = topFilterAndSort(orderedtop100ByDate, filterOptions);

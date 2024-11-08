@@ -1,7 +1,7 @@
 export interface OsuScore {
     accuracy: number;
     best_id: number;
-    created_at: string;
+    ended_at: string;
     id: number;
     max_combo: number;
     mode: string;

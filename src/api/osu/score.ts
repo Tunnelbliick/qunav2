@@ -9,6 +9,7 @@ import { v2 } from "osu-api-extended"
 import { getTopForUser } from "./top";
 import { getLeaderBoard } from "./leaderboard";
 import { loadUnrankedScore } from "../unranked/scoreLoading";
+import { modeIntToMode } from "./utility/utility";
 
 
 export async function getScore(mode: any, scoreid: any) {
@@ -24,11 +25,11 @@ export async function getBeatmapScore(beatmap: any, userid: any, mode?: any) {
     await login();
     return new Promise((resolve, reject) => {
         if (mode === undefined) {
-            v2.user.scores.beatmap.all(beatmap, userid).then((data: any) => {
+            v2.scores.list({ type: "user_beatmap_all", beatmap_id: beatmap, user_id: userid }).then((data: any) => {
                 return resolve(data);
             });
         } else {
-            v2.user.scores.beatmap.all(beatmap, userid, mode).then((data: any) => {
+            v2.scores.list({ type: "user_beatmap_all", beatmap_id: beatmap, user_id: userid, mode: mode }).then((data: any) => {
                 return resolve(data);
             });
         }
@@ -96,14 +97,16 @@ export async function getScoresForUsernameForBeatMap(mapid: string, username: an
                     mehs: score.statistics.count_50,
                     goods: score.statistics.count_100,
                     great: score.statistics.count_300,
+                    ok: score.statistics.ok ?? 0,
+                    perfect: score.statistics.perfect ?? 0,
                     combo: score.max_combo,
                     score: score.score,
-                    mode: score.mode,
+                    mode: score.ruleset_id,
                     mods: score.mods
                 };
 
-                const acc100: any = loadacc100(mapid, beatmap.checksum, score.mode, score.mods);
-                const raiting: any = difficulty(mapid, beatmap.checksum, score.mode, score.mods);
+                const acc100: any = loadacc100(mapid, beatmap.checksum, score.ruleset_id, score.mods);
+                const raiting: any = difficulty(mapid, beatmap.checksum, score.ruleset_id, score.mods);
 
                 if (score.pp == null) {
 
@@ -170,16 +173,16 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
         top = result[2].value;
         lb = result[3].value;
 
-        if(beatmap !== undefined && ["loved","ranked","qualified"].includes(beatmap.status) === false) {
+        if (beatmap !== undefined && ["loved", "ranked", "qualified"].includes(beatmap.status) === false) {
             scores = await loadUnrankedScore(userid, beatmap.id, beatmap.mode_int)
         }
 
         user = await getUser(userid, beatmap.mode);
     })
 
-    if (scores.scores == undefined) {
+    if (!scores) {
 
-        return { scores: scores.scores, user: user, beatmap: beatmap };
+        return { scores: [], user: user, beatmap: beatmap };
 
     }
 
@@ -189,7 +192,7 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
 
         const promises: Array<Promise<any>> = []
 
-        scores.scores.forEach(async (score: any) => {
+        scores.slice(0, 5).forEach(async (score: any) => {
 
             const top100 = top.find((t: any) => t.value.id === score.best_id);
 
@@ -210,14 +213,16 @@ export async function getScoresForBeatMap(mapid: string, userid: string) {
                     mehs: score.statistics.count_50,
                     goods: score.statistics.count_100,
                     great: score.statistics.count_300,
+                    ok: score.statistics.ok ?? 0,
+                    perfect: score.statistics.perfect ?? 0,
                     combo: score.max_combo,
                     score: score.score,
-                    mode: score.mode,
+                    mode: score.ruleset_id,
                     mods: score.mods
                 };
 
-                const acc100: any = loadacc100(mapid, beatmap.checksum, score.mode, score.mods);
-                const raiting: any = difficulty(mapid, beatmap.checksum, score.mode, score.mods);
+                const acc100: any = loadacc100(mapid, beatmap.checksum, score.ruleset_id, score.mods);
+                const raiting: any = difficulty(mapid, beatmap.checksum, score.ruleset_id, score.mods);
 
                 if (score.pp == null) {
 
