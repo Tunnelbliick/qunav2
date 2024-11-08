@@ -46,7 +46,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
     const user = result.user;
     const map = result.beatmap;
     const play = result.recentplay;
-    const acc100 = result.acc100.pp[100];
+    const acc100 = play.ruleset_id === 0 ? result.acc100.pp[0][100] : result.acc100.pp[100];
     const ppIffc = result.ppIffc;
     const top100 = result.top100;
     const leaderboard = result.leaderboard;
@@ -91,7 +91,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     const difficulty = result.difficulty;
 
-    const color = getDifficultyColor(difficulty.star.toFixed(2));
+    const color = getDifficultyColor(difficulty.stars.toFixed(2));
 
     stats = calcualteStatsforMods(stats, mods);
 
@@ -99,10 +99,10 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
 
     let fc_acc = 100;
 
-    let c300 = play.statistics.great == undefined ? 0 : play.statistics.great;
-    let c100 = play.statistics.ok == undefined ? 0 : play.statistics.ok;
-    let c50 = play.statistics.meh == undefined ? 0 : play.statistics.meh;
-    let cMiss = play.statistics.miss == undefined ? 0 : play.statistics.miss;
+    let c300 = play.statistics.great ?? 0;
+    let c100 = play.statistics.ok ?? 0;
+    let c50 = play.statistics.meh ?? 0;
+    let cMiss = play.statistics.miss ?? 0;
 
     switch (modeIntToMode(play.ruleset_id)) {
 
@@ -179,7 +179,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
                 .setColor(color)
-                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
+                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.stars.toFixed(2)}★]`)
                 .setURL(`${map.url}`)
                 .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 
@@ -235,7 +235,7 @@ export function generateRecentEmbed(result: any, interaction: any, message: Mess
                 .setThumbnail(`${map.beatmapset.covers.list}`)
                 .setAuthor({ name: `${user.username} - ${user.statistics.pp.toFixed(2)}pp | #${replaceFirstDots(global_rank)} (${user.country_code}${country_rank})`, iconURL: `${user.avatar_url}`, url: `https://osu.ppy.sh/users/${user.id}` })
                 .setColor(color)
-                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.star.toFixed(2)}★]`)
+                .setTitle(`${map.beatmapset.artist} - ${map.beatmapset.title} [${map.version}] [${difficulty.stars.toFixed(2)}★]`)
                 .setURL(`${map.url}`)
                 .setFooter({ text: `Mapset by ${map.beatmapset.creator} ${stored === true ? "| Unranked score saved!" : ""}`, iconURL: `https://a.ppy.sh/${map.beatmapset.user_id}` })
 

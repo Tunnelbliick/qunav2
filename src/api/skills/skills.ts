@@ -66,12 +66,14 @@ export async function getAllSkills(top_100: top100[]) {
                 if (task.value != null && task.value.beatmap != null) {
 
                     const sim: simulateArgs = {
-                        mode: task.value.mode,
+                        mode: task.value.mode_int,
                         checksum: task.value.beatmap.checksum,
                         mapid: task.value.beatmap.id.toString(),
                         mods: task.value.mods,
                         combo: task.value.max_combo,
                         great: task.value.statistics.count_300,
+                        ok: 0,
+                        perfect: 0,
                         goods: task.value.statistics.count_100,
                         mehs: task.value.statistics.count_50,
                         misses: task.value.statistics.count_miss,

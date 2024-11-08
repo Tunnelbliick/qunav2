@@ -1,6 +1,6 @@
 import { BeatmapStats } from "../../../../api/beatmaps/stats";
 import { replaceDots } from "../../../../utility/comma";
-import { buildScoreString, buildStatisticNoMissString, buildStatisticString } from "../../../../utility/score";
+import { buildMapInfo, buildScoreString, buildStatisticNoMissString, buildStatisticString } from "../../../../utility/score";
 import { RecentEmbedParameters } from "../recent";
 
 export function ctbFields(param: RecentEmbedParameters, embed: any) {
@@ -72,8 +72,7 @@ export function ctbFields(param: RecentEmbedParameters, embed: any) {
         },
         {
             name: `Map Info`,
-            value: `Length: \`${min}:${strSec}\` (\`${dmin}:${strDsec}\`) BPM: \`${bpm}\` Objects: \`${total_objects}\`\n` +
-                `CS:\`${cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${hp.toFixed(2).replace(/[.,]00$/, "")}\` Stars: \`${difficulty.star.toFixed(2)}★\``,
+            value: `${buildMapInfo(param.stats, difficulty)}`,
             inline: true
         },
     ])

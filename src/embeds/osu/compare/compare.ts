@@ -15,7 +15,7 @@ export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>,
 
         const acc100 = play.acc100.pp[100];
         const max_combo = map.max_combo;
-        const difficulty = play.difficulty.star.toFixed(2);
+        const difficulty = play.difficulty.stars.toFixed(2);
         let ppOfPlay = play.score.pp;
         if (play.hasOwnProperty('ppOfPlay')) {
             ppOfPlay = play.ppOfPlay;

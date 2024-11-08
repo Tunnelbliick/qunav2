@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/builders": "^1.1.0",
+    "@kotrikd/rosu-pp": "^2.0.0-alpha.8",
     "async-batch": "^1.1.2",
     "axios": "^0.27.2",
     "canvas": "^2.11.0",

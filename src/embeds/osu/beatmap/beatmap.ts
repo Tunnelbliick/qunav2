@@ -9,6 +9,7 @@ import { Recommendation } from "../../../interfaces/Recommendation";
 import { RecommendationInfo } from "../../../interfaces/RecommendationInfo";
 import { getDifficultyColor } from "../../../utility/gradiant";
 import { gamemode_icons } from "../../../utility/icons";
+import { buildMapInfo } from "../../../utility/score";
 const { Canvas, loadImage } = require('skia-canvas');
 const DataImageAttachment = require("dataimageattachment");
 
@@ -47,7 +48,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
     let ppString: string;
     let background: any;
 
-    const statsPromise = loadMapPP(data, modArray, data.mode);
+    const statsPromise = loadMapPP(data, modArray, data.mode_int);
     const backgroundPromise = loadImage(data.beatmapset.covers.cover);
 
     await Promise.allSettled([statsPromise, backgroundPromise]).then((result: any) => {
@@ -67,8 +68,8 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
         ppString = "Could not load PP values";
     }
 
-    const chartURL = await generateBeatmapChart(graph);
-    const chart = await loadImage(chartURL);
+    const chartURL = null; //await generateBeatmapChart(graph);
+    const chart = null; // await loadImage(chartURL);
 
     const canvas = new Canvas(background.width, background.height);
     const ctx = canvas.getContext('2d');
@@ -76,7 +77,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
     ctx.filter = 'blur(7px) brightness(33%)';
     ctx.drawImage(background, 0, 0);
     ctx.filter = 'none';
-    ctx.drawImage(chart, 0, 0);
+    //ctx.drawImage(chart, 0, 0);
 
     const result = canvas.toDataURLSync();
 
@@ -92,7 +93,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
 
     // extras
     const successrate = Math.round((data.passcount / data.playcount) * 100);
-    const embedColor = getDifficultyColor(difficulty.star.toFixed(2));
+    const embedColor = getDifficultyColor((difficulty.stars ?? 0).toFixed(2));
 
     // @ts-ignore 
     const modeEmote = gamemode_icons[data.mode];
@@ -110,9 +111,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
         embed.addFields([
             {
                 name: `${modeEmote} [${data.version}] ${modString}`,
-                value: `Combo: \`${data.max_combo}x\` Stars: \`${difficulty.star.toFixed(2)}★\`\n` +
-                    `Length: \`${stats.min}:${stats.strSec}\` (\`${stats.dmin}:${stats.strDsec}\`) Objects: \`${data.count_circles + data.count_sliders + data.count_spinners}\`\n` +
-                    `CS:\`${stats.cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${difficulty.hp.toFixed(2).replace(/[.,]00$/, "")}\` BPM: \`${stats.bpm.toFixed(2).replace(/[.,]00$/, "")}\``,
+                value: `${buildMapInfo(stats, difficulty)}`,
                 inline: true
             },
             {
@@ -130,9 +129,7 @@ export async function buildMapEmbedNoResponse(mods: string, data: any) {
         embed.addFields([
             {
                 name: `${modeEmote} [${data.version}] ${modString}`,
-                value: `Stars: \`${difficulty.star.toFixed(2)}★\`\n` +
-                    `Length: \`${stats.min}:${stats.strSec}\` (\`${stats.dmin}:${stats.strDsec}\`) Objects: \`${data.count_circles + data.count_sliders + data.count_spinners}\`\n` +
-                    `CS:\`${stats.cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${difficulty.hp.toFixed(2).replace(/[.,]00$/, "")}\` BPM: \`${stats.bpm.toFixed(2).replace(/[.,]00$/, "")}\``,
+                value: `${buildMapInfo(stats, difficulty)}`,
                 inline: true
             },
             {
@@ -207,7 +204,7 @@ export async function buildMapEmbedMoreLikeThis(mods: string, data: any, index: 
 
     // extras
     const successrate = Math.round((data.passcount / data.playcount) * 100);
-    const embedColor = getDifficultyColor(difficulty.star.toFixed(2));
+    const embedColor = getDifficultyColor(difficulty.stars.toFixed(2));
 
     // @ts-ignore 
     const modeEmote = gamemode_icons[data.mode];
@@ -225,7 +222,7 @@ export async function buildMapEmbedMoreLikeThis(mods: string, data: any, index: 
         embed.addFields([
             {
                 name: `${modeEmote} [${data.version}] ${modString}`,
-                value: `Combo: \`${data.max_combo}x\` Stars: \`${difficulty.star.toFixed(2)}★\`\n` +
+                value: `Combo: \`${data.max_combo}x\` Stars: \`${difficulty.stars.toFixed(2)}★\`\n` +
                     `Length: \`${stats.min}:${stats.strSec}\` (\`${stats.dmin}:${stats.strDsec}\`) Objects: \`${data.count_circles + data.count_sliders + data.count_spinners}\`\n` +
                     `CS:\`${stats.cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${difficulty.hp.toFixed(2).replace(/[.,]00$/, "")}\` BPM: \`${stats.bpm.toFixed(2).replace(/[.,]00$/, "")}\``,
                 inline: true
@@ -245,7 +242,7 @@ export async function buildMapEmbedMoreLikeThis(mods: string, data: any, index: 
         embed.addFields([
             {
                 name: `${modeEmote} [${data.version}] ${modString}`,
-                value: `Stars: \`${difficulty.star.toFixed(2)}★\`\n` +
+                value: `Stars: \`${difficulty.stars.toFixed(2)}★\`\n` +
                     `Length: \`${stats.min}:${stats.strSec}\` (\`${stats.dmin}:${stats.strDsec}\`) Objects: \`${data.count_circles + data.count_sliders + data.count_spinners}\`\n` +
                     `CS:\`${stats.cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${difficulty.hp.toFixed(2).replace(/[.,]00$/, "")}\` BPM: \`${stats.bpm.toFixed(2).replace(/[.,]00$/, "")}\``,
                 inline: true
@@ -312,7 +309,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
     let ppString: string;
     let background: any;
 
-    const statsPromise = loadMapPP(data, rec.mods, data.mode);
+    const statsPromise = loadMapPP(data, rec.mods, data.mode_int);
     const backgroundPromise = loadImage(data.beatmapset.covers.cover);
 
     await Promise.allSettled([statsPromise, backgroundPromise]).then((result: any) => {
@@ -353,7 +350,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
     stats = calcualteStatsforMods(stats, rec.mods);
 
     // extras
-    const embedColor = getDifficultyColor(difficulty.star.toFixed(2));
+    const embedColor = getDifficultyColor(difficulty.stars.toFixed(2));
 
     // @ts-ignore 
     const modeEmote = gamemode_icons[data.mode];
@@ -371,7 +368,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
         embed.addFields([
             {
                 name: `${modeEmote} [${data.version}] ${modString}`,
-                value: `Combo: \`${data.max_combo}x\` Stars: \`${difficulty.star.toFixed(2)}★\`\n` +
+                value: `Combo: \`${data.max_combo}x\` Stars: \`${difficulty.stars.toFixed(2)}★\`\n` +
                     `Length: \`${stats.min}:${stats.strSec}\` (\`${stats.dmin}:${stats.strDsec}\`) Objects: \`${data.count_circles + data.count_sliders + data.count_spinners}\`\n` +
                     `CS:\`${stats.cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${difficulty.hp.toFixed(2).replace(/[.,]00$/, "")}\` BPM: \`${stats.bpm.toFixed(2).replace(/[.,]00$/, "")}\``,
                 inline: true
@@ -391,7 +388,7 @@ export async function buildMapEmbedRecommendation(rec: Recommendation, data: bea
         embed.addFields([
             {
                 name: `${modeEmote} [${data.version}] ${modString}`,
-                value: `Stars: \`${difficulty.star.toFixed(2)}★\`\n` +
+                value: `Stars: \`${difficulty.stars.toFixed(2)}★\`\n` +
                     `Length: \`${stats.min}:${stats.strSec}\` (\`${stats.dmin}:${stats.strDsec}\`) Objects: \`${data.count_circles + data.count_sliders + data.count_spinners}\`\n` +
                     `CS:\`${stats.cs.toFixed(2).replace(/[.,]00$/, "")}\` AR:\`${difficulty.ar.toFixed(2).replace(/[.,]00$/, "")}\` OD:\`${difficulty.od.toFixed(2).replace(/[.,]00$/, "")}\` HP:\`${difficulty.hp.toFixed(2).replace(/[.,]00$/, "")}\` BPM: \`${stats.bpm.toFixed(2).replace(/[.,]00$/, "")}\``,
                 inline: true
@@ -434,7 +431,7 @@ function buildpp(pp_values: { [key: string]: { [accuracy: string]: number } }, m
     }
 
     const separator = "─";
-    const columnWidth = 5; // Define a fixed width for each column
+    const columnWidth = 6; // Define a fixed width for each column
 
     // Helper function to pad strings to a fixed width
     function pad(text: string, length: number): string {
@@ -450,16 +447,57 @@ function buildpp(pp_values: { [key: string]: { [accuracy: string]: number } }, m
 
     // Build the header and separator lines
     let results = `${pre} │ ${a95} │ ${a97} │ ${a99} │ ${a100}\n`;
-    results += `──────┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth)}\n`;
+    results += `──────┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 1)}\n`;
 
     // Iterate through each miss value and format the pp values
     for (const miss in pp_values) {
-        const acc95 = pad(pp_values[miss]["95"].toFixed(1), columnWidth);
-        const acc97 = pad(pp_values[miss]["97"].toFixed(1), columnWidth);
-        const acc99 = pad(pp_values[miss]["99"].toFixed(1), columnWidth);
-        const acc100 = pad(pp_values[miss]["100"].toFixed(1), columnWidth);
+        const acc95 = pad(pp_values[miss][95].toFixed(1).slice(0, columnWidth), columnWidth + 2);
+        const acc97 = pad(pp_values[miss][97].toFixed(1).slice(0, columnWidth), columnWidth + 2);
+        const acc99 = pad(pp_values[miss][99].toFixed(1).slice(0, columnWidth), columnWidth + 2);
+        const acc100 = pad(pp_values[miss][100].toFixed(1).slice(0, columnWidth), columnWidth + 2);
 
-        results += ` ${pad(miss + "x", 4)} │ ${acc95} │ ${acc97} │ ${acc99} │ ${acc100}\n`;
+        results += ` ${pad(miss + "x", 4)} │${acc95}│${acc97}│${acc99}│${acc100}\n`;
+    }
+
+    return results;
+}
+
+export function buildppIfLessMiss(original_pp: number, pp_values: number[], original_miss: number): string {
+
+    const separator = "─";
+    const columnWidth = 4; // Define a fixed width for each column
+
+    // Helper function to pad strings to a fixed width
+    function pad(text: string, length: number): string {
+        return text.padStart(Math.floor((length + text.length) / 2)).padEnd(length);
+    }
+
+    // Default headers and prefix
+
+
+    let pre = pad(`Miss`, columnWidth + 2);
+    let results = `${pre}`;
+
+    for (let miss in pp_values) {
+        let missString = pad(`${original_miss - +miss}x`, columnWidth + 2);
+        results += `│${missString}`;
+    }
+
+    results += "\n";
+
+    // Build the header and separator lines
+
+    results += `${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}\n`;
+
+    results += pad(`${original_pp.toFixed(1).slice(0, columnWidth)}`, columnWidth + 2);
+
+    for (let miss of pp_values) {
+
+        if (miss == undefined)
+            continue;
+
+        let missString = pad(`${miss.toFixed(1).slice(0, columnWidth)}`, columnWidth + 2);
+        results += `│${missString}`;
     }
 
     return results;
@@ -501,7 +539,7 @@ function build_old(acc100: any, acc99: any, acc97: any, acc95: any, mode: any): 
 
     const total_length = fill.length + acc100.length + 2
 
-    const buildString = `${pre} │${a95}│${a97}│${a99}│ ${a100}\n${fill}${seper.repeat(total_length - fill.length)}\nPP  │ ${acc95} │ ${acc97} │ ${acc99} │ ${acc100}`;
+    const buildString = `${pre} │${a95}│${a97}│${a99}│ ${a100} \n${fill}${seper.repeat(total_length - fill.length)} \nPP  │ ${acc95} │ ${acc97} │ ${acc99} │ ${acc100} `;
 
     return buildString;
 

@@ -64,8 +64,8 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
 
         const user: any = getUser(userid, modeIntToMode(recentplay.ruleset_id));
         const beatmap: any = await getBeatmapFromCache(recentplay.beatmap.id, recentplay.beatmap.checksum);
-        const acc100: any = loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, mode);
-        const raiting: any = await difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, mode, recentplay.mods);
+        const acc100: any = loadacc100WithoutBeatMapDownload(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.mods, recentplay.ruleset_id);
+        const raiting: any = await difficulty(recentplay.beatmap.id, recentplay.beatmap.checksum, recentplay.ruleset_id, recentplay.mods);
 
         if(beatmap.max_combo == null) {
             beatmap.max_combo = raiting.max_combo;
@@ -99,10 +99,10 @@ export async function getRecentPlaysForUser(userid: string, filter: RecentPlayFi
 
             Promise.allSettled([user, beatmap, acc100, ppIffc, raiting, top100, leaderboard]).then((result: any) => {
 
-                const top100 = result[5].value.find((t: any) => t.value.id === recentplay.best_id);
+                const top100 = result[5].value.find((t: any) => t.value.id === recentplay.id);
                 let top_100_position = undefined;
 
-                const leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.best_id);
+                const leaderboard = result[6].value.find((t: any) => t.value.id === recentplay.id);
                 let leaderboard_position = undefined;
 
                 if (top100 !== undefined)

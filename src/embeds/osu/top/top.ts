@@ -77,7 +77,7 @@ export async function topEmbed(data: any, user: any, index: number, max: number)
         const score = plays[0].value;
         const beatmap = plays[0].beatmap.value;
         const maxpp = plays[0].maxpp.value.pp[100];
-        const diff = await difficulty(beatmap.id, beatmap.checksum, modeIntToMode(score.ruleset_id), score.mods);
+        const diff = await difficulty(beatmap.id, beatmap.checksum, score.ruleset_id, score.mods);
         const leaderboard = await getLeaderBoardPosition(beatmap.id, modeIntToMode(score.ruleset_id), score.id);
 
         if (score == null || beatmap == null || maxpp == null) {
@@ -175,7 +175,7 @@ function genereateField(play: any) {
     switch (modeIntToMode(score.ruleset_id)) {
         case "osu":
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
                 `[**${score.max_combo}x**/${difficulty.max_combo}x] ` +
                 `${buildStatisticString(score)}\n ` +
@@ -183,7 +183,7 @@ function genereateField(play: any) {
             break;
         case "mania":
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
                 `[**${score.max_combo}x**] ` +
                 `${buildStatisticString(score)}\n ` +
@@ -191,7 +191,7 @@ function genereateField(play: any) {
             break;
         case "taiko":
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
                 `[**${score.max_combo}x**/${difficulty.max_combo}x] ` +
                 `${buildStatisticString(score)}\n ` +
@@ -199,7 +199,7 @@ function genereateField(play: any) {
             break;
         case "fruits":
             scoreField =
-                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.star.toFixed(2)}★]\n` +
+                `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
                 `[**${score.max_combo}x**/${difficulty.max_combo}x] ` +
                 `${buildStatisticString(score)}\n ` +

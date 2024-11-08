@@ -4,7 +4,7 @@ import { PerformancePoints } from "../interfaces/performancePoints";
 const PerformancePointsSchema = new mongoose.Schema({
     mapid: String,
     checksum: String,
-    mode: String,
+    mode: Number,
     mods: Array,
     pp: Object,
     difficulty: Object,

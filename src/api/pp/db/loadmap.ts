@@ -1,12 +1,10 @@
 import PerformancePoints from "../../../models/PerformancePoints";
 import { downloadBeatmap } from "../../beatmaps/downloadbeatmap";
-import { calcualte } from "../calculate";
-import { difficulty } from "../difficulty";
-import { max } from "../max";
+import { calculate } from "../calculate";
 
 const maxDecimate = 200;
 
-export async function loadMapPP(data: any, modArray: any, mode: any) {
+export async function loadMapPP(data: any, modArray: any, mode: number) {
     let generatedpp: any;
     let returnpp: any;
 
@@ -16,7 +14,7 @@ export async function loadMapPP(data: any, modArray: any, mode: any) {
 
         await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${data.id}_${data.checksum}.osu`, data.id);
 
-        generatedpp = await calcualte(data.id, data.checksum, mode, modArray);
+        generatedpp = await calculate(data.id, data.checksum, mode, modArray);
 
         if (ppObject == undefined) {
             ppObject = new PerformancePoints();
@@ -36,7 +34,7 @@ export async function loadMapPP(data: any, modArray: any, mode: any) {
 
         await downloadBeatmap('https://osu.ppy.sh/osu/', `${process.env.FOLDER_TEMP}${data.id}_${data.checksum}.osu`, data.id);
 
-        generatedpp = await calcualte(data.id, data.checksum, mode, modArray);
+        generatedpp = await calculate(data.id, data.checksum, mode, modArray);
 
         if (ppObject.pp == undefined) {
             ppObject.pp = {};
@@ -56,7 +54,7 @@ export async function loadMapPP(data: any, modArray: any, mode: any) {
 
 }
 
-export async function loadMapPPWithoutDownload(data: any, modArray: any, mode: any) {
+export async function loadMapPPWithoutDownload(data: any, modArray: any, mode: number) {
     let generatedpp: any;
     let returnpp: any;
 
@@ -64,7 +62,7 @@ export async function loadMapPPWithoutDownload(data: any, modArray: any, mode: a
 
     if (ppObject == undefined || ppObject.checksum != data.checksum) {
 
-        generatedpp = await calcualte(data.id, data.checksum, mode, modArray);
+        generatedpp = await calculate(data.id, data.checksum, mode, modArray);
 
         if (ppObject == undefined) {
             ppObject = new PerformancePoints();
@@ -82,7 +80,7 @@ export async function loadMapPPWithoutDownload(data: any, modArray: any, mode: a
 
     } else if (ppObject != undefined && (ppObject.pp == undefined || Object.keys(ppObject.pp).length <= 1)) {
 
-        generatedpp = await calcualte(data.id, data.checksum, mode, modArray);
+        generatedpp = await calculate(data.id, data.checksum, mode, modArray);
 
         if (ppObject.pp == undefined) {
             ppObject.pp = {};
@@ -109,7 +107,7 @@ export async function recalculateBeatMap(ppObject: any) {
     let generatedpp: any;
     let returnpp: any;
 
-    generatedpp = await calcualte(ppObject.mapid, ppObject.checksum, ppObject.mode, ppObject.mods);
+    generatedpp = await calculate(ppObject.mapid, ppObject.checksum, ppObject.mode, ppObject.mods);
 
     if (ppObject == undefined) {
         ppObject = new PerformancePoints();

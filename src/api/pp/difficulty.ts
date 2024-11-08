@@ -1,12 +1,20 @@
-import { arraytoBinary } from "../osu/utility/parsemods";
+import * as rosu from "@kotrikd/rosu-pp";
+import * as fs from "fs";
 
-const ppcalc = require('quna-pp');
+export async function difficulty(mapid: any, checksum: any, mode: number, mods: Array<any>) {
 
-export async function difficulty(mapid: any, checksum: any, mode: any, mods: Array<any>) {
+    const bytes = fs.readFileSync(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`);
 
-    const modbinary = arraytoBinary(mods);
+    // Parse the map.
+    let map = new rosu.Beatmap(bytes);
 
-    const map_difficulty: any = await ppcalc.difficutly(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary);
+    map.convert(mode);
 
-    return map_difficulty
+    const maxAttrs = new rosu.Performance({ mods: mods }).calculate(map);
+
+    // const map_difficulty: any = await ppcalc.difficutly(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary);
+
+    map.free();
+
+    return maxAttrs.difficulty
 }

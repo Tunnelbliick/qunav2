@@ -404,7 +404,7 @@ export async function bulldrecommends(message: any, args: string[], prefix: any)
                         mapDrain: data.hit_length
                     };
 
-                    const pp_stats = await loadMapPP(data, modArray, data.mode);
+                    const pp_stats = await loadMapPP(data, modArray, 0);
 
                     const acc100 = pp_stats.pp[100];
                     const acc99 = pp_stats.pp[99];
@@ -430,7 +430,7 @@ export async function bulldrecommends(message: any, args: string[], prefix: any)
                     recommendation.cs = difficulty.cs;
                     recommendation.hp = difficulty.hp;
                     recommendation.bpm = stats.bpm;
-                    recommendation.star = difficulty.star;
+                    recommendation.star = difficulty.stars;
                     recommendation.acc95 = acc95;
                     recommendation.acc97 = acc97;
                     recommendation.acc99 = acc99;

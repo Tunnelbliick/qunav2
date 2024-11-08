@@ -1,20 +1,18 @@
-import { arraytoBinary } from "../osu/utility/parsemods";
+import * as rosu from "@kotrikd/rosu-pp";
+import * as fs from "fs";
 
-const ppcalc = require('quna-pp');
+export async function max(mapid: any, checksum: any, mode: number, mods?: Array<any>): Promise<number> {
 
-export async function max(mapid: any, checksum: any, mode: any, mods?: Array<any>): Promise<number> {
+    const bytes = fs.readFileSync(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`);
 
-    const modbinary = arraytoBinary(mods);
+    // Parse the map.
+    let map = new rosu.Beatmap(bytes);
 
-    let max_pp = undefined;
+    map.convert(mode);
 
-    switch (mode) {
-        case "mania":
-            max_pp = await ppcalc.max(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary);
-        default:
-            max_pp = await ppcalc.max(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`, modbinary);
-            break;
-    }
+    const maxAttrs = new rosu.Performance({ mods: mods }).calculate(map);
 
-    return max_pp;
+    map.free();
+
+    return maxAttrs.pp;
 }
