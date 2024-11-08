@@ -71,7 +71,7 @@ export async function loadMapPPWithoutDownload(data: any, modArray: any, mode: n
 
         ppObject.mapid = data.id;
         ppObject.checksum = data.checksum;
-        ppObject.mode = mode;
+        ppObject.mode = generatedpp.difficulty.mode;
         ppObject.pp = generatedpp.pp;
         ppObject.difficulty = generatedpp.difficulty;
         ppObject.graph = decimate(generatedpp.graph);
@@ -106,25 +106,8 @@ export async function recalculateBeatMap(ppObject: any) {
 
     let generatedpp: any;
     let returnpp: any;
-    let mode = 0;
 
-    if (isNaN(ppObject.mode))
-        switch (ppObject.mode) {
-            case "osu":
-                mode = 0;
-                break;
-            case "taiko":
-                mode = 1;
-                break;
-            case "catch":
-                mode = 2;
-                break;
-            case "mania":
-                mode = 3;
-                break;
-        }
-
-    generatedpp = await calculate(ppObject.mapid, ppObject.checksum, ppObject.mode, ppObject.mods);
+    generatedpp = await calculate(ppObject.mapid, ppObject.checksum, ppObject.mode ?? 0, ppObject.mods);
 
     if (ppObject == undefined) {
         ppObject = new PerformancePoints();
@@ -133,7 +116,7 @@ export async function recalculateBeatMap(ppObject: any) {
 
     ppObject.mapid = ppObject.mapid;
     ppObject.checksum = ppObject.checksum;
-    ppObject.mode = ppObject.mode;
+    ppObject.mode = generatedpp.difficulty.mode;
     ppObject.pp = generatedpp.pp;
     ppObject.difficulty = generatedpp.difficulty;
     ppObject.graph = decimate(generatedpp.graph);

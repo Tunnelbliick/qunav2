@@ -59,6 +59,8 @@ export async function simulateRecentPlay(recentplay: any) {
 
 }
 
+const missReduction = [1, 2, 5, 9999];
+
 export async function simulateRecentPlayFC(recentplay: any, beatmap: any) {
 
     const mapid = recentplay.beatmap.id;
@@ -88,16 +90,14 @@ export async function simulateRecentPlayFC(recentplay: any, beatmap: any) {
         const miss = recentplay.statistics.miss ?? 0;
 
         let ppReturn: any[] = [];
-        let missReducer = 1;
 
-        for (let i = 1; i < 6; i++) {
+        for (let reducer of missReduction) {
 
-            if (miss - missReducer < 0)
-                continue;
+            let missCount = Math.max(miss - reducer, 0)
 
             const currAttrs = new rosu.Performance({
                 mods: mods, // Must be the same as before in order to use the previous attributes!
-                misses: miss - missReducer,
+                misses: missCount,
                 n300: great,
                 n100: ok,
                 n50: meh,
@@ -107,8 +107,7 @@ export async function simulateRecentPlayFC(recentplay: any, beatmap: any) {
                 hitresultPriority: rosu.HitResultPriority.BestCase,
             }).calculate(maxAttrs);
 
-            ppReturn[missReducer] = currAttrs.pp;
-            missReducer *= 2;
+            ppReturn[reducer] = currAttrs.pp;
         }
 
         returnpp = ppReturn;

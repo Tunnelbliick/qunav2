@@ -11,7 +11,12 @@ export async function calculate(mapid: any, checksum: any, mode: number, mods?: 
     const map_bytes = fs.readFileSync(`${process.env.FOLDER_TEMP}${mapid}_${checksum}.osu`);
     let map = new rosu.Beatmap(map_bytes);
 
-    map.convert(mode);
+    if (mode == undefined) {
+        mode = map.mode;
+    }
+
+    if (map.mode == 0)
+        map.convert(mode);
 
     let values: any = { difficulty: undefined, pp: undefined, graph: [] };
     let map_pp: any = {};
@@ -49,7 +54,8 @@ export async function calculate(mapid: any, checksum: any, mode: number, mods?: 
         flashlight: strains.flashlight,
         color: strains.color,
         rythm: strains.rhythm,
-        stamina: strains.stamina
+        stamina: strains.stamina,
+        strain: strains.strains
     }
 
     values.graph = graph;

@@ -1,9 +1,6 @@
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js";
-import { retry } from "ts-retry-promise";
-import { normalise, skill_score, skill_type } from "../../../api/skills/skills";
+import { normalise, skill_type } from "../../../api/skills/skills";
 import { OsuScore } from "../../../interfaces/OsuScore";
-import { Score } from "../../../interfaces/Score";
-import score from "../../../models/score";
 import { replaceFirstDots } from "../../../utility/comma";
 import { rank_icons } from "../../../utility/icons";
 import { buildModString } from "../../../utility/score";

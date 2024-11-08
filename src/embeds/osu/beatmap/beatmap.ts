@@ -465,7 +465,7 @@ function buildpp(pp_values: { [key: string]: { [accuracy: string]: number } }, m
 export function buildppIfLessMiss(original_pp: number, pp_values: number[], original_miss: number): string {
 
     const separator = "─";
-    const columnWidth = 4; // Define a fixed width for each column
+    const columnWidth = 6; // Define a fixed width for each column
 
     // Helper function to pad strings to a fixed width
     function pad(text: string, length: number): string {
@@ -479,7 +479,7 @@ export function buildppIfLessMiss(original_pp: number, pp_values: number[], orig
     let results = `${pre}`;
 
     for (let miss in pp_values) {
-        let missString = pad(`${original_miss - +miss}x`, columnWidth + 2);
+        let missString = pad(`${Math.max(original_miss - +miss, 0)}x`, columnWidth + 2);
         results += `│${missString}`;
     }
 
@@ -487,7 +487,7 @@ export function buildppIfLessMiss(original_pp: number, pp_values: number[], orig
 
     // Build the header and separator lines
 
-    results += `${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}\n`;
+    results += `${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth + 2)}┼${separator.repeat(columnWidth)}\n`;
 
     results += pad(`${original_pp.toFixed(1).slice(0, columnWidth + 1)}`, columnWidth + 2);
 

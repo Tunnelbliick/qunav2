@@ -9,6 +9,7 @@ const color: any = {
     "color": "#a87b32",
     "rhythm": "#9332a8",
     "stamina": "#3244a8",
+    "strain": "#32a869",
 }
 
 const max = 200;
@@ -22,7 +23,7 @@ export async function generateBeatmapChart(graph: any) {
 
         const value: any = graph[key];
 
-        if (isNaN(value)) {
+        if (isNaN(value) && value !== undefined && value !== null) {
 
             const key_string = key.toString();
             stepSize = value[value.length - 1].x / 5;

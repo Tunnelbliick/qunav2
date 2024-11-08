@@ -92,24 +92,37 @@ export interface beatmap {
 }
 
 export async function getBeatmap(mapid: any): Promise<beatmap> {
-    await login();
+    await login(); // Ensure authenticated session
+
     return new Promise((resolve, reject) => {
-        const result = v2.beatmaps.details({ type: "difficulty", id: mapid })
+        const result = v2.beatmaps.details({ type: "difficulty", id: mapid });
 
         result.then(async (data: any) => {
+            try {
+                // Upsert the beatmap (update if exists, insert if not)
+                const updatedBeatmap: any = await Beatmap.findOneAndUpdate(
+                    { mapid: data.id }, // Query by mapid
+                    {
+                        $set: {
+                            checksum: data.checksum,
+                            beatmap: data,
+                        },
+                    },
+                    { upsert: true, new: true } // Create if not exists and return the updated document
+                );
 
-            const beatmapObject = new Beatmap();
-
-            beatmapObject.checksum = data.checksum;
-            beatmapObject.mapid = data.id;
-            beatmapObject.beatmap = data;
-
-            await beatmapObject.save();
-
-            return resolve(data);
+                return resolve(updatedBeatmap.beatmap); // Return the beatmap data
+            } catch (err) {
+                console.error(`Error saving beatmap with id ${mapid}:`, err);
+                return reject(err);
+            }
+        }).catch((err) => {
+            console.error(`Error fetching beatmap with id ${mapid}:`, err);
+            return reject(err);
         });
     });
 }
+
 
 export async function getBeatmapSet(setid: number) {
     await login();
