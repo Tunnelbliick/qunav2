@@ -175,7 +175,7 @@ function genereateField(play: any) {
             scoreField =
                 `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
-                `[**${score.max_combo}x**/${difficulty.max_combo}x] ` +
+                `[**${score.max_combo}x**/${difficulty.maxCombo }x] ` +
                 `${buildStatisticString(score)}\n ` +
                 `Score set <t:${currentTimeInSeconds}:R>\n`
             break;
@@ -191,7 +191,7 @@ function genereateField(play: any) {
             scoreField =
                 `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
-                `[**${score.max_combo}x**/${difficulty.max_combo}x] ` +
+                `[**${score.max_combo}x**/${difficulty.maxCombo}x] ` +
                 `${buildStatisticString(score)}\n ` +
                 `Score set <t:${currentTimeInSeconds}:R>\n`
             break;
@@ -199,7 +199,7 @@ function genereateField(play: any) {
             scoreField =
                 `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} **${score.pp.toFixed(2)}**/${maxpp.toFixed(2)}pp | ${(score.accuracy * 100).toFixed(2)}% | ${buildScoreString(score)}\n` +
-                `[**${score.max_combo}x**/${difficulty.max_combo}x] ` +
+                `[**${score.max_combo}x**/${difficulty.maxCombo}x] ` +
                 `${buildStatisticString(score)}\n ` +
                 `Score set <t:${currentTimeInSeconds}:R>\n`
             break;

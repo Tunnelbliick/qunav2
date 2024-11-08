@@ -98,7 +98,7 @@ function genereateField(play: any) {
             scoreField =
                 `**${play.position + 1}.** [${beatmap.beatmapset.title} [${beatmap.version}]](${beatmap.url}) ${appliedmods == "+" ? "" : "**" + appliedmods + "**"} [${difficulty.stars.toFixed(2)}★]\n` +
                 `${rankEmote} ${score.pp.toFixed(2)} → **${play.unchocked.toFixed(2)}pp** | ${(score.accuracy * 100).toFixed(2)}% → **${acc.toFixed(2)}%**\n` +
-                `[${score.max_combo}x → **${difficulty.max_combo}x**/${difficulty.max_combo}x] Removed ${(score.statistics.miss ?? 0) == 1 ? "1 miss" : (score.statistics.miss ?? 0) + " misses"}\n`
+                `[${score.max_combo}x → **${difficulty.maxCombo}x**/${difficulty.maxCombo}x] Removed ${(score.statistics.miss ?? 0) == 1 ? "1 miss" : (score.statistics.miss ?? 0) + " misses"}\n`
             break;
     }
     return scoreField;
