@@ -5,7 +5,7 @@ export default (client: Client) => {
     const statusOptions = [
 
         `${client.guilds.cache.size} servers | !help`,
-        `Recommendations v3.0!`
+        `Now with CSR!`
 
     ]
     const updateStatus = () => {
