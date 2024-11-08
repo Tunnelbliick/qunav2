@@ -211,8 +211,8 @@ export async function getMaxForCurrentTopArray(input: any) {
     return new Promise(async (resolve, reject) => {
 
         const beatmap: any = getBeatmapFromCache(input.value.beatmap.id, input.value.beatmap.checksum);
-        const acc100: any = loadacc100WithoutBeatMapDownload(input.value.beatmap.id, input.value.beatmap.checksum, input.value.mods, input.value.beatmap.mode);
-        const raiting: any = difficulty(input.value.beatmap.id, input.value.beatmap.checksum, input.value.mode, input.value.mods);
+        const acc100: any = loadacc100WithoutBeatMapDownload(input.value.beatmap.id, input.value.beatmap.checksum, input.value.mods, input.value.ruleset_id);
+        const raiting: any = difficulty(input.value.beatmap.id, input.value.beatmap.checksum, input.value.ruleset_id, input.value.mods);
 
         acc100.catch(() => { return reject(null); });
 

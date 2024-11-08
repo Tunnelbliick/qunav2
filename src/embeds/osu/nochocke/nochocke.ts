@@ -72,7 +72,7 @@ function genereateField(play: any) {
     const score = play.value;
 
     const beatmap = play.beatmap.value;
-    const maxpp = play.maxpp.value.pp[100];
+    const maxpp = play.maxpp.value.pp[0] !== undefined ? play.maxpp.value.pp[0][100] : play.maxpp.value.pp[100];
     const difficulty = play.difficulty.value;
 
     if (score == null || beatmap == null || maxpp == null) {

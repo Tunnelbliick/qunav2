@@ -28,8 +28,15 @@ export async function loadacc100(mapid: string, checksum: string, mode: number, 
                 ppObject.pp = {};
             }
 
-            if(maxpp)
-            ppObject.pp[100] = maxpp;
+            if (maxpp) {
+                // Ensure ppObject.pp is initialized as an object
+                if (!ppObject.pp) {
+                    ppObject.pp = {};
+                }
+
+                // Now safely set the property
+                ppObject.pp[0] = { 100: maxpp };
+            }
 
             await ppObject.save();
 
@@ -44,12 +51,11 @@ export async function loadacc100(mapid: string, checksum: string, mode: number, 
 export async function loadacc100WithoutBeatMapDownload(mapid: string, checksum: string, modArray: string[], mode: number) {
     return new Promise(async (resolve, reject) => {
 
-        const generatedpp: any = [];
         let returnpp: any;
 
         let ppObject = await PerformancePoints.findOne({ mapid: mapid, mods: modArray, mode: mode });
 
-        if (ppObject == undefined || ppObject.pp == null || ppObject.pp[0] == null || ppObject.checksum != checksum) {
+        if (ppObject == undefined || ppObject.pp == null || ppObject.pp[0] == null || ppObject.pp[0][100] == null || ppObject.checksum != checksum) {
 
             const maxpp = await max(mapid, checksum, mode, modArray).catch(() => {
                 return reject(null);
@@ -63,8 +69,16 @@ export async function loadacc100WithoutBeatMapDownload(mapid: string, checksum: 
             ppObject.checksum = checksum;
             ppObject.mods = modArray;
 
-            if(maxpp)
-            ppObject.pp = { 100: maxpp };
+            if (maxpp) {
+                // Ensure ppObject.pp is initialized as an object
+                if (!ppObject.pp) {
+                    ppObject.pp = {};
+                }
+
+                // Now safely set the property
+                ppObject.pp[0] = { 100: maxpp };
+            }
+
 
             await ppObject.save();
 

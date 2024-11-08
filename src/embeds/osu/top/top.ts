@@ -72,11 +72,9 @@ export async function topEmbed(data: any, user: any, index: number, max: number)
 
         return compact;
     } else {
-
-
         const score = plays[0].value;
         const beatmap = plays[0].beatmap.value;
-        const maxpp = plays[0].maxpp.value.pp[100];
+        const maxpp = plays[0].maxpp.value.pp[0] !== undefined ? plays[0].maxpp.value.pp[0][100] : plays[0].maxpp.value.pp[100];
         const diff = await difficulty(beatmap.id, beatmap.checksum, score.ruleset_id, score.mods);
         const leaderboard = await getLeaderBoardPosition(beatmap.id, modeIntToMode(score.ruleset_id), score.id);
 
@@ -156,7 +154,7 @@ function genereateField(play: any) {
 
     const score = play.value;
     const beatmap = play.beatmap.value;
-    const maxpp = play.maxpp.value.pp[100];
+    const maxpp = play.maxpp.value.pp[0] !== undefined ? play.maxpp.value.pp[0][100] : play.maxpp.value.pp[100];
     const difficulty = play.difficulty.value;
 
     if (score == null || beatmap == null || maxpp == null) {
