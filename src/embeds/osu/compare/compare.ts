@@ -13,7 +13,7 @@ export function generateCompareEmbed(map: any, user: any, scoreList: Array<any>,
     scoreList.forEach((play) => {
         index++;
 
-        const acc100 = play.acc100.pp[100];
+        const acc100 = play.acc100.pp[0][100];
         const max_combo = map.max_combo;
         const difficulty = play.difficulty.stars.toFixed(2);
         let ppOfPlay = play.score.pp;
